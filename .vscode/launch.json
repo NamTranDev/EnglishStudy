@@ -1,0 +1,93 @@
+{
+    "version": "0.2.0",
+    // flutter devices to found device
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Android Phone",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "R5CRC06XTAP"
+        },
+        {
+            "name": "Android Tablet",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "android"
+        },
+        {
+            "name": "Apple iPad",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "ipad"
+        },
+        {
+            "name": "Apple iPhone",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "iphone"
+        },
+        {
+            "name": "Apple Macos",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "macos"
+        },
+        {
+            "name": "Web",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "chrome"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "All Apple",
+            "configurations": [
+                "Apple iPad",
+                "Apple iPhone"
+            ]
+        },
+        {
+            "name": "All Android",
+            "configurations": [
+                "Android Phone",
+                "Android Tablet"
+            ]
+        },
+        {
+            "name": "All Phone",
+            "configurations": [
+                "Apple iPhone",
+                "Android Phone",
+            ]
+        },
+        {
+            "name": "All Devices",
+            "configurations": [
+                "Apple iPad",
+                "Apple iPhone",
+                "Android Phone",
+                "Android Tablet"
+            ]
+        },
+        {
+            "name": "All Platforms",
+            "configurations": [
+                "Apple iPad",
+                "Apple iPhone",
+                "Apple Macos",
+                "Android Phone",
+                "Android Tablet",
+                "Web"
+            ]
+        }
+    ]
+}

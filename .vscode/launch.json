@@ -14,37 +14,43 @@
             "name": "Android Phone",
             "request": "launch",
             "type": "dart",
-            "deviceId": "R5CRC06XTAP"
+            "deviceId": "R5CRC06XTAP",
+            "program": "lib/app.dart",
         },
         {
             "name": "Android Tablet",
             "request": "launch",
             "type": "dart",
-            "deviceId": "android"
+            "deviceId": "android",
+            "program": "lib/app.dart",
         },
         {
             "name": "Apple iPad",
             "request": "launch",
             "type": "dart",
-            "deviceId": "ipad"
+            "deviceId": "ipad",
+            "program": "lib/app.dart",
         },
         {
             "name": "Apple iPhone",
             "request": "launch",
             "type": "dart",
-            "deviceId": "iphone"
+            "deviceId": "iphone",
+            "program": "lib/app.dart",
         },
         {
             "name": "Apple Macos",
             "request": "launch",
             "type": "dart",
-            "deviceId": "macos"
+            "deviceId": "macos",
+            "program": "lib/app.dart",
         },
         {
             "name": "Web",
             "request": "launch",
             "type": "dart",
-            "deviceId": "chrome"
+            "deviceId": "chrome",
+            "program": "lib/app.dart",
         }
     ],
     "compounds": [

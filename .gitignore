@@ -26,5 +26,5 @@ doc/api/
 .flutter-plugins
 .flutter-plugins-dependencies
 
-/crawled/langeek_co/CEFR_Wordlist/audio
-/crawled/langeek_co/CEFR_Wordlist/image
+/assets/audio
+/assets/image

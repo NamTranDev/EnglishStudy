@@ -12,6 +12,8 @@ import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 index = 2
 log_link = None
@@ -245,14 +247,24 @@ def main():
 
                 # link_child = '/en/vocab/subcategory/3999/learn'
                 link_sub_topic_path = 'https://langeek.co' + link_sub_topic
+                # link_sub_topic_path = 'https://langeek.co/en/vocab/subcategory/17/learn'
                 soup_words = BeautifulSoup(requests.get(link_sub_topic_path).content, 'lxml')
                 words_soup = soup_words.find_all("h6")
                 driver = webdriver.Chrome()
                 driver.get(link_sub_topic_path)
                 time.sleep(time_load)
-                driver.find_element(by=By.XPATH,value="""//*[@id="__next"]/div/main/div[2]/div/div[2]/button[2]""").click()
+
+                try:
+                    driver.find_element(by=By.XPATH,value="""//*[@id="__next"]/div/main/div[2]/div/div[2]/button[2]""").click()
+                except:
+                    pass
+
                 time.sleep(time_wait)
+
                 driver.find_element(by=By.TAG_NAME,value='html').send_keys(Keys.END)
+
+                # time.sleep(time_wait)
+                # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
                 global index 
                 index = 2
                 for word in words_soup:
@@ -263,6 +275,11 @@ def main():
                         image_vocabulary = parent_word.find('img')['src']
                         vocabulary = parent_word.find("div", {"class": "tw-text-[1.75rem] sm:tw-text-[2rem] font-quicksand-bold"}).text
                         vocabulary = re.sub(r"[^\x00-\x7F]+", '', vocabulary)     
+                        if'/' in vocabulary:
+                            click_next(driver,time_wait,False)
+                            continue
+                        if 'to be' != vocabulary and 'to ' == vocabulary[0:3]:
+                            vocabulary = vocabulary[3:]
                         spelling = parent_word.find('h6').text
                         word_type = parent_word.find('small').text
                         description = parent_word.find("div", {"class": "ReviewCardFron_wordTranslation__qn3g5"}).text
@@ -306,7 +323,7 @@ def main():
                         else:
                             id_vocabulary = first_or_default_word[0]
                             #  isError
-                            if first_or_default_word[6]:
+                            if first_or_default_word[6] == 0:
                                 click_next(driver,time_wait,False)
                                 continue
 
@@ -319,8 +336,8 @@ def main():
                         # 
                         url = 'https://www.oxfordlearnersdictionaries.com/definition/english/'+word_search + "?" + word_query
                         oxford = BeautifulSoup(requests.get(url,allow_redirects=True,headers={
-"User-Agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
-}).content, 'lxml')
+                    "User-Agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+                    }).content, 'lxml')
                         try:
                             frame = oxford.find("div", {"class": "webtop"})
                             word_compair = frame.find('h1').text
@@ -371,34 +388,44 @@ def main():
 
                         except Exception as error:
                             print(error)
-                            url = 'https://www.howtopronounce.com/' + word_search
+                            count = 0
+                            while count < 2:
+                                count = 2
+                                url = 'https://www.howtopronounce.com/' + word_search
 
-                            response = requests.get(url,allow_redirects=True,headers={
-    "User-Agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
-    })
-                            if response.status_code == 404:
-                                print('Not Found Audio' + "\nLink : " + log_link + "\Sub Topic : " + log_sub_topic+ "\nWord : " + log_word)
-                            elif response.status_code == 200:
-                                pronounce = BeautifulSoup(response.content, 'lxml')
-                                audio_pronounce_link = pronounce.find('audio')['src']
-                                audio_vocabulary_name = 'vocabulary_' + vocabulary.replace(' ','_') + '.mp3'
-                                download(audio_pronounce_link,dir_folder_audio,audio_vocabulary_name)
+                                response = requests.get(url,allow_redirects=True,headers={
+                    "User-Agent" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+                    })
+                                if response.status_code == 404:
+                                    # count += 1
+                                    # if count == 2:
+                                    print('Not Found Audio' + "\nLink : " + log_link + "\Sub Topic : " + log_sub_topic+ "\nWord : " + log_word)
+                                    # if 'to' == vocabulary[0:2]:
+                                    #     word_search = vocabulary[3:-1].strip()
+                                    # else:
+                                    #     break
+                                elif response.status_code == 200:
+                                    pronounce = BeautifulSoup(response.content, 'lxml')
+                                    audio_pronounce_link = pronounce.find('audio')['src']
+                                    audio_vocabulary_name = 'vocabulary_' + vocabulary.replace(' ','_') + '.mp3'
+                                    download(audio_pronounce_link,dir_folder_audio,audio_vocabulary_name)
 
-                                cursor.execute('''
-                                    INSERT INTO audio (
-                                        vocabulary_id, audio_file
-                                    ) VALUES (?, ?)
-                                ''', (
-                                    id_vocabulary, audio_vocabulary_name
-                                ))
+                                    cursor.execute('''
+                                        INSERT INTO audio (
+                                            vocabulary_id, audio_file
+                                        ) VALUES (?, ?)
+                                    ''', (
+                                        id_vocabulary, audio_vocabulary_name
+                                    ))
 
-                                cursor.execute('''
-                                    INSERT INTO spelling (
-                                        vocabulary_id, spelling_text
-                                    ) VALUES (?, ?)
-                                ''', (
-                                    id_vocabulary, spelling
-                                ))
+                                    cursor.execute('''
+                                        INSERT INTO spelling (
+                                            vocabulary_id, spelling_text
+                                        ) VALUES (?, ?)
+                                    ''', (
+                                        id_vocabulary, spelling
+                                    ))
+                                    break
 
                         try:
                             if parent_word.find('h6',{'class','mb-0'}):
@@ -424,9 +451,12 @@ def main():
                         # div class webtop 
                         conn.commit()
                         click_next(driver,time_wait,parent_word.find('h6',{'class','mb-0'}) is not None)
-                        
-                        
-                driver.quit()
+
+                driver.quit
+                    
+
+def scroll_to_bottom(driver):
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
 
 def download(url,dir,file_name):
 
@@ -442,13 +472,10 @@ def download(url,dir,file_name):
     if response.status_code == 404:
         print('Error Not Found')
         print(url)
-    with open(dir + '/' + file_name, 'wb') as out_file:
-        shutil.copyfileobj(response.raw, out_file)
+    open(dir + '/' + file_name, 'wb').write(response.content)
             
 def open_example(driver,time_wait):
-
-    driver.find_element(by=By.TAG_NAME,value='html').send_keys(Keys.END)
-    click('Click to see examples',driver,time_wait,[
+    example_views = [
         """#tabcontainer-tabpane-review > div > div > div.swiper-wrapper.WordsBox_swiperWrapper__LOvCf > div.swiper-slide.WordsBox_cardContainer__YBpRw.swiper-slide-active > div > div > div.ReviewCardFron_side__fjWgA.ReviewCardFron_hasPhoto__alvci.ReviewCardFron_wordReviewCard__J7Mof.undefined.pt-3.position-relative.shadow-sm.card > div.ReviewCardFron_examplesButton__hjqNl.d-flex.justify-content-center.align-items-center.text-white""",
 
         """#tabcontainer-tabpane-review > div > div > div.swiper-wrapper.WordsBox_swiperWrapper__LOvCf > div.swiper-slide.WordsBox_cardContainer__YBpRw.WordsBox_swiperSlideActive__O3wLX.swiper-slide-active > div > div > div.ReviewCardFron_side__fjWgA.null.ReviewCardFron_wordReviewCard__J7Mof.undefined.position-relative.shadow-sm.card > div.ReviewCardFron_examplesButton__hjqNl.d-flex.justify-content-center.align-items-center.text-white""",
@@ -457,7 +484,14 @@ def open_example(driver,time_wait):
 
         """#tabcontainer-tabpane-review > div > div > div.swiper-wrapper.WordsBox_swiperWrapper__LOvCf > div.swiper-slide.WordsBox_cardContainer__YBpRw.WordsBox_swiperSlideActive__O3wLX.swiper-slide-active > div > div > div.ReviewCardFron_side__fjWgA.ReviewCardFron_hasPhoto__alvci.ReviewCardFron_wordReviewCard__J7Mof.undefined.pt-3.position-relative.shadow-sm.card > div.ReviewCardFron_examplesButton__hjqNl.d-flex.justify-content-center.align-items-center.text-white""",
         
-    ])
+    ]
+
+    time.sleep(time_wait)
+
+    for _ in range(10):  # Adjust the number of times you want to scroll
+        driver.find_element(by = By.TAG_NAME,value = 'body').send_keys(Keys.END)
+
+    click('Click to see examples',driver,time_wait,example_views)
     
     click('See more',driver,time_wait,[
         """#tabcontainer-tabpane-review > div > div > div.swiper-wrapper.WordsBox_swiperWrapper__LOvCf > div.swiper-slide.WordsBox_cardContainer__YBpRw.swiper-slide-active > div > div > div.ReviewCardBack_side__8hPGG.ReviewCardBack_hasPhoto__EM1OZ.ReviewCardBack_backSide__ydgZR.card > div.d-flex.justify-content-center.position-relative.py-45 > button""",

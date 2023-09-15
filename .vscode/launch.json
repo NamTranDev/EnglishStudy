@@ -14,7 +14,7 @@
             "name": "Android Phone",
             "request": "launch",
             "type": "dart",
-            "deviceId": "R5CRC06XTAP",
+            "deviceId": "740e90cb",
             "program": "lib/app.dart",
         },
         {

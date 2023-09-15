@@ -13,6 +13,7 @@ class Vocabulary {
   String? image;
   String? type;
   String? description;
+  int? isLearn;
   List<Audio>? audios;
   List<Spelling>? spellings;
   List<Example>? examples;
@@ -24,6 +25,7 @@ class Vocabulary {
     this.image,
     this.type,
     this.description,
+    this.isLearn,
   });
 
   Vocabulary copyWith({
@@ -33,6 +35,7 @@ class Vocabulary {
     String? image,
     String? type,
     String? description,
+    int? isLearn,
   }) {
     return Vocabulary(
       id: id ?? this.id,
@@ -41,6 +44,7 @@ class Vocabulary {
       image: image ?? this.image,
       type: type ?? this.type,
       description: description ?? this.description,
+      isLearn: isLearn ?? this.isLearn,
     );
   }
 
@@ -52,6 +56,7 @@ class Vocabulary {
       'image': image,
       'type': type,
       'description': description,
+      'isLearn': isLearn,
     };
   }
 
@@ -63,8 +68,8 @@ class Vocabulary {
       word: map['vocabulary'] != null ? map['vocabulary'] as String : null,
       image: map['image'] != null ? map['image'] as String : null,
       type: map['type'] != null ? map['type'] as String : null,
-      description:
-          map['description'] != null ? map['description'] as String : null,
+      description: map['description'] != null ? map['description'] as String : null,
+      isLearn: map['isLearn'] != null ? map['isLearn'] as int : null,
     );
   }
 
@@ -75,7 +80,7 @@ class Vocabulary {
 
   @override
   String toString() {
-    return 'Vocabulary(id: $id, sub_topic_id: $sub_topic_id, word: $word, image: $image, type: $type, description: $description)';
+    return 'Vocabulary(id: $id, sub_topic_id: $sub_topic_id, word: $word, image: $image, type: $type, description: $description, isLearn: $isLearn)';
   }
 
   @override
@@ -87,7 +92,8 @@ class Vocabulary {
         other.word == word &&
         other.image == image &&
         other.type == type &&
-        other.description == description;
+        other.description == description &&
+        other.isLearn == isLearn;
   }
 
   @override
@@ -97,6 +103,7 @@ class Vocabulary {
         word.hashCode ^
         image.hashCode ^
         type.hashCode ^
-        description.hashCode;
+        description.hashCode ^
+        isLearn.hashCode;
   }
 }

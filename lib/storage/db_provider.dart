@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/spelling.dart';
+import 'package:english_study/model/sub_topic.dart';
+import 'package:english_study/model/topic.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
@@ -22,6 +24,8 @@ class DBProvider {
 
   Database? _database;
 
+  final _TOPIC_TABLE = "topics";
+  final _SUB_TOPIC_TABLE = "sub_topics";
   final _VOCABULARY_TABLE = "vocabulary";
   final _AUDIO_TABLE = "audio";
   final _SPELLING_TABLE = "spelling";
@@ -52,7 +56,34 @@ class DBProvider {
     return await openDatabase(path);
   }
 
-  Future<List<Vocabulary>> getVocabulary(String sub_topic_id) async {
+  Future<List<String>> getCategorys() async {
+    final db = await _db;
+    var res = await db.query(_TOPIC_TABLE,
+        columns: ['category'], groupBy: 'category');
+    List<String> list =
+        res.isNotEmpty ? res.map((c) => c['category'] as String).toList() : [];
+    return list;
+  }
+
+  Future<List<Topic>> getTopics(String? category) async {
+    final db = await _db;
+    var res = await db
+        .query(_TOPIC_TABLE, where: 'category = ?', whereArgs: [category]);
+    List<Topic> list =
+        res.isNotEmpty ? res.map((c) => Topic.fromMap(c)).toList() : [];
+    return list;
+  }
+
+  Future<List<SubTopic>> getSubTopics(String? topicId) async {
+    final db = await _db;
+    var res = await db
+        .query(_SUB_TOPIC_TABLE, where: 'topic_id = ?', whereArgs: [topicId]);
+    List<SubTopic> list =
+        res.isNotEmpty ? res.map((c) => SubTopic.fromMap(c)).toList() : [];
+    return list;
+  }
+
+  Future<List<Vocabulary>> getVocabulary(String? sub_topic_id) async {
     final db = await _db;
     var res = await db.query(_VOCABULARY_TABLE,
         where: 'sub_topic_id = ?', whereArgs: [sub_topic_id]);
@@ -66,8 +97,10 @@ class DBProvider {
             var examples = await db.query(_EXAMPLE_TABLE,
                 where: 'vocabulary_id = ?', whereArgs: [vocabulary.id]);
             vocabulary.audios = audios.map((e) => Audio.fromMap(e)).toList();
-            vocabulary.spellings = spellings.map((e) => Spelling.fromMap(e)).toList();
-            vocabulary.examples = examples.map((e) => Example.fromMap(e)).toList();
+            vocabulary.spellings =
+                spellings.map((e) => Spelling.fromMap(e)).toList();
+            vocabulary.examples =
+                examples.map((e) => Example.fromMap(e)).toList();
             return vocabulary;
           }).toList()
         : [];

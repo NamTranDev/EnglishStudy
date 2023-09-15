@@ -1,3 +1,4 @@
+import 'package:english_study/screen/category/category_screen.dart';
 import 'package:english_study/screen/flash_card/flash_card_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -8,7 +9,7 @@ class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
   Future initialize() async {
-    return Future.delayed(Duration(seconds: 5));
+    return Future.delayed(Duration(seconds: 2));
   }
 
   @override
@@ -21,7 +22,7 @@ class SplashScreen extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.done) {
             SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
               Navigator.pushNamedAndRemoveUntil(
-                  context, FlashCardScreen.routeName, (route) => false);
+                  context, CategoryScreen.routeName, (route) => false);
             });
           }
           return buildSplashScreen(context);

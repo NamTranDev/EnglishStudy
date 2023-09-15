@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-import 'dart:ffi';
 
 class Topic {
   int? id;
@@ -9,6 +8,8 @@ class Topic {
   String? number_sub_topic;
   String? total_word;
   String? description;
+  int? isLearnComplete;
+  int? isLearning;
   Topic({
     this.id,
     this.name,
@@ -16,6 +17,8 @@ class Topic {
     this.number_sub_topic,
     this.total_word,
     this.description,
+    this.isLearnComplete,
+    this.isLearning,
   });
 
   Topic copyWith({
@@ -25,6 +28,8 @@ class Topic {
     String? number_sub_topic,
     String? total_word,
     String? description,
+    int? isLearnComplete,
+    int? isLearning,
   }) {
     return Topic(
       id: id ?? this.id,
@@ -33,6 +38,8 @@ class Topic {
       number_sub_topic: number_sub_topic ?? this.number_sub_topic,
       total_word: total_word ?? this.total_word,
       description: description ?? this.description,
+      isLearnComplete: isLearnComplete ?? this.isLearnComplete,
+      isLearning: isLearning ?? this.isLearning,
     );
   }
 
@@ -44,6 +51,8 @@ class Topic {
       'number_lessons': number_sub_topic,
       'total_words': total_word,
       'description_topic': description,
+      'isLearnComplete': isLearnComplete,
+      'isLearning': isLearning,
     };
   }
 
@@ -55,6 +64,8 @@ class Topic {
       number_sub_topic: map['number_lessons'] != null ? map['number_lessons'] as String : null,
       total_word: map['total_words'] != null ? map['total_words'] as String : null,
       description: map['description_topic'] != null ? map['description_topic'] as String : null,
+      isLearnComplete: map['isLearnComplete'] != null ? map['isLearnComplete'] as int : null,
+      isLearning: map['isLearning'] != null ? map['isLearning'] as int : null,
     );
   }
 
@@ -64,7 +75,7 @@ class Topic {
 
   @override
   String toString() {
-    return 'Topic(id: $id, name: $name, image: $image, number_sub_topic: $number_sub_topic, total_word: $total_word, description: $description)';
+    return 'Topic(id: $id, name: $name, image: $image, number_sub_topic: $number_sub_topic, total_word: $total_word, description: $description, isLearnComplete: $isLearnComplete)';
   }
 
   @override
@@ -77,7 +88,8 @@ class Topic {
       other.image == image &&
       other.number_sub_topic == number_sub_topic &&
       other.total_word == total_word &&
-      other.description == description;
+      other.description == description &&
+      other.isLearnComplete == isLearnComplete;
   }
 
   @override
@@ -87,6 +99,7 @@ class Topic {
       image.hashCode ^
       number_sub_topic.hashCode ^
       total_word.hashCode ^
-      description.hashCode;
+      description.hashCode ^
+      isLearnComplete.hashCode;
   }
 }

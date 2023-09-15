@@ -5,37 +5,49 @@ class SubTopic {
   int? id;
   String? name;
   String? number_word;
+  int? isLearnComplete;
+  int? isLearning;
   SubTopic({
     this.id,
     this.name,
     this.number_word,
+    this.isLearnComplete,
+    this.isLearning,
   });
 
   SubTopic copyWith({
     int? id,
     String? name,
     String? number_word,
+    int? isLearnComplete,
+    int? isLearning,
   }) {
     return SubTopic(
       id: id ?? this.id,
       name: name ?? this.name,
       number_word: number_word ?? this.number_word,
+      isLearnComplete: isLearnComplete ?? this.isLearnComplete,
+      isLearning: isLearning ?? this.isLearning,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'topic_id': id,
+      'id': id,
       'sub_topic_name': name,
       'number_sub_topic_words': number_word,
+      'isLearnComplete': isLearnComplete,
+      'isLearning': isLearning,
     };
   }
 
   factory SubTopic.fromMap(Map<String, dynamic> map) {
     return SubTopic(
-      id: map['topic_id'] != null ? map['topic_id'] as int : null,
+      id: map['id'] != null ? map['id'] as int : null,
       name: map['sub_topic_name'] != null ? map['sub_topic_name'] as String : null,
       number_word: map['number_sub_topic_words'] != null ? map['number_sub_topic_words'] as String : null,
+      isLearnComplete: map['isLearnComplete'] != null ? map['isLearnComplete'] as int : null,
+      isLearning: map['isLearning'] != null ? map['isLearning'] as int : null,
     );
   }
 
@@ -44,7 +56,7 @@ class SubTopic {
   factory SubTopic.fromJson(String source) => SubTopic.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'SubTopic(id: $id, name: $name, number_word: $number_word)';
+  String toString() => 'SubTopic(id: $id, name: $name, number_word: $number_word, isLearnComplete: $isLearnComplete, isLearning: $isLearning)';
 
   @override
   bool operator ==(covariant SubTopic other) {
@@ -53,9 +65,11 @@ class SubTopic {
     return 
       other.id == id &&
       other.name == name &&
-      other.number_word == number_word;
+      other.number_word == number_word &&
+      other.isLearnComplete == isLearnComplete &&
+      other.isLearning == isLearning;
   }
 
   @override
-  int get hashCode => id.hashCode ^ name.hashCode ^ number_word.hashCode;
+  int get hashCode => id.hashCode ^ name.hashCode ^ number_word.hashCode ^ isLearnComplete.hashCode ^ isLearning.hashCode;
 }

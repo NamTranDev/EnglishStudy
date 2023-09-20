@@ -42,6 +42,11 @@ class FlashCardScreen extends StatelessWidget {
         options: CarouselOptions(
           height: MediaQuery.of(context).size.height,
           viewportFraction: 0.9,
+          onPageChanged: (index, reason) {
+              var db = getIt<DBProvider>();
+              data?[index].isLearn = 1;
+              db.updateVocabulary(data?[index]);
+          },
         ),
         items: data
             ?.map((item) => Card(

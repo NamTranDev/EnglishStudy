@@ -64,10 +64,10 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
           width: MediaQuery.of(context).size.width,
           child: Center(
             child: GestureDetector(
-              onTap: () {
+              onTap: () async {
                 var subTopicId = subTopics?[index].id.toString();
-                print(subTopicId);
-                Navigator.pushNamed(context, FlashCardScreen.routeName,
+                
+                final result = await Navigator.pushNamed(context, FlashCardScreen.routeName,
                     arguments: subTopicId);
               },
               child: Text(

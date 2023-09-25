@@ -63,13 +63,24 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
           width: MediaQuery.of(context).size.width,
           child: Center(
             child: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, SubTopicScreen.routeName,
-                    arguments: topics?[index].id.toString());
+              onTap: () async {
+                if (topics?[index].isLearnComplete == 0 && topics?[index].isLearning == 0) {
+                  return;
+                }
+                var topicId = topics?[index].id.toString();
+                await Navigator.pushNamed(context, SubTopicScreen.routeName,
+                    arguments: topicId);
+                if (topics?[index].isLearnComplete == 1) {
+                  return;
+                }
+                if (await _viewModel?.syncTopic(topicId) == true) {
+                  _viewModel?.initData(widget.category);
+                }
               },
               child: Text(
                 topics?[index].name ?? '',
                 textAlign: TextAlign.center,
+                style: TextStyle(color: topics?[index].isLearning == 1 || topics?[index].isLearnComplete == 1 ? Colors.black : Colors.red),
               ),
             ),
           ),

@@ -11,7 +11,7 @@ class Vocabulary {
   int? sub_topic_id;
   String? word;
   String? image;
-  String? type;
+  String? word_type;
   String? description;
   int? isLearn;
   List<Audio>? audios;
@@ -23,7 +23,7 @@ class Vocabulary {
     this.sub_topic_id,
     this.word,
     this.image,
-    this.type,
+    this.word_type,
     this.description,
     this.isLearn,
   });
@@ -33,7 +33,7 @@ class Vocabulary {
     int? sub_topic_id,
     String? word,
     String? image,
-    String? type,
+    String? word_type,
     String? description,
     int? isLearn,
   }) {
@@ -42,7 +42,7 @@ class Vocabulary {
       sub_topic_id: sub_topic_id ?? this.sub_topic_id,
       word: word ?? this.word,
       image: image ?? this.image,
-      type: type ?? this.type,
+      word_type: word_type ?? this.word_type,
       description: description ?? this.description,
       isLearn: isLearn ?? this.isLearn,
     );
@@ -54,7 +54,7 @@ class Vocabulary {
       'sub_topic_id': sub_topic_id,
       'vocabulary': word,
       'image': image,
-      'type': type,
+      'word_type': word_type,
       'description': description,
       'isLearn': isLearn,
     };
@@ -67,7 +67,7 @@ class Vocabulary {
           map['sub_topic_id'] != null ? map['sub_topic_id'] as int : null,
       word: map['vocabulary'] != null ? map['vocabulary'] as String : null,
       image: map['image'] != null ? map['image'] as String : null,
-      type: map['type'] != null ? map['type'] as String : null,
+      word_type: map['word_type'] != null ? map['word_type'] as String : null,
       description: map['description'] != null ? map['description'] as String : null,
       isLearn: map['isLearn'] != null ? map['isLearn'] as int : null,
     );
@@ -80,7 +80,7 @@ class Vocabulary {
 
   @override
   String toString() {
-    return 'Vocabulary(id: $id, sub_topic_id: $sub_topic_id, word: $word, image: $image, type: $type, description: $description, isLearn: $isLearn)';
+    return 'Vocabulary(id: $id, sub_topic_id: $sub_topic_id, word: $word, image: $image, word_type: $word_type, description: $description, isLearn: $isLearn)';
   }
 
   @override
@@ -91,7 +91,7 @@ class Vocabulary {
         other.sub_topic_id == sub_topic_id &&
         other.word == word &&
         other.image == image &&
-        other.type == type &&
+        other.word_type == word_type &&
         other.description == description &&
         other.isLearn == isLearn;
   }
@@ -102,7 +102,7 @@ class Vocabulary {
         sub_topic_id.hashCode ^
         word.hashCode ^
         image.hashCode ^
-        type.hashCode ^
+        word_type.hashCode ^
         description.hashCode ^
         isLearn.hashCode;
   }

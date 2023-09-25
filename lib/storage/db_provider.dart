@@ -84,7 +84,7 @@ class DBProvider {
       int compareLearnComplete =
           a.isLearnComplete!.compareTo(b.isLearnComplete!);
 
-      if (compareLearnComplete == 0) {
+      if (compareLearnComplete == 1) {
         return a.isLearning!.compareTo(b.isLearning!);
       } else {
         return compareLearnComplete;
@@ -112,7 +112,7 @@ class DBProvider {
       int compareLearnComplete =
           a.isLearnComplete!.compareTo(b.isLearnComplete!);
 
-      if (compareLearnComplete == 0) {
+      if (compareLearnComplete == 1) {
         return a.isLearning!.compareTo(b.isLearning!);
       } else {
         return compareLearnComplete;
@@ -181,15 +181,31 @@ class DBProvider {
         where: 'id = ?', whereArgs: [vocabulary.id]);
   }
 
-  Future<void> syncSubTopic(SubTopic? subTopic) async {
-    if (subTopic == null) return;
+  Future<bool> syncSubTopic(String? subTopicId) async {
+    if (subTopicId == null) return false;
     final db = await _db;
-    
+    var result = await db.query(_VOCABULARY_TABLE,
+        where: 'sub_topic_id = ? and isLearn = 0', whereArgs: [subTopicId]);
+    if (result.isEmpty) {
+      db.rawUpdate(
+          'UPDATE ${_SUB_TOPIC_TABLE} SET isLearnComplete = 1 WHERE id = ?',
+          [subTopicId]);
+      return true;
+    }
+    return false;
   }
 
-  Future<void> syncTopic(Topic? topic) async {
-    if (subTopic == null) return;
+  Future<bool> syncTopic(String? topicId) async {
+    if (topicId == null) return false;
     final db = await _db;
-    
+    var result = await db.query(_SUB_TOPIC_TABLE,
+        where: 'topic_id = ? and isLearnComplete = 0', whereArgs: [topicId]);
+    if (result.isEmpty) {
+      db.rawUpdate(
+          'UPDATE ${_TOPIC_TABLE} SET isLearnComplete = 1 WHERE id = ?',
+          [topicId]);
+      return true;
+    }
+    return false;
   }
 }

@@ -15,4 +15,9 @@ class TopicViewModel {
   }
 
   Future<void> dispose() => _topicListController.close();
+
+  Future<bool> syncTopic(String? topicId) async {
+    var db = getIt<DBProvider>();
+    return db.syncTopic(topicId);
+  }
 }

@@ -65,14 +65,27 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
           child: Center(
             child: GestureDetector(
               onTap: () async {
+                if (subTopics?[index].isLearnComplete == 0 &&
+                    subTopics?[index].isLearning == 0) {
+                  return;
+                }
+
                 var subTopicId = subTopics?[index].id.toString();
-                
-                final result = await Navigator.pushNamed(context, FlashCardScreen.routeName,
+
+                await Navigator.pushNamed(context, FlashCardScreen.routeName,
                     arguments: subTopicId);
+
+                if (subTopics?[index].isLearnComplete == 1) {
+                  return;
+                }
+                if (await _viewModel?.syncSubTopic(subTopicId) == true) {
+                  _viewModel?.initData(widget.topicId);
+                }
               },
               child: Text(
                 subTopics?[index].name ?? '',
                 textAlign: TextAlign.center,
+                style: TextStyle(color: subTopics?[index].isLearning == 1 || subTopics?[index].isLearnComplete == 1 ? Colors.black : Colors.red),
               ),
             ),
           ),

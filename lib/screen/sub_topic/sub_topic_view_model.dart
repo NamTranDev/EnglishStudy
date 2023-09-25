@@ -16,4 +16,9 @@ class SubTopicViewModel {
   }
 
   Future<void> dispose() => _subTopicListController.close();
+
+  Future<bool> syncSubTopic(String? subTopicId) async {
+    var db = getIt<DBProvider>();
+    return db.syncSubTopic(subTopicId);
+  }
 }

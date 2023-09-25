@@ -81,6 +81,8 @@ Future main() async {
     databaseFactory = databaseFactoryFfi;
   }
 
+  WidgetsFlutterBinding.ensureInitialized();
+
   _configureLocalTimeZone();
 
   await flutterLocalNotificationsPlugin.initialize(initializationSettings,
@@ -101,8 +103,6 @@ Future main() async {
   _cancelAllNotifications();
 
   _scheduleDailyNotification();
-
-  WidgetsFlutterBinding.ensureInitialized();
 
   await setupServiceLocator();
 
@@ -129,9 +129,9 @@ Future<void> _scheduleDailyNotification() async {
 tz.TZDateTime _nextInstanceOfTime() {
   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
   tz.TZDateTime scheduledDate =
-      tz.TZDateTime(tz.local, now.year, now.month, now.day, 9, 08);
+      tz.TZDateTime(tz.local, now.year, now.month, now.day, 22, 25);
   if (scheduledDate.isBefore(now)) {
-    scheduledDate = scheduledDate.add(const Duration(days: 30));
+    scheduledDate = scheduledDate.add(const Duration(seconds: 30));
   }
   return scheduledDate;
 }

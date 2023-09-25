@@ -31,3 +31,5 @@ doc/api/
 
 /crawled/langeek_co/CEFR_Wordlist/audio 
 /crawled/langeek_co/CEFR_Wordlist/image
+/.vscode/launch.json
+/.vscode/settings.json

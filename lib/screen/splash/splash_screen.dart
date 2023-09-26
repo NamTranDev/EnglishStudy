@@ -1,5 +1,5 @@
 import 'package:english_study/screen/category/category_screen.dart';
-import 'package:english_study/screen/flash_card/flash_card_screen.dart';
+import 'package:english_study/screen/flash_card/flash_card_vocabulary_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 

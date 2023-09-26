@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/example.dart';
+import 'package:english_study/model/game_vocabulary_model.dart';
 import 'package:english_study/model/spelling.dart';
 import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/topic.dart';
@@ -126,8 +128,28 @@ class DBProvider {
     var res = await db.query(_VOCABULARY_TABLE,
         where: 'sub_topic_id = ?', whereArgs: [sub_topic_id]);
     // ,orderBy: 'isLearn'
-    Iterable<Future<Vocabulary>> mappedList = res.isNotEmpty
-        ? res.map((c) async {
+
+    List<Vocabulary> result = await mapperVocabulary(db, res);
+    result.sort((a, b) {
+      // Compare by isLearn, with items having isLearn equal to 0 first
+      if (a.isLearn == 0 && b.isLearn != 0) {
+        return -1; // a should come before b
+      } else if (a.isLearn != 0 && b.isLearn == 0) {
+        return 1; // b should come before a
+      } else {
+        // If both have isLearn equal to 0 or both have isLearn not equal to 0, compare by ID or other criteria if needed
+        return a.id!.compareTo(b.id!);
+      }
+    });
+    result[0].isLearn = 1;
+    updateVocabulary(result[0]);
+    return result;
+  }
+
+  Future<List<Vocabulary>> mapperVocabulary(
+      Database db, List<Map<String, Object?>> values) async {
+    Iterable<Future<Vocabulary>> mappedList = values.isNotEmpty
+        ? values.map((c) async {
             Vocabulary vocabulary = Vocabulary.fromMap(c);
             var audios = await db.query(_AUDIO_TABLE,
                 where: 'vocabulary_id = ?', whereArgs: [vocabulary.id]);
@@ -143,22 +165,7 @@ class DBProvider {
             return vocabulary;
           }).toList()
         : [];
-    Future<List<Vocabulary>> futureList = Future.wait(mappedList);
-    List<Vocabulary> result = await futureList;
-    result.sort((a, b) {
-      // Compare by isLearn, with items having isLearn equal to 0 first
-      if (a.isLearn == 0 && b.isLearn != 0) {
-        return -1; // a should come before b
-      } else if (a.isLearn != 0 && b.isLearn == 0) {
-        return 1; // b should come before a
-      } else {
-        // If both have isLearn equal to 0 or both have isLearn not equal to 0, compare by ID or other criteria if needed
-        return a.id!.compareTo(b.id!);
-      }
-    });
-    result[0].isLearn = 1;
-    updateVocabulary(result[0]);
-    return result;
+    return Future.wait(mappedList);
   }
 
   Future<void> updateTopic(Topic topic) async {
@@ -207,5 +214,66 @@ class DBProvider {
       return true;
     }
     return false;
+  }
+
+  Future<List<GameVocabularyModel>> vocabularyGameSubTopic(
+      String sub_topic_id) async {
+    final db = await _db;
+    var res = await db.query(_VOCABULARY_TABLE,
+        where: 'sub_topic_id = ?', whereArgs: [sub_topic_id]);
+
+    return vocabularyGame(await mapperVocabulary(db, res));
+  }
+
+  Future<List<GameVocabularyModel>> vocabularyGameLearn(
+      {int? limit = 100}) async {
+    final db = await _db;
+    var res =
+        await db.query(_VOCABULARY_TABLE, where: 'isLearn = 1', limit: limit);
+
+    return vocabularyGame(await mapperVocabulary(db, res));
+  }
+
+  List<GameVocabularyModel> vocabularyGame(List<Vocabulary> vocabularies) {
+    List<GameVocabularyModel> vocabularyGames = [];
+    vocabularies.shuffle();
+    vocabularies.forEach((vocabulary) {
+      try {
+        var list = getRandomItemsWithDifferentIds(vocabularies, vocabulary);
+        list.add(vocabulary);
+        list.shuffle();
+        vocabularyGames.add(GameVocabularyModel(
+            main: vocabulary,
+            vocabularies:
+                list));
+      } catch (e) {
+        print(e);
+      }
+    });
+    return vocabularyGames;
+  }
+
+  List<Vocabulary> getRandomItemsWithDifferentIds(
+      List<Vocabulary> list, Vocabulary itemMain) {
+    if (list.length < 3) {
+      throw Exception("List must contain at least three items.");
+    }
+
+    final random = Random();
+    final selectedItems = <Vocabulary>[];
+
+    while (selectedItems.length < 3) {
+      final randomIndex = random.nextInt(list.length);
+      final selectedItem = list[randomIndex];
+
+      // Check if the selected item's ID is not equal to itemMain's ID
+      // and it's not already in selectedItems
+      if (selectedItem.id != itemMain.id &&
+          !selectedItems.any((item) => item.id == selectedItem.id)) {
+        selectedItems.add(selectedItem);
+      }
+    }
+
+    return selectedItems;
   }
 }

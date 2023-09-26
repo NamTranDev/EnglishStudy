@@ -1,6 +1,6 @@
 import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/topic.dart';
-import 'package:english_study/screen/flash_card/flash_card_screen.dart';
+import 'package:english_study/screen/flash_card/flash_card_vocabulary_screen.dart';
 import 'package:english_study/screen/sub_topic/sub_topic_view_model.dart';
 import 'package:english_study/screen/topic/topic_view_model.dart';
 import 'package:flutter/material.dart';

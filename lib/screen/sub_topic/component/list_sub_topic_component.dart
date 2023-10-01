@@ -1,6 +1,7 @@
 import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/screen/flash_card/flash_card_vocabulary_screen.dart';
+import 'package:english_study/screen/game/game_vocabulary_screen.dart';
 import 'package:english_study/screen/sub_topic/sub_topic_view_model.dart';
 import 'package:english_study/screen/topic/topic_view_model.dart';
 import 'package:flutter/material.dart';
@@ -43,12 +44,12 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                 child: Text(
                     "Something wrong with message: ${snapshot.error.toString()}"),
               );
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
+            } else if (snapshot.hasData) {
+              return buildListSubTopic(context, snapshot.data);
+            } else {
               return Center(
                 child: CircularProgressIndicator(),
               );
-            } else {
-              return buildListSubTopic(context, snapshot.data);
             }
           },
         );
@@ -60,7 +61,6 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
     return ListView.builder(
       itemBuilder: (context, index) {
         return Container(
-          height: 50,
           width: MediaQuery.of(context).size.width,
           child: Center(
             child: GestureDetector(
@@ -82,10 +82,43 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                   _viewModel?.initData(widget.topicId);
                 }
               },
-              child: Text(
-                subTopics?[index].name ?? '',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: subTopics?[index].isLearning == 1 || subTopics?[index].isLearnComplete == 1 ? Colors.black : Colors.red),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 50,
+                    child: Center(
+                      child: Text(
+                        subTopics?[index].name ?? '',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: subTopics?[index].isLearning == 1 ||
+                                    subTopics?[index].isLearnComplete == 1
+                                ? Colors.black
+                                : Colors.red),
+                      ),
+                    ),
+                  ),
+                  if (subTopics?[index].isLearnComplete == 1)
+                    SizedBox(
+                      height: 50,
+                      width: 100,
+                      child: GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, GameVocabularyScreen.routeName,
+                                arguments: subTopics?[index].id.toString());
+                          },
+                          child: Card(
+                            child: Center(
+                              child: Text(
+                                'Play game',
+                                style: TextStyle(color: Colors.blue),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          )),
+                    ),
+                ],
               ),
             ),
           ),

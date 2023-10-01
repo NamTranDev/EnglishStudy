@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:english_study/navigator.dart';
-import 'package:english_study/screen/splash/splash_screen.dart';
-import 'package:english_study/services/service_locator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +10,10 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+
+import 'package:english_study/navigator.dart' as nav;
+import 'package:english_study/screen/splash/splash_screen.dart';
+import 'package:english_study/services/service_locator.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -71,49 +72,11 @@ Future<void> _configureLocalTimeZone() async {
   tz.setLocalLocation(tz.getLocation(timeZoneName));
 }
 
-Future main() async {
-  if (kIsWeb) {
-    databaseFactory = databaseFactoryFfiWeb;
-  } else if (Platform.isWindows || Platform.isLinux) {
-    // Initialize FFI
-    sqfliteFfiInit();
-    // Change the default factory
-    databaseFactory = databaseFactoryFfi;
-  }
-
-  WidgetsFlutterBinding.ensureInitialized();
-
-  _configureLocalTimeZone();
-
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-      onDidReceiveNotificationResponse:
-          (NotificationResponse notificationResponse) {
-    switch (notificationResponse.notificationResponseType) {
-      case NotificationResponseType.selectedNotification:
-        selectNotificationStream.add(notificationResponse.payload);
-        break;
-      case NotificationResponseType.selectedNotificationAction:
-        if (notificationResponse.actionId == navigationActionId) {
-          selectNotificationStream.add(notificationResponse.payload);
-        }
-        break;
-    }
-  });
-
-  _cancelAllNotifications();
-
-  _scheduleDailyNotification();
-
-  await setupServiceLocator();
-
-  runApp(const MyApp());
-}
-
 Future<void> _scheduleDailyNotification() async {
   await flutterLocalNotificationsPlugin.zonedSchedule(
       0,
-      'daily scheduled notification title',
-      'daily scheduled notification body',
+      'English Study Daily Notification',
+      'Open app to learn',
       _nextInstanceOfTime(),
       const NotificationDetails(
         android: AndroidNotificationDetails(
@@ -129,7 +92,7 @@ Future<void> _scheduleDailyNotification() async {
 tz.TZDateTime _nextInstanceOfTime() {
   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
   tz.TZDateTime scheduledDate =
-      tz.TZDateTime(tz.local, now.year, now.month, now.day, 22, 25);
+      tz.TZDateTime(tz.local, now.year, now.month, now.day, 7);
   if (scheduledDate.isBefore(now)) {
     scheduledDate = scheduledDate.add(const Duration(seconds: 30));
   }
@@ -203,6 +166,44 @@ tz.TZDateTime _nextInstanceOfDay() {
   return scheduledDate;
 }
 
+Future main() async {
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  } else if (Platform.isWindows || Platform.isLinux) {
+    // Initialize FFI
+    sqfliteFfiInit();
+    // Change the default factory
+    databaseFactory = databaseFactoryFfi;
+  }
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  _configureLocalTimeZone();
+
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onDidReceiveNotificationResponse:
+          (NotificationResponse notificationResponse) {
+    switch (notificationResponse.notificationResponseType) {
+      case NotificationResponseType.selectedNotification:
+        selectNotificationStream.add(notificationResponse.payload);
+        break;
+      case NotificationResponseType.selectedNotificationAction:
+        if (notificationResponse.actionId == navigationActionId) {
+          selectNotificationStream.add(notificationResponse.payload);
+        }
+        break;
+    }
+  });
+
+  _cancelAllNotifications();
+
+  _scheduleDailyNotification();
+
+  await setupServiceLocator();
+
+  runApp(const MyApp());
+}
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -218,9 +219,31 @@ class _MyAppState extends State<MyApp> {
     // Importing 'package:flutter/widgets.dart' is required.
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Roboto'),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        fontFamily: 'Roboto',
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder()
+          },
+        ),
+      ),
       initialRoute: SplashScreen.routeName,
-      routes: routes,
+      routes: nav.routes,
+      // onGenerateRoute: (settings) {
+      //   Widget? widget = nav.routes[settings.name] as Widget?;
+      //   if (widget != null) {
+      //     return PageRouteBuilder(
+      //         settings:
+      //             settings, // Pass this to make popUntil(), pushNamedAndRemoveUntil(), works
+      //         pageBuilder: (_, __, ___) => widget,
+      //         transitionsBuilder: (_, a, __, c) =>
+      //             FadeTransition(opacity: a, child: c));
+      //   }
+      //   // Unknown route
+      //   return MaterialPageRoute(builder: (_) => SplashScreen());
+      // },
     );
   }
 

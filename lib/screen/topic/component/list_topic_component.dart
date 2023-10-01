@@ -42,12 +42,12 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
                 child: Text(
                     "Something wrong with message: ${snapshot.error.toString()}"),
               );
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
+            } else if (snapshot.hasData) {
+              return buildListTopic(context, snapshot.data);
+            } else {
               return Center(
                 child: CircularProgressIndicator(),
               );
-            } else {
-              return buildListTopic(context, snapshot.data);
             }
           },
         );
@@ -64,7 +64,8 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
           child: Center(
             child: GestureDetector(
               onTap: () async {
-                if (topics?[index].isLearnComplete == 0 && topics?[index].isLearning == 0) {
+                if (topics?[index].isLearnComplete == 0 &&
+                    topics?[index].isLearning == 0) {
                   return;
                 }
                 var topicId = topics?[index].id.toString();
@@ -80,7 +81,11 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
               child: Text(
                 topics?[index].name ?? '',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: topics?[index].isLearning == 1 || topics?[index].isLearnComplete == 1 ? Colors.black : Colors.red),
+                style: TextStyle(
+                    color: topics?[index].isLearning == 1 ||
+                            topics?[index].isLearnComplete == 1
+                        ? Colors.black
+                        : Colors.red),
               ),
             ),
           ),

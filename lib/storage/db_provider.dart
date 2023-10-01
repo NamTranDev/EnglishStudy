@@ -222,7 +222,7 @@ class DBProvider {
     var res = await db.query(_VOCABULARY_TABLE,
         where: 'sub_topic_id = ?', whereArgs: [sub_topic_id]);
 
-    return vocabularyGame(await mapperVocabulary(db, res));
+    return _vocabularyGame(await mapperVocabulary(db, res));
   }
 
   Future<List<GameVocabularyModel>> vocabularyGameLearn(
@@ -231,15 +231,15 @@ class DBProvider {
     var res =
         await db.query(_VOCABULARY_TABLE, where: 'isLearn = 1', limit: limit);
 
-    return vocabularyGame(await mapperVocabulary(db, res));
+    return _vocabularyGame(await mapperVocabulary(db, res));
   }
 
-  List<GameVocabularyModel> vocabularyGame(List<Vocabulary> vocabularies) {
+  List<GameVocabularyModel> _vocabularyGame(List<Vocabulary> vocabularies) {
     List<GameVocabularyModel> vocabularyGames = [];
     vocabularies.shuffle();
     vocabularies.forEach((vocabulary) {
       try {
-        var list = getRandomItemsWithDifferentIds(vocabularies, vocabulary);
+        var list = _getRandomItemsWithDifferentIds(vocabularies, vocabulary);
         list.add(vocabulary);
         list.shuffle();
         vocabularyGames.add(GameVocabularyModel(
@@ -253,7 +253,7 @@ class DBProvider {
     return vocabularyGames;
   }
 
-  List<Vocabulary> getRandomItemsWithDifferentIds(
+  List<Vocabulary> _getRandomItemsWithDifferentIds(
       List<Vocabulary> list, Vocabulary itemMain) {
     if (list.length < 3) {
       throw Exception("List must contain at least three items.");

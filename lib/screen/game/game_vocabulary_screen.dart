@@ -1,5 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:english_study/model/game_type.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
+import 'package:english_study/screen/game/component/choose_answer_component.dart';
+import 'package:english_study/screen/game/component/drag_fill_answer.dart';
+import 'package:english_study/screen/game/component/input_answer_component.dart';
+import 'package:english_study/screen/game/component/right_or_wrong_answer_component.dart';
 import 'package:english_study/screen/game/game_vocabulary_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -20,34 +25,54 @@ class GameVocabularyScreen extends StatefulWidget {
 class _GameVocabularyScreenState extends State<GameVocabularyScreen> {
   @override
   Widget build(BuildContext context) {
-    var db = getIt<DBProvider>();
-    String? subTopicId = ModalRoute.of(context)?.settings.arguments as String?;
     return Scaffold(
       backgroundColor: Colors.white,
-      body: FutureBuilder(
-        future: subTopicId == null
-            ? db.vocabularyGameLearn()
-            : db.vocabularyGameSubTopic(subTopicId),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                  "Something wrong with message: ${snapshot.error.toString()}"),
-            );
-          } else if (snapshot.connectionState == ConnectionState.done) {
-            // return buildListCategory(context, snapshot.data);
-            return Provider.value(
-              value: GameVocabularyViewModel(snapshot.data),
-              builder: (context, child) {
-                return Container();
+      body: Provider.value(
+        value: GameVocabularyViewModel(
+            ModalRoute.of(context)?.settings.arguments as String?),
+        child: Consumer<GameVocabularyViewModel>(
+          builder: (context, value, child) {
+            return StreamBuilder(
+              stream: value.gameVocabularyList,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                        "Something wrong with message: ${snapshot.error.toString()}"),
+                  );
+                } else if (snapshot.hasData &&
+                    snapshot.data?.isNotEmpty == true) {
+                  return ValueListenableBuilder(
+                    valueListenable: value.vocabulary,
+                    builder: (context, value, child) {
+                      return InputAnswerComponent(
+                        gameVocabularyModel: value,
+                      );
+                      // switch (Provider.of<GameVocabularyViewModel>(context)
+                      //     .randomGameType()) {
+                      //   case GameType.RightOrWrong:
+                      //     return RightOrWrongAnswerComponent();
+
+                      //   case GameType.DragFill:
+                      //     return DragFillAnswerComponent();
+
+                      //   case GameType.Input:
+                      //     return InputAnswerComponent();
+
+                      //   default:
+                      //     return ChooseAnswerComponent(gameVocabularyModel: value,);
+                      // }
+                    },
+                  );
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
               },
             );
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
+          },
+        ),
       ),
     );
   }

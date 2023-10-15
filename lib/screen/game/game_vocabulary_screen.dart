@@ -45,23 +45,27 @@ class _GameVocabularyScreenState extends State<GameVocabularyScreen> {
                   return ValueListenableBuilder(
                     valueListenable: value.vocabulary,
                     builder: (context, value, child) {
-                      return InputAnswerComponent(
-                        gameVocabularyModel: value,
-                      );
-                      // switch (Provider.of<GameVocabularyViewModel>(context)
-                      //     .randomGameType()) {
-                      //   case GameType.RightOrWrong:
-                      //     return RightOrWrongAnswerComponent();
+                      GameType? type = value?.type;
+                      type ??= Provider.of<GameVocabularyViewModel>(context)
+                          .randomGameType();
+                      value?.type = type;
+                      // return InputAnswerComponent(
+                      //   gameVocabularyModel: value,
+                      // );
+                      switch (type) {
+                        case GameType.RightOrWrong:
+                          return RightOrWrongAnswerComponent();
 
-                      //   case GameType.DragFill:
-                      //     return DragFillAnswerComponent();
+                        case GameType.Input:
+                          return InputAnswerComponent(
+                            gameVocabularyModel: value,
+                          );
 
-                      //   case GameType.Input:
-                      //     return InputAnswerComponent();
-
-                      //   default:
-                      //     return ChooseAnswerComponent(gameVocabularyModel: value,);
-                      // }
+                        default:
+                          return ChooseAnswerComponent(
+                            gameVocabularyModel: value,
+                          );
+                      }
                     },
                   );
                 } else {

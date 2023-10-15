@@ -2,8 +2,10 @@
 class GameAnswerStatus {
   bool isAnswer;
   int? index;
+  String? input;
   GameAnswerStatus({
     this.isAnswer = false,
     this.index,
+    this.input
   });
 }

@@ -7,7 +7,7 @@ import Foundation
 
 import flutter_local_notifications
 import flutter_timezone
-import shared_preferences_macos
+import shared_preferences_foundation
 import sqflite
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {

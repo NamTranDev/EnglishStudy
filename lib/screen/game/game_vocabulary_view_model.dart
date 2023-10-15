@@ -19,7 +19,8 @@ class GameVocabularyViewModel {
       ValueNotifier<GameAnswerStatus>(GameAnswerStatus());
   ValueNotifier<GameAnswerStatus> get gameAnswerStatus => _gameAnswerStatus;
 
-  List<GameVocabularyModel>? _gameVocabularies;
+  List<GameVocabularyModel>? _listGameVocabulary;
+  List<GameAnswerStatus>? _listGameAnswerStatus;
   int _index = 0;
 
   GameVocabularyViewModel(this.subTopicId) {
@@ -35,24 +36,37 @@ class GameVocabularyViewModel {
   Future<void> getData() async {
     _gameVocabularyListController.sink.add([]);
     var db = getIt<DBProvider>();
-    _gameVocabularies = subTopicId == null
+    _listGameVocabulary = subTopicId == null
         ? await db.vocabularyGameLearn()
         : await db.vocabularyGameSubTopic(subTopicId!);
+    _listGameVocabulary?.forEach((element) {
+      var type = randomGameType();
+      if (type == GameType.ChooseAnswer) element.vocabularies.shuffle();
+      element.type = type;
+    });
+    _listGameAnswerStatus = [];
     // await Future.delayed(Duration(seconds: 2));
     // _gameVocabularies = _gameVocabularies?.sublist(0, 2);
-    if (_gameVocabularies == null)
+    if (_listGameVocabulary == null)
       _gameVocabularyListController.sink.addError("Not found list Vocabulary");
     else {
       _index = 0;
       _initQuestionInfo();
-      _gameVocabularyListController.sink.add(_gameVocabularies!);
+      _gameVocabularyListController.sink.add(_listGameVocabulary!);
     }
+  }
+
+  void previousQuestion() async {
+    _index = _index - 1;
+    if (_index < 0) {
+      _index = 0;
+    }
+    _initQuestionInfo();
   }
 
   void nextQuestion() async {
     _index = _index + 1;
-    _gameAnswerStatus.value = GameAnswerStatus();
-    if (_index < (_gameVocabularies?.length ?? 0)) {
+    if (_index < (_listGameVocabulary?.length ?? 0)) {
       _initQuestionInfo();
     } else {
       await getData();
@@ -73,14 +87,27 @@ class GameVocabularyViewModel {
     }
   }
 
-  void answer(int index, bool isAnswerRight) {
-    _gameAnswerStatus.value = GameAnswerStatus(
-      isAnswer: true,
-      index: index,
-    );
+  bool lastQuestion() {
+    return _index == (_listGameVocabulary?.length ?? 0 - 1);
+  }
+
+  bool firstQuestion() {
+    return _index == 0;
+  }
+
+  void answer(bool isAnswerRight, {int? index, String? input}) {
+    var answer = GameAnswerStatus(isAnswer: true, index: index, input: input);
+    _listGameAnswerStatus?[_index] = answer;
+    _gameAnswerStatus.value = answer;
   }
 
   void _initQuestionInfo() {
-    _vocabulary.value = _gameVocabularies?[_index];
+    _vocabulary.value = _listGameVocabulary?[_index];
+    var answer = _listGameAnswerStatus?.elementAtOrNull(_index);
+    if (answer == null) {
+      answer = GameAnswerStatus();
+      _listGameAnswerStatus?.add(answer);
+    }
+    _gameAnswerStatus.value = answer;
   }
 }

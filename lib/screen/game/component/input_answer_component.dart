@@ -16,6 +16,7 @@ class InputAnswerComponent extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: _viewModel.gameAnswerStatus,
       builder: (context, value, child) {
+        inputController.text = value.input ?? '';
         return Stack(
           children: [
             Column(
@@ -40,7 +41,23 @@ class InputAnswerComponent extends StatelessWidget {
                         ),
                         child: TextField(
                           controller: inputController,
-                          decoration: InputDecoration(),
+                          enabled: !value.isAnswer,
+                          autocorrect: false,
+                          textInputAction: TextInputAction.done,
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration(
+                            disabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: inputController.text ==
+                                            gameVocabularyModel?.main.word
+                                        ? Colors.green
+                                        : Colors.red)),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(5),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     )),
@@ -49,34 +66,62 @@ class InputAnswerComponent extends StatelessWidget {
                   child: Container(
                     child: InkWell(
                       onTap: () {
-                        
+                        _viewModel.answer(
+                            inputController.text ==
+                                gameVocabularyModel?.main.word,
+                            input: inputController.text);
                       },
-                      child: Center(
-                        child: Text('Kiểm tra'),
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 50),
+                        decoration: BoxDecoration(border: Border.all(
+                          color: Colors.grey.shade100
+                        )),
+                        width: double.infinity,
+                        child: Center(
+                          child: Text('Kiểm tra',style: TextStyle(color: Colors.black),),
+                        ),
                       ),
                     ),
                   ),
                 )
               ],
             ),
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: value.isAnswer == true
-                  ? Expanded(
-                      child: Container(
-                      width: 100,
-                      height: 100,
-                      child: Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            _viewModel.nextQuestion();
-                          },
-                          child: Icon(Icons.navigate_next),
+            if (!_viewModel.lastQuestion())
+              Align(
+                alignment: AlignmentDirectional.centerEnd,
+                child: value.isAnswer == true
+                    ? Expanded(
+                        child: Container(
+                        width: 100,
+                        height: 100,
+                        child: Center(
+                          child: GestureDetector(
+                            onTap: () {
+                              _viewModel.nextQuestion();
+                            },
+                            child: Icon(Icons.navigate_next),
+                          ),
                         ),
-                      ),
-                    ))
-                  : SizedBox(),
-            )
+                      ))
+                    : SizedBox(),
+              ),
+            if (!_viewModel.firstQuestion())
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Expanded(
+                    child: Container(
+                  width: 100,
+                  height: 100,
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        _viewModel.previousQuestion();
+                      },
+                      child: Icon(Icons.navigate_before),
+                    ),
+                  ),
+                )),
+              ),
           ],
         );
       },

@@ -48,7 +48,7 @@ class ChooseAnswerComponent extends StatelessWidget {
                         child: GestureDetector(
                           onTap: () {
                             if (value.isAnswer == true) return;
-                            _viewModel.answer(index, isAnswerRight);
+                            _viewModel.answer(isAnswerRight,index: index);
                           },
                           child: Card(
                             child: Container(
@@ -77,24 +77,42 @@ class ChooseAnswerComponent extends StatelessWidget {
                   )),
             ],
           ),
-          Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: value.isAnswer == true
-                ? Expanded(
-                    child: Container(
-                    width: 100,
-                    height: 100,
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          _viewModel.nextQuestion();
-                        },
-                        child: Icon(Icons.navigate_next),
+          if (!_viewModel.lastQuestion())
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: value.isAnswer == true
+                  ? Expanded(
+                      child: Container(
+                      width: 100,
+                      height: 100,
+                      child: Center(
+                        child: GestureDetector(
+                          onTap: () {
+                            _viewModel.nextQuestion();
+                          },
+                          child: Icon(Icons.navigate_next),
+                        ),
                       ),
-                    ),
-                  ))
-                : SizedBox(),
-          )
+                    ))
+                  : SizedBox(),
+            ),
+          if (!_viewModel.firstQuestion())
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Expanded(
+                  child: Container(
+                width: 100,
+                height: 100,
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      _viewModel.previousQuestion();
+                    },
+                    child: Icon(Icons.navigate_before),
+                  ),
+                ),
+              )),
+            ),
         ]);
       },
     );

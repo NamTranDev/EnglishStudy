@@ -48,7 +48,7 @@ class _GameVocabularyScreenState extends State<GameVocabularyScreen> {
                       GameType? type = value?.type;
                       type ??= Provider.of<GameVocabularyViewModel>(context)
                           .randomGameType();
-                      value?.type = type;
+
                       // return InputAnswerComponent(
                       //   gameVocabularyModel: value,
                       // );

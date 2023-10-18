@@ -8,6 +8,8 @@ import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:flutter/material.dart';
 
+import '../../model/example.dart';
+
 class GameVocabularyViewModel {
   final String? subTopicId;
 
@@ -40,8 +42,25 @@ class GameVocabularyViewModel {
         ? await db.vocabularyGameLearn()
         : await db.vocabularyGameSubTopic(subTopicId!);
     _listGameVocabulary?.forEach((element) {
-      var type = randomGameType();
-      if (type == GameType.ChooseAnswer) element.vocabularies.shuffle();
+      int count = 2;
+      if ((element.main.audios?.length ?? 0) > 0) {
+        count += 2;
+      }
+      if ((element.main.spellings?.length ?? 0) > 0) {
+        count += 2;
+      }
+      if ((element.main.examples?.length ?? 0) > 0) {
+        element.main.examples?.shuffle();
+        while (true) {
+          Example? example = element.main.examples?.first;
+          if (example == null || element.main.word == null) break;
+          if (example.sentence?.contains(element.main.word!) == true) {
+            count += 2;
+            break;
+          }
+        }
+      }
+      var type = randomGameType(count: count);
       element.type = type;
     });
     _listGameAnswerStatus = [];
@@ -75,16 +94,12 @@ class GameVocabularyViewModel {
 
   Future<void> dispose() => _gameVocabularyListController.close();
 
-  GameType randomGameType() {
+  GameType randomGameType({int count = 2}) {
     final random = Random();
 
-    final randomIndex = random.nextInt(2);
+    final randomIndex = random.nextInt(count);
 
-    try {
-      return GameType.values[randomIndex];
-    } catch (_) {
-      return GameType.ChooseAnswer;
-    }
+    return GameType.values[randomIndex];
   }
 
   bool lastQuestion() {

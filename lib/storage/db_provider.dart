@@ -240,6 +240,7 @@ class DBProvider {
     vocabularies.forEach((vocabulary) {
       try {
         var list = _getRandomItemsWithDifferentIds(vocabularies, vocabulary);
+        list.shuffle();
         list.add(vocabulary);
         vocabularyGames
             .add(GameVocabularyModel(main: vocabulary, vocabularies: list));

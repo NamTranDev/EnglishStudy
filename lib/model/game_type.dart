@@ -1,1 +1,10 @@
-enum GameType { ChooseAnswer, Input, DragFill, RightOrWrong }
+enum GameType {
+  ChooseAnswerDefinationToWord,
+  InputDefinationToWord,
+  InputAudioToWord,
+  ChooseAnswerAudioToDefination,
+  InputSpellingToWord,
+  ChooseAnswerSpellingToWord,
+  ChooseAnswerExampleToWord,
+  InputExampleToWord,
+}

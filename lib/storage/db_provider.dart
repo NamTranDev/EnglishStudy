@@ -240,8 +240,8 @@ class DBProvider {
     vocabularies.forEach((vocabulary) {
       try {
         var list = _getRandomItemsWithDifferentIds(vocabularies, vocabulary);
-        list.shuffle();
         list.add(vocabulary);
+        list.shuffle();
         vocabularyGames
             .add(GameVocabularyModel(main: vocabulary, vocabularies: list));
       } catch (e) {
@@ -259,8 +259,7 @@ class DBProvider {
 
     final random = Random();
     final selectedItems = <Vocabulary>[];
-    selectedItems.add(itemMain);
-    while (selectedItems.length < 4) {
+    while (selectedItems.length < 3) {
       final randomIndex = random.nextInt(list.length);
       final selectedItem = list[randomIndex];
 

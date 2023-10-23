@@ -1,3 +1,4 @@
+import 'package:english_study/model/game_type.dart';
 import 'package:english_study/screen/game/game_vocabulary_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,15 +7,17 @@ import '../../../model/game_vocabulary_model.dart';
 
 class InputAnswerComponent extends StatelessWidget {
   final GameVocabularyModel? gameVocabularyModel;
+  final GameType? gameType;
   TextEditingController inputController = TextEditingController();
-  InputAnswerComponent({super.key, required this.gameVocabularyModel});
+  InputAnswerComponent(
+      {super.key, required this.gameVocabularyModel, this.gameType});
 
   @override
   Widget build(BuildContext context) {
-    var _viewModel =
+    var viewModel =
         Provider.of<GameVocabularyViewModel>(context, listen: false);
     return ValueListenableBuilder(
-      valueListenable: _viewModel.gameAnswerStatus,
+      valueListenable: viewModel.gameAnswerStatus,
       builder: (context, value, child) {
         inputController.text = value.input ?? '';
         return Stack(
@@ -22,21 +25,24 @@ class InputAnswerComponent extends StatelessWidget {
             Column(
               children: [
                 Expanded(
-                    flex: 3,
+                    flex: 2,
                     child: Container(
                       child: Center(
-                        child: Text(
-                          gameVocabularyModel?.main.description ?? '',
-                          textAlign: TextAlign.center,
-                        ),
+                        child: gameType == GameType.InputAudioToWord
+                            ? IconButton(
+                                onPressed: () {}, icon: Icon(Icons.audio_file))
+                            : Text(
+                                question(gameType),
+                                textAlign: TextAlign.center,
+                              ),
                       ),
                     )),
                 Expanded(
-                    flex: 4,
+                    flex: 1,
                     child: Center(
                       child: Container(
                         width: double.infinity,
-                        margin: EdgeInsets.symmetric(
+                        margin: const EdgeInsets.symmetric(
                           horizontal: 20,
                         ),
                         child: TextField(
@@ -52,7 +58,7 @@ class InputAnswerComponent extends StatelessWidget {
                                             gameVocabularyModel?.main.word
                                         ? Colors.green
                                         : Colors.red)),
-                            border: OutlineInputBorder(
+                            border: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(5),
                               ),
@@ -63,22 +69,25 @@ class InputAnswerComponent extends StatelessWidget {
                     )),
                 Expanded(
                   flex: 2,
-                  child: Container(
+                  child: Center(
                     child: InkWell(
                       onTap: () {
-                        _viewModel.answer(
+                        viewModel.answer(
                             inputController.text ==
                                 gameVocabularyModel?.main.word,
                             input: inputController.text);
                       },
                       child: Container(
                         margin: EdgeInsets.symmetric(horizontal: 50),
-                        decoration: BoxDecoration(border: Border.all(
-                          color: Colors.grey.shade100
-                        )),
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade100)),
                         width: double.infinity,
+                        height: 50,
                         child: Center(
-                          child: Text('Kiểm tra',style: TextStyle(color: Colors.black),),
+                          child: Text(
+                            'Kiểm tra',
+                            style: TextStyle(color: Colors.black),
+                          ),
                         ),
                       ),
                     ),
@@ -86,45 +95,83 @@ class InputAnswerComponent extends StatelessWidget {
                 )
               ],
             ),
-            if (!_viewModel.lastQuestion())
-              Align(
-                alignment: AlignmentDirectional.centerEnd,
-                child: value.isAnswer == true
-                    ? Expanded(
-                        child: Container(
-                        width: 100,
-                        height: 100,
-                        child: Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              _viewModel.nextQuestion();
-                            },
-                            child: Icon(Icons.navigate_next),
-                          ),
-                        ),
-                      ))
-                    : SizedBox(),
-              ),
-            if (!_viewModel.firstQuestion())
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Expanded(
-                    child: Container(
-                  width: 100,
-                  height: 100,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {
-                        _viewModel.previousQuestion();
-                      },
-                      child: Icon(Icons.navigate_before),
+            Positioned(
+              top: 20,
+              left: 20,
+              child: AnimatedOpacity(
+                duration: Duration(
+                  milliseconds: value.isAnswer == true ? 500 : 0,
+                ),
+                opacity: value.isAnswer == true ? 1.0 : 0.0,
+                child: AnimatedContainer(
+                  duration: const Duration(
+                    milliseconds: 500,
+                  ),
+                  transform: Matrix4.diagonal3Values(
+                      value.isAnswer ? 1 : 10, value.isAnswer ? 1 : 10, 1.0),
+                  child: Transform.rotate(
+                    angle: 75,
+                    child: Image(
+                      image: AssetImage(
+                          inputController.text == gameVocabularyModel?.main.word
+                              ? "assets/background/background_right.webp"
+                              : "assets/background/background_wrong.webp"),
                     ),
                   ),
-                )),
+                ),
               ),
+            ),
+            Positioned(
+              bottom: 10,
+              right: 0,
+              child: AnimatedOpacity(
+                duration: const Duration(
+                  milliseconds: 500,
+                ),
+                opacity: value.isAnswer == true ? 1.0 : 0.0,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        viewModel.nextQuestion();
+                      },
+                      child: const Column(
+                        children: [
+                          Icon(Icons.navigate_next),
+                          Text('Next'),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 40,
+                    )
+                  ],
+                ),
+              ),
+            ),
           ],
         );
       },
     );
+  }
+
+  String question(GameType? gameType) {
+    switch (gameType) {
+      case GameType.InputDefinationToWord:
+        return gameVocabularyModel?.main.description ?? '';
+      case GameType.InputExampleToWord:
+        return gameVocabularyModel?.main.examples?.first.sentence
+                ?.replaceAll(gameVocabularyModel?.main.word ?? '', ' _____ ') ??
+            '';
+      case GameType.InputSpellingToDefination:
+      case GameType.InputSpellingToWord:
+        return gameVocabularyModel?.main.spellings
+                ?.map((e) => e.text)
+                .join(" - ") ??
+            '';
+    }
+    return '';
   }
 }

@@ -218,7 +218,6 @@ class _MyAppState extends State<MyApp> {
     // Avoid errors caused by flutter upgrade.
     // Importing 'package:flutter/widgets.dart' is required.
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         fontFamily: 'Roboto',
@@ -231,23 +230,8 @@ class _MyAppState extends State<MyApp> {
       ),
       initialRoute: SplashScreen.routeName,
       routes: nav.routes,
-      // onGenerateRoute: (settings) {
-      //   Widget? widget = nav.routes[settings.name] as Widget?;
-      //   if (widget != null) {
-      //     return PageRouteBuilder(
-      //         settings:
-      //             settings, // Pass this to make popUntil(), pushNamedAndRemoveUntil(), works
-      //         pageBuilder: (_, __, ___) => widget,
-      //         transitionsBuilder: (_, a, __, c) =>
-      //             FadeTransition(opacity: a, child: c));
-      //   }
-      //   // Unknown route
-      //   return MaterialPageRoute(builder: (_) => SplashScreen());
-      // },
     );
   }
-
-  bool _notificationsEnabled = false;
 
   @override
   void initState() {
@@ -260,15 +244,13 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _isAndroidPermissionGranted() async {
     if (Platform.isAndroid) {
-      final bool granted = await flutterLocalNotificationsPlugin
+      await flutterLocalNotificationsPlugin
               .resolvePlatformSpecificImplementation<
                   AndroidFlutterLocalNotificationsPlugin>()
               ?.areNotificationsEnabled() ??
           false;
 
-      setState(() {
-        _notificationsEnabled = granted;
-      });
+      setState(() {});
     }
   }
 
@@ -295,11 +277,8 @@ class _MyAppState extends State<MyApp> {
           flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin>();
 
-      final bool? grantedNotificationPermission =
-          await androidImplementation?.requestPermission();
-      setState(() {
-        _notificationsEnabled = grantedNotificationPermission ?? false;
-      });
+      await androidImplementation?.requestPermission();
+      setState(() {});
     }
   }
 

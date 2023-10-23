@@ -47,12 +47,11 @@ class GameVocabularyViewModel {
         count += 2;
       }
       if ((element.main.spellings?.length ?? 0) > 0) {
-        count += 2;
+        count += 4;
       }
       if ((element.main.examples?.length ?? 0) > 0) {
         element.main.examples?.shuffle();
-        while (true) {
-          Example? example = element.main.examples?.first;
+        for (Example? example in element.main.examples ?? []) {
           if (example == null || element.main.word == null) break;
           if (example.sentence?.contains(element.main.word!) == true) {
             count += 2;

@@ -40,3 +40,14 @@ flutter:
       - assets/image/
       - assets/CEFR_Wordlist.db
       - assets/audio/
+      - assets/background/
+
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/light.ttf
+        - asset: assets/fonts/bold.ttf
+          weight: 700
+    - family: Noto
+      fonts:
+        - asset: assets/fonts/medium.ttf

@@ -1,120 +1,166 @@
 import 'dart:math';
 
 import 'package:english_study/model/game_answer_status.dart';
+import 'package:english_study/model/game_type.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/screen/game/game_vocabulary_view_model.dart';
+import 'package:english_study/screen/game/widget/widget_answer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ChooseAnswerComponent extends StatelessWidget {
   final GameVocabularyModel? gameVocabularyModel;
-  ChooseAnswerComponent({super.key, required this.gameVocabularyModel});
+  final GameType? gameType;
+  ChooseAnswerComponent(
+      {super.key, required this.gameVocabularyModel, this.gameType});
 
   bool isDefinition = Random().nextBool();
 
   @override
   Widget build(BuildContext context) {
-    var _viewModel =
+    var viewModel =
         Provider.of<GameVocabularyViewModel>(context, listen: false);
     return ValueListenableBuilder(
-      valueListenable: _viewModel.gameAnswerStatus,
+      valueListenable: viewModel.gameAnswerStatus,
       builder: (context, value, child) {
-        return Stack(children: [
-          Column(
-            children: [
-              Expanded(
-                  flex: 5,
-                  child: Container(
-                    child: Center(
-                      child: Text(
-                        isDefinition
-                            ? gameVocabularyModel?.main.description ?? ''
-                            : gameVocabularyModel?.main.word ?? '',
-                        textAlign: TextAlign.center,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+                child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 50),
+              child: Center(
+                child: questionWidget(),
+              ),
+            )),
+            answerWidget(value, 0, viewModel),
+            answerWidget(value, 1, viewModel),
+            answerWidget(value, 2, viewModel),
+            answerWidget(value, 3, viewModel),
+            const SizedBox(
+              height: 10,
+            ),
+            AnimatedOpacity(
+              duration: const Duration(
+                milliseconds: 500,
+              ),
+              opacity: value.isAnswer == true ? 1.0 : 0.0,
+              child: AnimatedContainer(
+                duration: const Duration(
+                  milliseconds: 500,
+                ),
+                width: double.infinity,
+                height: value.isAnswer == true ? 50 : 0,
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        viewModel.nextQuestion();
+                      },
+                      child: const Column(
+                        children: [
+                          Icon(Icons.navigate_next),
+                          Text('Next'),
+                        ],
                       ),
                     ),
-                  )),
-              Expanded(
-                  flex: 5,
-                  child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      var vocabulary = gameVocabularyModel?.vocabularies[index];
-                      bool isAnswerRight =
-                          gameVocabularyModel?.main.id == vocabulary?.id;
-                      return Container(
-                        width: double.infinity,
-                        margin: EdgeInsets.symmetric(horizontal: 20),
-                        child: GestureDetector(
-                          onTap: () {
-                            if (value.isAnswer == true) return;
-                            _viewModel.answer(isAnswerRight,index: index);
-                          },
-                          child: Card(
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 15),
-                              color: value.isAnswer == false
-                                  ? Colors.white
-                                  : (value.index == index
-                                      ? (isAnswerRight
-                                          ? Colors.green
-                                          : Colors.red)
-                                      : Colors.white),
-                              child: Center(
-                                child: Text(
-                                  isDefinition
-                                      ? vocabulary?.word ?? ''
-                                      : vocabulary?.description ?? '',
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                    itemCount: gameVocabularyModel?.vocabularies.length ?? 0,
-                  )),
-            ],
-          ),
-          if (!_viewModel.lastQuestion())
-            Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: value.isAnswer == true
-                  ? Expanded(
-                      child: Container(
-                      width: 100,
-                      height: 100,
-                      child: Center(
-                        child: GestureDetector(
-                          onTap: () {
-                            _viewModel.nextQuestion();
-                          },
-                          child: Icon(Icons.navigate_next),
-                        ),
-                      ),
-                    ))
-                  : SizedBox(),
-            ),
-          if (!_viewModel.firstQuestion())
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Expanded(
-                  child: Container(
-                width: 100,
-                height: 100,
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      _viewModel.previousQuestion();
-                    },
-                    child: Icon(Icons.navigate_before),
-                  ),
+                    const SizedBox(
+                      width: 40,
+                    )
+                  ],
                 ),
-              )),
+              ),
             ),
-        ]);
+            const SizedBox(
+              height: 10,
+            )
+          ],
+        );
       },
     );
+  }
+
+  Widget questionWidget() {
+    switch (gameType) {
+      case GameType.ChooseAnswerAudioToDefination:
+        return IconButton(onPressed: () {}, icon: Icon(Icons.audio_file));
+      case GameType.ChooseAnswerSpellingToDefination:
+      case GameType.ChooseAnswerSpellingToWord:
+        return Text(gameVocabularyModel?.main.spellings
+                ?.map((e) => e.text)
+                .join(" - ") ??
+            '');
+      default:
+        return Text(
+          question(gameType),
+          textAlign: TextAlign.center,
+        );
+    }
+  }
+
+  Widget answerWidget(
+      GameAnswerStatus value, int index, GameVocabularyViewModel viewModel) {
+    var vocabulary = gameVocabularyModel?.vocabularies[index];
+    bool isAnswerRight = gameVocabularyModel?.main.id == vocabulary?.id;
+    return WidgetAnswer(
+      typeAnswer: getTypeAnswer(value,isAnswerRight,index),
+      answer: answer(gameType, vocabulary),
+      isSpelling: gameType == GameType.ChooseAnswerSpellingToDefination ||
+          gameType == GameType.ChooseAnswerSpellingToWord,
+      onSelect: () {
+        if (value.isAnswer == true) return;
+        viewModel.answer(isAnswerRight, index: index);
+      },
+    );
+  }
+
+  int getTypeAnswer(GameAnswerStatus value, bool isAnswerRight, int index) {
+    return value.isAnswer == false
+        ? 1
+        : value.index == index
+            ? isAnswerRight == true
+                ? 2
+                : 3
+            : isAnswerRight == true
+                ? 2
+                : 1;
+  }
+
+  String answer(
+    GameType? gameType,
+    Vocabulary? vocabulary,
+  ) {
+    switch (gameType) {
+      case GameType.ChooseAnswerAudioToDefination:
+        return vocabulary?.description ?? '';
+      case GameType.ChooseAnswerDefinationToWord:
+        return vocabulary?.word ?? '';
+      case GameType.ChooseAnswerExampleToWord:
+        return vocabulary?.word ?? '';
+      case GameType.ChooseAnswerSpellingToWord:
+        return vocabulary?.word ?? '';
+      case GameType.ChooseAnswerSpellingToDefination:
+        return vocabulary?.description ?? '';
+      default:
+        return '';
+    }
+  }
+
+  String question(GameType? gameType) {
+    switch (gameType) {
+      case GameType.ChooseAnswerDefinationToWord:
+        return gameVocabularyModel?.main.description ?? '';
+      case GameType.ChooseAnswerExampleToWord:
+        return gameVocabularyModel?.main.examples?.first.sentence
+                ?.replaceAll(gameVocabularyModel?.main.word ?? '', ' _____ ') ??
+            '';
+      default:
+        return '';
+    }
   }
 }

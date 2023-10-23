@@ -7,3 +7,6 @@ const Color ruddy = Color(0xFFF89292);
 const Color turquoise = Color(0xFF6DD2A0);
 const Color baby_powder = Color(0xFFFDFFFC);
 const Color red_violet = Color(0xFFB91372);
+
+const int duration_animation_right_wrong = 200;
+const int duration_animation_next = 300;

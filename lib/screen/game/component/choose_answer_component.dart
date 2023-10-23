@@ -9,6 +9,8 @@ import 'package:english_study/screen/game/widget/widget_answer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../constants.dart';
+
 class ChooseAnswerComponent extends StatelessWidget {
   final GameVocabularyModel? gameVocabularyModel;
   final GameType? gameType;
@@ -45,12 +47,12 @@ class ChooseAnswerComponent extends StatelessWidget {
             ),
             AnimatedOpacity(
               duration: const Duration(
-                milliseconds: 500,
+                milliseconds: duration_animation_next,
               ),
               opacity: value.isAnswer == true ? 1.0 : 0.0,
               child: AnimatedContainer(
                 duration: const Duration(
-                  milliseconds: 500,
+                  milliseconds: duration_animation_next,
                 ),
                 width: double.infinity,
                 height: value.isAnswer == true ? 50 : 0,
@@ -62,8 +64,8 @@ class ChooseAnswerComponent extends StatelessWidget {
                       onTap: () {
                         viewModel.nextQuestion();
                       },
-                      child: const Column(
-                        children: [
+                      child: Column(
+                        children: const [
                           Icon(Icons.navigate_next),
                           Text('Next'),
                         ],
@@ -91,10 +93,11 @@ class ChooseAnswerComponent extends StatelessWidget {
         return IconButton(onPressed: () {}, icon: Icon(Icons.audio_file));
       case GameType.ChooseAnswerSpellingToDefination:
       case GameType.ChooseAnswerSpellingToWord:
-        return Text(gameVocabularyModel?.main.spellings
-                ?.map((e) => e.text)
-                .join(" - ") ??
-            '');
+        return Text(
+          (gameVocabularyModel?.main.spellings?[0].text ?? ''),
+          style: TextStyle(fontFamily: "Noto"),
+        );
+
       default:
         return Text(
           question(gameType),
@@ -108,7 +111,7 @@ class ChooseAnswerComponent extends StatelessWidget {
     var vocabulary = gameVocabularyModel?.vocabularies[index];
     bool isAnswerRight = gameVocabularyModel?.main.id == vocabulary?.id;
     return WidgetAnswer(
-      typeAnswer: getTypeAnswer(value,isAnswerRight,index),
+      typeAnswer: getTypeAnswer(value, isAnswerRight, index),
       answer: answer(gameType, vocabulary),
       isSpelling: gameType == GameType.ChooseAnswerSpellingToDefination ||
           gameType == GameType.ChooseAnswerSpellingToWord,

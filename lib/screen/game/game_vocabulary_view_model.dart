@@ -59,7 +59,7 @@ class GameVocabularyViewModel {
           }
         }
       }
-      var type = randomGameType(count: count);
+      var type = randomGameType(count: 4);
       element.type = type;
     });
     _listGameAnswerStatus = [];
@@ -123,5 +123,19 @@ class GameVocabularyViewModel {
       _listGameAnswerStatus?.add(answer);
     }
     _gameAnswerStatus.value = answer;
+  }
+
+  bool isAnswerRight(GameVocabularyModel? gameVocabularyModel, String text) {
+    return text.toLowerCase().trim() ==
+        gameVocabularyModel?.main.word?.toLowerCase().trim();
+  }
+}
+
+extension ListExtension<E> on List<E>? {
+  E? elementAtOrNull(int index) {
+    if (index >= 0 && index < (this?.length ?? 0)) {
+      return this?[index];
+    }
+    return null;
   }
 }

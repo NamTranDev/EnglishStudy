@@ -59,7 +59,7 @@ class GameVocabularyViewModel {
           }
         }
       }
-      var type = randomGameType(count: 4);
+      var type = randomGameType(count: 2);
       element.type = type;
     });
     _listGameAnswerStatus = [];

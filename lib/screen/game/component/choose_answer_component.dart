@@ -5,8 +5,10 @@ import 'package:english_study/model/game_type.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/screen/game/game_vocabulary_view_model.dart';
+import 'package:english_study/screen/game/widget/widget_after_game.dart';
 import 'package:english_study/screen/game/widget/widget_answer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
@@ -56,25 +58,11 @@ class ChooseAnswerComponent extends StatelessWidget {
                 ),
                 width: double.infinity,
                 height: value.isAnswer == true ? 50 : 0,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        viewModel.nextQuestion();
-                      },
-                      child: Column(
-                        children: const [
-                          Icon(Icons.navigate_next),
-                          Text('Next'),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 40,
-                    )
-                  ],
+                child: WidgetAfterGame(
+                  onNext: () {
+                    viewModel.nextQuestion();
+                  },
+                  onReviewVocabulary: () {},
                 ),
               ),
             ),
@@ -90,7 +78,11 @@ class ChooseAnswerComponent extends StatelessWidget {
   Widget questionWidget() {
     switch (gameType) {
       case GameType.ChooseAnswerAudioToDefination:
-        return IconButton(onPressed: () {}, icon: Icon(Icons.audio_file));
+        return SvgPicture.asset(
+          'assets/icons/ic_audio.svg',
+          width: 40,
+          height: 40,
+        );
       case GameType.ChooseAnswerSpellingToDefination:
       case GameType.ChooseAnswerSpellingToWord:
         return Text(

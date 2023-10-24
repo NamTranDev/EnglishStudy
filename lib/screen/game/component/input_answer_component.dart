@@ -1,6 +1,8 @@
 import 'package:english_study/model/game_type.dart';
 import 'package:english_study/screen/game/game_vocabulary_view_model.dart';
+import 'package:english_study/screen/game/widget/widget_after_game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../../constants.dart';
@@ -31,14 +33,7 @@ class InputAnswerComponent extends StatelessWidget {
                     flex: 2,
                     child: Container(
                       child: Center(
-                        child: gameType == GameType.InputAudioToWord
-                            ? IconButton(
-                                onPressed: () {}, icon: Icon(Icons.audio_file))
-                            : Text(
-                                question(gameType),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontFamily: "Noto"),
-                              ),
+                        child: questionWidget(),
                       ),
                     )),
                 Expanded(
@@ -138,32 +133,40 @@ class InputAnswerComponent extends StatelessWidget {
                   milliseconds: duration_animation_next,
                 ),
                 opacity: value.isAnswer == true ? 1.0 : 0.0,
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        viewModel.nextQuestion();
-                      },
-                      child: Column(
-                        children: const [
-                          Icon(Icons.navigate_next),
-                          Text('Next'),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 40,
-                    )
-                  ],
-                ),
+                child: WidgetAfterGame(onNext: () {
+                  viewModel.nextQuestion();
+                },onReviewVocabulary: (){
+                  
+                },),
               ),
             ),
           ],
         );
       },
     );
+  }
+
+  Widget questionWidget() {
+    switch (gameType) {
+      case GameType.InputAudioToWord:
+        return SvgPicture.asset(
+          'assets/icons/ic_audio.svg',
+          width: 40,
+          height: 40,
+        );
+      case GameType.InputSpellingToDefination:
+      case GameType.InputSpellingToWord:
+        return Text(
+          (gameVocabularyModel?.main.spellings?[0].text ?? ''),
+          style: TextStyle(fontFamily: "Noto"),
+        );
+
+      default:
+        return Text(
+          question(gameType),
+          textAlign: TextAlign.center,
+        );
+    }
   }
 
   void checkAnswer(GameVocabularyViewModel viewModel) {

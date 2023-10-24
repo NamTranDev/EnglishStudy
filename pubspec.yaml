@@ -26,6 +26,8 @@ dependencies:
   flutter_local_notifications: ^15.1.1
   flutter_timezone: ^1.0.4
 
+  flutter_svg: ^2.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -41,6 +43,7 @@ flutter:
       - assets/CEFR_Wordlist.db
       - assets/audio/
       - assets/background/
+      - assets/icons/
 
   fonts:
     - family: Roboto

@@ -1,5 +1,8 @@
 enum GameType {
 
+  InputAudioToWord,
+  ChooseAnswerAudioToDefination,
+
   InputSpellingToWord,
   InputSpellingToDefination,
   ChooseAnswerSpellingToWord,
@@ -7,11 +10,6 @@ enum GameType {
 
   ChooseAnswerDefinationToWord,
   InputDefinationToWord,
-
-  InputAudioToWord,
-  ChooseAnswerAudioToDefination,
-
-  
   
   ChooseAnswerExampleToWord,
   InputExampleToWord,

@@ -1,7 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:english_study/model/vocabulary.dart';
+import 'package:english_study/screen/flash_card/component/example_component.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
+import 'package:flip_card/flip_card.dart';
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -50,16 +53,27 @@ class FlashCardScreen extends StatelessWidget {
             db.updateVocabulary(data?[index]);
           },
         ),
-        items: data
-            ?.map((item) => Card(
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  child: VocabularyComponent(
-                    vocabulary: item,
-                  ),
-                ))
-            .toList());
+        items: data?.map((item) {
+          FlipCardController _controller = FlipCardController();
+          return FlipCard(
+            controller: _controller,
+            fill: Fill.fillBack,
+            side: CardSide.FRONT,
+            flipOnTouch: false,
+            front: VocabularyComponent(
+              vocabulary: item,
+              onOpenExample: () {
+                _controller.toggleCard();
+              },
+              isGame: false,
+            ),
+            back: ExampleComponent(
+                vocabulary: item,
+                onOpenVocabulary: () {
+                  _controller.toggleCard();
+                },
+                isGame: false),
+          );
+        }).toList());
   }
 }

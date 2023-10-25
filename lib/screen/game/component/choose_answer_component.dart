@@ -57,12 +57,12 @@ class ChooseAnswerComponent extends StatelessWidget {
                   milliseconds: duration_animation_next,
                 ),
                 width: double.infinity,
-                height: value.isAnswer == true ? 50 : 0,
+                height: value.isAnswer == true ? 55 : 0,
                 child: WidgetAfterGame(
+                  vocabulary: gameVocabularyModel?.main,
                   onNext: () {
                     viewModel.nextQuestion();
                   },
-                  onReviewVocabulary: () {},
                 ),
               ),
             ),

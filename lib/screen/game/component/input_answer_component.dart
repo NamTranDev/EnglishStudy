@@ -133,11 +133,12 @@ class InputAnswerComponent extends StatelessWidget {
                   milliseconds: duration_animation_next,
                 ),
                 opacity: value.isAnswer == true ? 1.0 : 0.0,
-                child: WidgetAfterGame(onNext: () {
-                  viewModel.nextQuestion();
-                },onReviewVocabulary: (){
-                  
-                },),
+                child: WidgetAfterGame(
+                  vocabulary: gameVocabularyModel?.main,
+                  onNext: () {
+                    viewModel.nextQuestion();
+                  },
+                ),
               ),
             ),
           ],

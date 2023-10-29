@@ -1,5 +1,6 @@
 import 'package:english_study/constants.dart';
 import 'package:english_study/model/vocabulary.dart';
+import 'package:english_study/screen/flash_card/widget/widget_audio_spelling.dart';
 import 'package:flutter/material.dart';
 
 class VocabularyComponent extends StatelessWidget {
@@ -41,46 +42,21 @@ class VocabularyComponent extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center),
                 SizedBox(
-                  height: 10,
+                  height: 5,
                 ),
-                SizedBox(
-                  height: 50,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: vocabulary?.spellings?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: EdgeInsets.symmetric(horizontal: 5),
-                        child: Text(
-                          vocabulary?.spellings?[index].text ?? '',
-                          style: TextStyle(fontFamily: 'Noto'),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                Text(vocabulary?.word_type ?? '',
+                    style: TextStyle(
+                      color: maastricht_blue,
+                      fontSize: 15,
+                    ),
+                    textAlign: TextAlign.center),
                 SizedBox(
                   height: 10,
                 ),
-                SizedBox(
-                  height: 50,
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: vocabulary?.audios?.length ?? 0,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 5,
-                        ),
-                        child: Icon(
-                          Icons.audio_file,
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                if (vocabulary?.audios != null && vocabulary?.spellings != null)
+                  WidgetAudioSpellig(
+                      audios: vocabulary?.audios,
+                      spellings: vocabulary?.spellings),
                 SizedBox(
                   height: 50,
                 ),

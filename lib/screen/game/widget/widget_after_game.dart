@@ -24,23 +24,26 @@ class WidgetAfterGame extends StatelessWidget {
           onTap: () {
             showModalBottomSheet(
               context: context,
+              isScrollControlled: true,
               builder: (context) {
                 FlipCardController _controller = FlipCardController();
-                return FlipCard(
-                  controller: _controller,
-                  fill: Fill.fillBack,
-                  side: CardSide.FRONT,
-                  flipOnTouch: false,
-                  front: VocabularyComponent(
-                      vocabulary: vocabulary,
-                      onOpenExample: () {
-                        _controller.toggleCard();
-                      }),
-                  back: ExampleComponent(
-                      vocabulary: vocabulary,
-                      onOpenVocabulary: () {
-                        _controller.toggleCard();
-                      }),
+                return SafeArea(
+                  child: FlipCard(
+                    controller: _controller,
+                    fill: Fill.none,
+                    side: CardSide.FRONT,
+                    flipOnTouch: false,
+                    front: VocabularyComponent(
+                        vocabulary: vocabulary,
+                        onOpenExample: () {
+                          _controller.toggleCard();
+                        }),
+                    back: ExampleComponent(
+                        vocabulary: vocabulary,
+                        onOpenVocabulary: () {
+                          _controller.toggleCard();
+                        }),
+                  ),
                 );
               },
             );

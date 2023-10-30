@@ -15,33 +15,38 @@ class WidgetAudioSpellig extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: audios?.length == 2 && spellings?.length == 2
-          ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                audioSpellingWithFlag(audios?[0], spellings?[0], true),
-                SizedBox(
-                  width: 30,
-                ),
-                audioSpellingWithFlag(audios?[1], spellings?[1], false),
-              ],
-            )
-          : Center(
-              child: Column(
+          ? SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  widgetAudio(audios?[0]),
-                  widgetSpelling(spellings?[0])
+                  audioSpellingWithFlag(audios?[0], spellings?[0], true),
+                  SizedBox(
+                    width: 30,
+                  ),
+                  audioSpellingWithFlag(audios?[1], spellings?[1], false),
                 ],
               ),
+            )
+          : Column(
+              children: [
+                widgetAudio(audios?[0]),
+                SizedBox(
+                  height: 10,
+                ),
+                widgetSpelling(spellings?[0])
+              ],
             ),
     );
   }
 
   Widget audioSpellingWithFlag(Audio? audio, Spelling? spelling, bool isUK) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         widgetAudio(audio),
         SizedBox(
-          height: 5,
+          height: 10,
         ),
         Row(
           children: [

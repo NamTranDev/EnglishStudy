@@ -24,43 +24,72 @@ class VocabularyComponent extends StatelessWidget {
         children: [
           Container(
             padding: EdgeInsets.only(
-                top: isGame ? 55 : 10,
-                left: 10,
-                right: 10,
-                bottom: isGame ? 10 : 55),
+                top: isGame ? 55 : 10, left: 10, right: 10, bottom: 55),
             child: Column(
               children: [
-                widgetImage(null),
-                SizedBox(
-                  height: 10,
+                Expanded(
+                  child: Container(
+                    child: widgetImage(null),
+                  ),
+                  flex: 3,
                 ),
-                Text(vocabulary?.word ?? '',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 50,
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(vocabulary?.word ?? '',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontSize: 50,
+                              ),
+                              textAlign: TextAlign.center),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                              color: maastricht_blue,
+                              width: 0.5,
+                            )),
+                            padding: EdgeInsets.all(5),
+                            child: Text(vocabulary?.word_type ?? '',
+                                style: TextStyle(
+                                  color: maastricht_blue,
+                                  fontSize: 15,
+                                ),
+                                textAlign: TextAlign.center),
+                          ),
+                        ],
+                      ),
                     ),
-                    textAlign: TextAlign.center),
-                SizedBox(
-                  height: 5,
-                ),
-                Text(vocabulary?.word_type ?? '',
-                    style: TextStyle(
-                      color: maastricht_blue,
-                      fontSize: 15,
-                    ),
-                    textAlign: TextAlign.center),
-                SizedBox(
-                  height: 10,
+                  ),
                 ),
                 if (vocabulary?.audios != null && vocabulary?.spellings != null)
-                  WidgetAudioSpellig(
-                      audios: vocabulary?.audios,
-                      spellings: vocabulary?.spellings),
-                SizedBox(
-                  height: 50,
-                ),
-                Text(vocabulary?.description ?? ''),
+                  Expanded(
+                    child: WidgetAudioSpellig(
+                        audios: vocabulary?.audios,
+                        spellings: vocabulary?.spellings),
+                    flex: 2,
+                  ),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: SingleChildScrollView(
+                      child: Text(
+                        (vocabulary?.description ?? ''),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  flex: 2,
+                )
               ],
             ),
           ),

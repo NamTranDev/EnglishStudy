@@ -59,12 +59,10 @@ class GameVocabularyViewModel {
           }
         }
       }
-      var type = randomGameType(count: 2);
+      var type = randomGameType(count: count);
       element.type = type;
     });
     _listGameAnswerStatus = [];
-    // await Future.delayed(Duration(seconds: 2));
-    // _gameVocabularies = _gameVocabularies?.sublist(0, 2);
     if (_listGameVocabulary == null)
       _gameVocabularyListController.sink.addError("Not found list Vocabulary");
     else {

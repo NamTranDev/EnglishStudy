@@ -6,7 +6,6 @@ import 'package:english_study/storage/db_provider.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'component/vocabulary_component.dart';
 
@@ -34,7 +33,7 @@ class FlashCardScreen extends StatelessWidget {
                 child: CircularProgressIndicator(),
               );
             } else {
-              return buildCaroselCard(context, snapshot.data);
+              return Center(child: buildCaroselCard(context, snapshot.data));
             }
           },
         ),
@@ -45,8 +44,12 @@ class FlashCardScreen extends StatelessWidget {
   Widget buildCaroselCard(BuildContext context, List<Vocabulary>? data) {
     return CarouselSlider(
         options: CarouselOptions(
-          height: MediaQuery.of(context).size.height,
-          viewportFraction: 0.9,
+          height: MediaQuery.of(context).size.height - 50,
+          viewportFraction: 0.925,
+          enlargeFactor: 0.2,
+          enlargeCenterPage: true,
+          enlargeStrategy: CenterPageEnlargeStrategy.zoom,
+          // enlargeFactor: 0.5,
           onPageChanged: (index, reason) {
             var db = getIt<DBProvider>();
             data?[index].isLearn = 1;

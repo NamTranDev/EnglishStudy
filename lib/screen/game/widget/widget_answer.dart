@@ -44,6 +44,7 @@ class WidgetAnswer extends StatelessWidget {
         child: Container(
           width: double.infinity,
           padding: EdgeInsets.all(10),
+          alignment: Alignment.centerLeft,
           child: Text(
             answer,
             style: TextStyle(

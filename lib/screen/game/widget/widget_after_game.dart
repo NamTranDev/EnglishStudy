@@ -28,21 +28,39 @@ class WidgetAfterGame extends StatelessWidget {
               builder: (context) {
                 FlipCardController _controller = FlipCardController();
                 return SafeArea(
-                  child: FlipCard(
-                    controller: _controller,
-                    fill: Fill.none,
-                    side: CardSide.FRONT,
-                    flipOnTouch: false,
-                    front: VocabularyComponent(
-                        vocabulary: vocabulary,
-                        onOpenExample: () {
-                          _controller.toggleCard();
-                        }),
-                    back: ExampleComponent(
-                        vocabulary: vocabulary,
-                        onOpenVocabulary: () {
-                          _controller.toggleCard();
-                        }),
+                  child: Stack(
+                    children: [
+                      FlipCard(
+                        controller: _controller,
+                        fill: Fill.none,
+                        side: CardSide.FRONT,
+                        flipOnTouch: false,
+                        front: VocabularyComponent(
+                            vocabulary: vocabulary,
+                            onOpenExample: () {
+                              _controller.toggleCard();
+                            }),
+                        back: ExampleComponent(
+                            vocabulary: vocabulary,
+                            onOpenVocabulary: () {
+                              _controller.toggleCard();
+                            }),
+                      ),
+                      Positioned(
+                        top: 40,
+                        left: 10,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: SvgPicture.asset(
+                            'assets/icons/ic_arrow_down.svg',
+                            width: 30,
+                            height: 30,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },

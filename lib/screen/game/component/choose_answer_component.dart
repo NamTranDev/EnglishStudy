@@ -87,12 +87,22 @@ class ChooseAnswerComponent extends StatelessWidget {
       case GameType.ChooseAnswerSpellingToWord:
         return Text(
           (gameVocabularyModel?.main.spellings?[0].text ?? ''),
-          style: TextStyle(fontFamily: "Noto"),
+          style: TextStyle(
+            color: maastricht_blue,
+            fontSize: 20,
+            fontFamily: "Noto",
+            fontWeight: FontWeight.w700,
+          ),
         );
 
       default:
         return Text(
           question(gameType),
+          style: TextStyle(
+            color: maastricht_blue,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
           textAlign: TextAlign.center,
         );
     }

@@ -160,8 +160,12 @@ class DBProvider {
             vocabulary.audios = audios.map((e) => Audio.fromMap(e)).toList();
             vocabulary.spellings =
                 spellings.map((e) => Spelling.fromMap(e)).toList();
-            vocabulary.examples =
-                examples.map((e) => Example.fromMap(e)).toList();
+            vocabulary.examples = examples.map((e) {
+              Example example = Example.fromMap(e);
+              example.sentence =
+                  example.sentence?.replaceAll('"', '').replaceAll(RegExp(r'^\d+\.\s'), "");
+              return example;
+            }).toList();
             return vocabulary;
           }).toList()
         : [];

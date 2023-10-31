@@ -25,17 +25,26 @@ class ExampleComponent extends StatelessWidget {
         children: [
           Container(
             padding: EdgeInsets.only(
-                top: isGame ? 55 : 10,
-                left: 10,
-                right: 10,
-                bottom: isGame ? 10 : 55),
+                top: isGame ? 65 : 10, left: 10, right: 10, bottom: 55),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
                 Flexible(
                   child: ListView.builder(
                     itemBuilder: (context, index) {
-                      return Text(examples?[index].sentence ?? '');
+                      return Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 5,
+                          horizontal: 10,
+                        ),
+                        child: Text(
+                          examples?[index].sentence ?? '',
+                          style: TextStyle(
+                            color: maastricht_blue,
+                            fontSize: 15,
+                          ),
+                        ),
+                      );
                     },
                     itemCount: examples?.length ?? 0,
                   ),

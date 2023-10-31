@@ -32,6 +32,9 @@ class InputAnswerComponent extends StatelessWidget {
                 Expanded(
                     flex: 2,
                     child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
                       child: Center(
                         child: questionWidget(),
                       ),
@@ -159,12 +162,22 @@ class InputAnswerComponent extends StatelessWidget {
       case GameType.InputSpellingToWord:
         return Text(
           (gameVocabularyModel?.main.spellings?[0].text ?? ''),
-          style: TextStyle(fontFamily: "Noto"),
+          style: TextStyle(
+            fontFamily: "Noto",
+            color: maastricht_blue,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
         );
 
       default:
         return Text(
           question(gameType),
+          style: TextStyle(
+            color: maastricht_blue,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+          ),
           textAlign: TextAlign.center,
         );
     }
@@ -187,11 +200,13 @@ class InputAnswerComponent extends StatelessWidget {
         return gameVocabularyModel?.main.description ?? '';
       case GameType.InputExampleToWord:
         return gameVocabularyModel?.main.examples?.first.sentence
-                ?.replaceAll(gameVocabularyModel?.main.word ?? '', ' _____ ') ??
+                ?.replaceAllMapped(
+                    RegExp(
+                        r'\b' + (gameVocabularyModel?.main.word ?? '') + '\w*'),
+                    (match) {
+              return '_____';
+            }) ??
             '';
-      case GameType.InputSpellingToDefination:
-      case GameType.InputSpellingToWord:
-        return gameVocabularyModel?.main.spellings?[0].text ?? '';
       default:
         return '';
     }

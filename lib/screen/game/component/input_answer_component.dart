@@ -36,7 +36,7 @@ class InputAnswerComponent extends StatelessWidget {
                         horizontal: 20,
                       ),
                       child: Center(
-                        child: questionWidget(),
+                        child: questionWidget(context),
                       ),
                     )),
                 Expanded(
@@ -90,9 +90,10 @@ class InputAnswerComponent extends StatelessWidget {
                           child: Center(
                             child: Text(
                               'Kiểm tra',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(color: Colors.white),
                             ),
                           ),
                         ),
@@ -150,34 +151,22 @@ class InputAnswerComponent extends StatelessWidget {
     );
   }
 
-  Widget questionWidget() {
+  Widget questionWidget(BuildContext context) {
     switch (gameType) {
       case GameType.InputAudioToWord:
-        return SvgPicture.asset(
-          'assets/icons/ic_audio.svg',
-          width: 40,
-          height: 40,
-        );
+        return widgetIcon('assets/icons/ic_audio.svg', size: 40);
       case GameType.InputSpellingToDefination:
       case GameType.InputSpellingToWord:
-        return Text(
-          (gameVocabularyModel?.main.spellings?[0].text ?? ''),
-          style: TextStyle(
-            fontFamily: "Noto",
-            color: maastricht_blue,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
-        );
+        return Text((gameVocabularyModel?.main.spellings?[0].text ?? ''),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(fontFamily: "Noto", fontSize: 20));
 
       default:
         return Text(
           question(gameType),
-          style: TextStyle(
-            color: maastricht_blue,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 20),
           textAlign: TextAlign.center,
         );
     }

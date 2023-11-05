@@ -12,11 +12,10 @@ class TopicScreen extends StatelessWidget {
     return Provider.value(
       value: TopicViewModel(),
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('Topic'),
-        ),
-        body: ListTopicComponent(
-          category: ModalRoute.of(context)?.settings.arguments as String?,
+        body: SafeArea(
+          child: ListTopicComponent(
+            category: ModalRoute.of(context)?.settings.arguments as String?,
+          ),
         ),
       ),
     );

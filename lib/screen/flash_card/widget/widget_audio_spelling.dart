@@ -50,13 +50,9 @@ class WidgetAudioSpellig extends StatelessWidget {
         ),
         Row(
           children: [
-            SvgPicture.asset(
-              isUK
-                  ? 'assets/icons/ic_flag_uk.svg'
-                  : 'assets/icons/ic_flag_us.svg',
-              width: 30,
-              height: 30,
-            ),
+            widgetIcon(isUK
+                ? 'assets/icons/ic_flag_uk.svg'
+                : 'assets/icons/ic_flag_us.svg'),
             SizedBox(
               width: 5,
             ),
@@ -70,19 +66,18 @@ class WidgetAudioSpellig extends StatelessWidget {
   Widget widgetAudio(Audio? audio) {
     return InkWell(
       onTap: () {},
-      child: SvgPicture.asset(
-        'assets/icons/ic_audio.svg',
-        width: 30,
-        height: 30,
-      ),
+      child: widgetIcon('assets/icons/ic_audio.svg'),
     );
   }
 
   Widget widgetSpelling(Spelling? spelling) {
     return Text(
       spellings?[0].text ?? '',
-      style:
-          TextStyle(fontFamily: 'Noto', fontSize: 15, color: maastricht_blue),
+      style: const TextStyle(
+          fontFamily: 'Noto',
+          fontSize: 15,
+          color: maastricht_blue,
+          fontWeight: FontWeight.normal),
     );
   }
 }

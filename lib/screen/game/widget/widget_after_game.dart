@@ -47,17 +47,13 @@ class WidgetAfterGame extends StatelessWidget {
                             }),
                       ),
                       Positioned(
-                        top: 40,
-                        left: 10,
+                        top: 50,
+                        left: 20,
                         child: InkWell(
                           onTap: () {
                             Navigator.pop(context);
                           },
-                          child: SvgPicture.asset(
-                            'assets/icons/ic_arrow_down.svg',
-                            width: 30,
-                            height: 30,
-                          ),
+                          child: widgetIcon('assets/icons/ic_arrow_down.svg'),
                         ),
                       ),
                     ],
@@ -68,17 +64,13 @@ class WidgetAfterGame extends StatelessWidget {
           },
           child: Column(
             children: [
-              SvgPicture.asset(
-                'assets/icons/ic_vocabulary.svg',
-                width: 30,
-                height: 30,
-              ),
+              widgetIcon('assets/icons/ic_vocabulary.svg'),
               const SizedBox(
                 height: 5,
               ),
               Text(
                 'Review',
-                style: TextStyle(fontSize: 15, color: maastricht_blue),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
           ),
@@ -92,17 +84,13 @@ class WidgetAfterGame extends StatelessWidget {
           },
           child: Column(
             children: [
-              SvgPicture.asset(
-                'assets/icons/ic_arrow_next.svg',
-                width: 30,
-                height: 30,
-              ),
+              widgetIcon('assets/icons/ic_arrow_next.svg'),
               const SizedBox(
                 height: 5,
               ),
               Text(
                 'Next',
-                style: TextStyle(fontSize: 15, color: maastricht_blue),
+                style: Theme.of(context).textTheme.bodySmall,
               ),
             ],
           ),

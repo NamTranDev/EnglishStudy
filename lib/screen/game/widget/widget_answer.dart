@@ -1,5 +1,4 @@
 import 'package:english_study/constants.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class WidgetAnswer extends StatelessWidget {
@@ -47,9 +46,8 @@ class WidgetAnswer extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             answer,
-            style: TextStyle(
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 fontFamily: isSpelling ? 'Noto' : 'Roboto',
-                fontSize: 15,
                 color: typeAnswer == 1 ? Colors.black : Colors.white),
           ),
         ),

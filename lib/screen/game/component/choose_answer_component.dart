@@ -37,7 +37,7 @@ class ChooseAnswerComponent extends StatelessWidget {
                 child: Container(
               padding: EdgeInsets.symmetric(horizontal: 50),
               child: Center(
-                child: questionWidget(),
+                child: questionWidget(context),
               ),
             )),
             answerWidget(value, 0, viewModel),
@@ -75,34 +75,24 @@ class ChooseAnswerComponent extends StatelessWidget {
     );
   }
 
-  Widget questionWidget() {
+  Widget questionWidget(BuildContext context) {
     switch (gameType) {
       case GameType.ChooseAnswerAudioToDefination:
-        return SvgPicture.asset(
-          'assets/icons/ic_audio.svg',
-          width: 40,
-          height: 40,
-        );
+        return widgetIcon('assets/icons/ic_audio.svg', size: 40);
       case GameType.ChooseAnswerSpellingToDefination:
       case GameType.ChooseAnswerSpellingToWord:
         return Text(
           (gameVocabularyModel?.main.spellings?[0].text ?? ''),
-          style: TextStyle(
-            color: maastricht_blue,
-            fontSize: 20,
-            fontFamily: "Noto",
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(fontFamily: "Noto", fontSize: 20),
         );
 
       default:
         return Text(
           question(gameType),
-          style: TextStyle(
-            color: maastricht_blue,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-          ),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 20),
           textAlign: TextAlign.center,
         );
     }
@@ -162,7 +152,12 @@ class ChooseAnswerComponent extends StatelessWidget {
         return gameVocabularyModel?.main.description ?? '';
       case GameType.ChooseAnswerExampleToWord:
         return gameVocabularyModel?.main.examples?.first.sentence
-                ?.replaceAll(gameVocabularyModel?.main.word ?? '', ' _____ ') ??
+                ?.replaceAllMapped(
+                    RegExp(
+                        r'\b' + (gameVocabularyModel?.main.word ?? '') + '\w*'),
+                    (match) {
+              return '_____';
+            }) ??
             '';
       default:
         return '';

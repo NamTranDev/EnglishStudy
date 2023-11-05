@@ -29,7 +29,7 @@ class VocabularyComponent extends StatelessWidget {
               children: [
                 Expanded(
                   child: Container(
-                    child: widgetImage(null),
+                    child: widgetImage(vocabulary?.image),
                   ),
                   flex: 3,
                 ),
@@ -43,11 +43,7 @@ class VocabularyComponent extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(vocabulary?.word ?? '',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                                fontSize: 50,
-                              ),
+                              style: Theme.of(context).textTheme.headlineMedium,
                               textAlign: TextAlign.center),
                           SizedBox(
                             height: 15,
@@ -60,10 +56,7 @@ class VocabularyComponent extends StatelessWidget {
                             )),
                             padding: EdgeInsets.all(5),
                             child: Text(vocabulary?.word_type ?? '',
-                                style: TextStyle(
-                                  color: maastricht_blue,
-                                  fontSize: 15,
-                                ),
+                                style: Theme.of(context).textTheme.bodySmall,
                                 textAlign: TextAlign.center),
                           ),
                         ],
@@ -73,22 +66,23 @@ class VocabularyComponent extends StatelessWidget {
                 ),
                 if (vocabulary?.audios != null && vocabulary?.spellings != null)
                   Expanded(
+                    flex: 2,
                     child: WidgetAudioSpellig(
                         audios: vocabulary?.audios,
                         spellings: vocabulary?.spellings),
-                    flex: 2,
                   ),
                 Expanded(
+                  flex: 2,
                   child: Container(
                     alignment: Alignment.center,
                     child: SingleChildScrollView(
                       child: Text(
-                        (vocabulary?.description ?? ''),
+                        vocabulary?.description ?? '',
+                        style: Theme.of(context).textTheme.bodySmall,
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
-                  flex: 2,
                 )
               ],
             ),
@@ -98,7 +92,7 @@ class VocabularyComponent extends StatelessWidget {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: GestureDetector(
+                child: InkWell(
                   onTap: () {
                     onOpenExample.call();
                   },
@@ -113,23 +107,15 @@ class VocabularyComponent extends StatelessWidget {
                       ),
                     ),
                     alignment: Alignment.center,
-                    child: Text(
-                      'View Examples',
-                      style: TextStyle(
-                        color: turquoise,
-                        fontSize: 15,
-                      ),
-                    ),
+                    child: Text('View Examples',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: Colors.white)),
                   ),
                 ))
         ],
       ),
     );
-  }
-
-  Widget widgetImage(String? image) {
-    return image != null
-        ? Image.asset('assets/image/' + image)
-        : Image.asset('assets/no_image.jpg');
   }
 }

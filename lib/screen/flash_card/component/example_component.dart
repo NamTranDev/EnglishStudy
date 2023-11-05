@@ -39,10 +39,7 @@ class ExampleComponent extends StatelessWidget {
                         ),
                         child: Text(
                           examples?[index].sentence ?? '',
-                          style: TextStyle(
-                            color: maastricht_blue,
-                            fontSize: 15,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                       );
                     },
@@ -73,10 +70,7 @@ class ExampleComponent extends StatelessWidget {
                   alignment: Alignment.center,
                   child: Text(
                     'View Vocabulary',
-                    style: TextStyle(
-                      color: maastricht_blue,
-                      fontSize: 15,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
               ))

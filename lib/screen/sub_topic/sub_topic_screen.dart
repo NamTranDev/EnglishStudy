@@ -17,11 +17,10 @@ class _SubTopicScreenState extends State<SubTopicScreen> {
     return Provider.value(
       value: SubTopicViewModel(),
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('SubTopic'),
-        ),
-        body: ListSubTopicComponent(
-          topicId: ModalRoute.of(context)?.settings.arguments as String?,
+        body: SafeArea(
+          child: ListSubTopicComponent(
+            topicId: ModalRoute.of(context)?.settings.arguments as String?,
+          ),
         ),
       ),
     );

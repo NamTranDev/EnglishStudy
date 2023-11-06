@@ -49,15 +49,8 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
             } else if (snapshot.hasData) {
               return Stack(
                 children: [
-                  GridView.builder(
-                    padding: EdgeInsets.only(top: 50, left: 4, right: 4),
-                    physics: BouncingScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                            mainAxisSpacing: 2,
-                            crossAxisSpacing: 2,
-                            crossAxisCount: 2,
-                            childAspectRatio: .8),
+                  ListView.builder(
+                    padding: EdgeInsets.only(top: 50),
                     itemBuilder: (context, index) {
                       return widgetSubTopicItem(snapshot.data?[index]);
                     },
@@ -88,80 +81,69 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
   Widget widgetSubTopicItem(SubTopic? subTopic) {
     return Stack(
       children: [
-        InkWell(
-          onTap: () async {
-            if (subTopic?.isLearnComplete == 0 && subTopic?.isLearning == 0) {
-              return;
-            }
+        Card(
+          elevation: 3,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: InkWell(
+            onTap: () async {
+              if (subTopic?.isLearnComplete == 0 && subTopic?.isLearning == 0) {
+                return;
+              }
 
-            var subTopicId = subTopic?.id.toString();
+              var subTopicId = subTopic?.id.toString();
 
-            await Navigator.pushNamed(context, FlashCardScreen.routeName,
-                arguments: subTopicId);
+              await Navigator.pushNamed(context, FlashCardScreen.routeName,
+                  arguments: subTopicId);
 
-            if (subTopic?.isLearnComplete == 1) {
-              return;
-            }
-            if (await _viewModel?.syncSubTopic(subTopicId) == true) {
-              _viewModel?.initData(widget.topicId);
-            }
-          },
-          child: Card(
-            elevation: 3,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(5),
-            ),
+              if (subTopic?.isLearnComplete == 1) {
+                return;
+              }
+              if (await _viewModel?.syncSubTopic(subTopicId) == true) {
+                _viewModel?.initData(widget.topicId);
+              }
+            },
             child: Stack(
               children: [
                 Column(
-                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            subTopic?.name ?? '',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            subTopic?.number_word ?? '',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ],
-                      ),
+                    Text(
+                      subTopic?.name ?? '',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
                     ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      subTopic?.number_word ?? '',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    if (subTopic?.isLearning == 1 ||
+                        subTopic?.isLearnComplete == 1)
+                      Container(
+                        width: double.infinity,
+                        height: 50,
+                        alignment: Alignment.center,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, GameVocabularyScreen.routeName,
+                                arguments: subTopic?.id.toString());
+                          },
+                          child: Row(
+                            children: [
+                              widgetIcon('assets/icons/ic_game.svg'),
+                              Text('Learn ')
+                            ],
+                          ),
+                        ),
+                      ),
                   ],
                 ),
-                if (subTopic?.isLearning == 1 || subTopic?.isLearnComplete == 1)
-                  Positioned(
-                      top: 10,
-                      right: 10,
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, GameVocabularyScreen.routeName,
-                              arguments: subTopic?.id.toString());
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                width: 0.5,
-                                color: maastricht_blue,
-                              )),
-                          alignment: Alignment.center,
-                          child: widgetIcon('assets/icons/ic_game.svg'),
-                        ),
-                      )),
                 if (subTopic?.isLearning == 0 && subTopic?.isLearnComplete == 0)
                   Positioned.fill(
                     child: Container(

@@ -44,10 +44,13 @@ ThemeData themeInfo = ThemeData(
   ),
 );
 
-Widget widgetImage(String? image) {
+Widget widgetImage(String? image, {BoxFit? fit}) {
   return image != null
-      ? Image.file(File(
-          "${getIt<AppMemory>().pathFolderDocument}/CEFR_Wordlist/image/$image"))
+      ? Image.file(
+          File(
+              "${getIt<AppMemory>().pathFolderDocument}/CEFR_Wordlist/image/$image"),
+          fit: fit,
+        )
       : Image.asset('assets/no_image.jpg');
 }
 

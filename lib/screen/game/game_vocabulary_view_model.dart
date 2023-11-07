@@ -4,13 +4,14 @@ import 'dart:math';
 import 'package:english_study/model/game_answer_status.dart';
 import 'package:english_study/model/game_type.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
+import 'package:english_study/reuse/audio_view_model.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:flutter/material.dart';
 
 import '../../model/example.dart';
 
-class GameVocabularyViewModel {
+class GameVocabularyViewModel with AudioViewModel {
   final String? subTopicId;
 
   final ValueNotifier<GameVocabularyModel?> _vocabulary =
@@ -114,7 +115,11 @@ class GameVocabularyViewModel {
   }
 
   void _initQuestionInfo() {
-    _vocabulary.value = _listGameVocabulary?[_index];
+    var question = _listGameVocabulary?[_index];
+    _vocabulary.value = question;
+    if (question?.type == GameType.ChooseAnswerAudioToDefination ||
+        question?.type == GameType.InputAudioToWord)
+      playAudio(question?.main.audios?[0]);
     var answer = _listGameAnswerStatus?.elementAtOrNull(_index);
     if (answer == null) {
       answer = GameAnswerStatus();

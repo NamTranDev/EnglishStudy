@@ -1,4 +1,5 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/screen/flash_card/widget/widget_audio_spelling.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +8,13 @@ class VocabularyComponent extends StatelessWidget {
   final Vocabulary? vocabulary;
   final Function onOpenExample;
   final bool isGame;
+  final Function(Audio?) onPlayAudio;
   const VocabularyComponent(
       {super.key,
       required this.vocabulary,
       required this.onOpenExample,
-      this.isGame = true});
+      this.isGame = true,
+      required this.onPlayAudio});
 
   @override
   Widget build(BuildContext context) {
@@ -68,8 +71,10 @@ class VocabularyComponent extends StatelessWidget {
                   Expanded(
                     flex: 2,
                     child: WidgetAudioSpellig(
-                        audios: vocabulary?.audios,
-                        spellings: vocabulary?.spellings),
+                      audios: vocabulary?.audios,
+                      spellings: vocabulary?.spellings,
+                      onPlayAudio: onPlayAudio,
+                    ),
                   ),
                 Expanded(
                   flex: 2,

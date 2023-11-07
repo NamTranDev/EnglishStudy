@@ -37,7 +37,7 @@ class ChooseAnswerComponent extends StatelessWidget {
                 child: Container(
               padding: EdgeInsets.symmetric(horizontal: 50),
               child: Center(
-                child: questionWidget(context),
+                child: questionWidget(context, viewModel),
               ),
             )),
             answerWidget(value, 0, viewModel),
@@ -75,10 +75,15 @@ class ChooseAnswerComponent extends StatelessWidget {
     );
   }
 
-  Widget questionWidget(BuildContext context) {
+  Widget questionWidget(
+      BuildContext context, GameVocabularyViewModel viewModel) {
     switch (gameType) {
       case GameType.ChooseAnswerAudioToDefination:
-        return widgetIcon('assets/icons/ic_audio.svg', size: 40);
+        return InkWell(
+            onTap: () {
+              viewModel.playAudio(gameVocabularyModel?.main.audios?[0]);
+            },
+            child: widgetIcon('assets/icons/ic_audio.svg', size: 40));
       case GameType.ChooseAnswerSpellingToDefination:
       case GameType.ChooseAnswerSpellingToWord:
         return Text(

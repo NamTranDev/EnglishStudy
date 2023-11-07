@@ -7,9 +7,10 @@ import 'package:flutter_svg/svg.dart';
 class WidgetAudioSpellig extends StatelessWidget {
   final List<Audio>? audios;
   final List<Spelling>? spellings;
+  final Function(Audio?) onPlayAudio;
 
   const WidgetAudioSpellig(
-      {super.key, required this.audios, required this.spellings});
+      {super.key, required this.audios, required this.spellings, required this.onPlayAudio});
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +66,9 @@ class WidgetAudioSpellig extends StatelessWidget {
 
   Widget widgetAudio(Audio? audio) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        onPlayAudio.call(audio);
+      },
       child: widgetIcon('assets/icons/ic_audio.svg'),
     );
   }

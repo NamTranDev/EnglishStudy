@@ -36,7 +36,7 @@ class InputAnswerComponent extends StatelessWidget {
                         horizontal: 20,
                       ),
                       child: Center(
-                        child: questionWidget(context),
+                        child: questionWidget(context, viewModel),
                       ),
                     )),
                 Expanded(
@@ -151,10 +151,15 @@ class InputAnswerComponent extends StatelessWidget {
     );
   }
 
-  Widget questionWidget(BuildContext context) {
+  Widget questionWidget(
+      BuildContext context, GameVocabularyViewModel viewModel) {
     switch (gameType) {
       case GameType.InputAudioToWord:
-        return widgetIcon('assets/icons/ic_audio.svg', size: 40);
+        return InkWell(
+            onTap: () {
+              viewModel.playAudio(gameVocabularyModel?.main.audios?[0]);
+            },
+            child: widgetIcon('assets/icons/ic_audio.svg', size: 40));
       case GameType.InputSpellingToDefination:
       case GameType.InputSpellingToWord:
         return Text((gameVocabularyModel?.main.spellings?[0].text ?? ''),

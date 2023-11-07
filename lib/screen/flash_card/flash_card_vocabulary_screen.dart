@@ -1,11 +1,13 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/screen/flash_card/component/example_component.dart';
+import 'package:english_study/screen/flash_card/flash_card_view_model.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'component/vocabulary_component.dart';
 
@@ -15,33 +17,42 @@ class FlashCardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var db = getIt<DBProvider>();
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: FutureBuilder(
-          future: db.getVocabulary(
-              ModalRoute.of(context)?.settings.arguments as String?),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                    "Something wrong with message: ${snapshot.error.toString()}"),
+    return Provider.value(
+      value: FlashCardViewModel(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Consumer<FlashCardViewModel>(
+            builder: (context, value, child) {
+              return FutureBuilder(
+                future: value.vocabularies(
+                    ModalRoute.of(context)?.settings.arguments as String?),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                          "Something wrong with message: ${snapshot.error.toString()}"),
+                    );
+                  } else if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    return Center(
+                        child: buildCaroselCard(context, snapshot.data));
+                  }
+                },
               );
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              return Center(child: buildCaroselCard(context, snapshot.data));
-            }
-          },
+            },
+          ),
         ),
       ),
     );
   }
 
   Widget buildCaroselCard(BuildContext context, List<Vocabulary>? data) {
+    var viewModel = Provider.of<FlashCardViewModel>(context);
     return CarouselSlider(
         options: CarouselOptions(
           height: MediaQuery.of(context).size.height - 50,
@@ -51,9 +62,8 @@ class FlashCardScreen extends StatelessWidget {
           enlargeStrategy: CenterPageEnlargeStrategy.zoom,
           // enlargeFactor: 0.5,
           onPageChanged: (index, reason) {
-            var db = getIt<DBProvider>();
-            data?[index].isLearn = 1;
-            db.updateVocabulary(data?[index]);
+            viewModel.playAudio(data?[index].audios?[0]);
+            viewModel.updateVocabulary(data?[index]);
           },
         ),
         items: data?.map((item) {
@@ -69,6 +79,9 @@ class FlashCardScreen extends StatelessWidget {
                 _controller.toggleCard();
               },
               isGame: false,
+              onPlayAudio: (audio) {
+                viewModel.playAudio(audio);
+              },
             ),
             back: ExampleComponent(
                 vocabulary: item,

@@ -58,7 +58,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                   ),
                   Positioned(
                       top: 10,
-                      left: 15,
+                      left: 10,
                       child: InkWell(
                         onTap: () {
                           Navigator.pop(context);
@@ -79,89 +79,93 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
   }
 
   Widget widgetSubTopicItem(SubTopic? subTopic) {
-    return Stack(
-      children: [
-        Card(
-          elevation: 3,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-          child: InkWell(
-            onTap: () async {
-              if (subTopic?.isLearnComplete == 0 && subTopic?.isLearning == 0) {
-                return;
-              }
-
-              var subTopicId = subTopic?.id.toString();
-
-              await Navigator.pushNamed(context, FlashCardScreen.routeName,
-                  arguments: subTopicId);
-
-              if (subTopic?.isLearnComplete == 1) {
-                return;
-              }
-              if (await _viewModel?.syncSubTopic(subTopicId) == true) {
-                _viewModel?.initData(widget.topicId);
-              }
-            },
-            child: Stack(
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: Stack(
+        children: [
+          Container(
+            width: double.infinity,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      subTopic?.name ?? '',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      subTopic?.number_word ?? '',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    if (subTopic?.isLearning == 1 ||
-                        subTopic?.isLearnComplete == 1)
-                      Container(
-                        width: double.infinity,
-                        height: 50,
-                        alignment: Alignment.center,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, GameVocabularyScreen.routeName,
-                                arguments: subTopic?.id.toString());
-                          },
-                          child: Row(
-                            children: [
-                              widgetIcon('assets/icons/ic_game.svg'),
-                              Text('Learn ')
-                            ],
-                          ),
-                        ),
-                      ),
-                  ],
+                if (subTopic?.image != null) widgetImage(subTopic?.image),
+                Text(
+                  subTopic?.name ?? '',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
                 ),
-                if (subTopic?.isLearning == 0 && subTopic?.isLearnComplete == 0)
-                  Positioned.fill(
+                SizedBox(
+                  height: 5,
+                ),
+                Text(
+                  subTopic?.number_word ?? '',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                if (subTopic?.isLearning == 1 || subTopic?.isLearnComplete == 1)
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context, GameVocabularyScreen.routeName,
+                          arguments: subTopic?.id.toString());
+                    },
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Center(
-                        child: widgetIcon('assets/icons/ic_lock.svg',
-                            size: 60, color: Colors.white),
+                      width: double.infinity,
+                      height: 50,
+                      alignment: Alignment.center,
+                      child: Row(
+                        children: [
+                          widgetIcon('assets/icons/ic_game.svg'),
+                          Text('Learn ')
+                        ],
                       ),
                     ),
-                  )
+                  ),
               ],
             ),
           ),
-        ),
-      ],
+          if (subTopic?.isLearning == 0 && subTopic?.isLearnComplete == 0)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Center(
+                  child: widgetIcon('assets/icons/ic_lock.svg',
+                      size: 60, color: Colors.white),
+                ),
+              ),
+            ),
+          Positioned.fill(
+              child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () async {
+                if (subTopic?.isLearnComplete == 0 &&
+                    subTopic?.isLearning == 0) {
+                  return;
+                }
+
+                var subTopicId = subTopic?.id.toString();
+
+                await Navigator.pushNamed(context, FlashCardScreen.routeName,
+                    arguments: subTopicId);
+
+                if (subTopic?.isLearnComplete == 1) {
+                  return;
+                }
+                if (await _viewModel?.syncSubTopic(subTopicId) == true) {
+                  _viewModel?.initData(widget.topicId);
+                }
+              },
+            ),
+          ))
+        ],
+      ),
     );
   }
 }

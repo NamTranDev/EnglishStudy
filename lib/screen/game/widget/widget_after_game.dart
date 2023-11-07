@@ -1,11 +1,14 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/screen/flash_card/component/example_component.dart';
 import 'package:english_study/screen/flash_card/component/vocabulary_component.dart';
+import 'package:english_study/screen/game/game_vocabulary_view_model.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 class WidgetAfterGame extends StatelessWidget {
   final Vocabulary? vocabulary;
@@ -16,6 +19,7 @@ class WidgetAfterGame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var viewModel = Provider.of<GameVocabularyViewModel>(context);
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.end,
@@ -36,10 +40,14 @@ class WidgetAfterGame extends StatelessWidget {
                         side: CardSide.FRONT,
                         flipOnTouch: false,
                         front: VocabularyComponent(
-                            vocabulary: vocabulary,
-                            onOpenExample: () {
-                              _controller.toggleCard();
-                            }),
+                          vocabulary: vocabulary,
+                          onOpenExample: () {
+                            _controller.toggleCard();
+                          },
+                          onPlayAudio: (audio) {
+                            viewModel.playAudio(audio);
+                          },
+                        ),
                         back: ExampleComponent(
                             vocabulary: vocabulary,
                             onOpenVocabulary: () {

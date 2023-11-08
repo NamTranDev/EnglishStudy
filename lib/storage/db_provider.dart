@@ -99,8 +99,7 @@ class DBProvider {
     final db = await _db;
     var res = await db
         .query(_SUB_TOPIC_TABLE, where: 'topic_id = ?', whereArgs: [topicId]);
-    List<SubTopic> list =
-        res.isNotEmpty ? res.map((c) => SubTopic.fromMap(c)).toList() : [];
+    List<SubTopic> list = await mapperSubTopic(db, res);
 
     bool hasLearning = list.any(
         (element) => element.isLearnComplete == 0 && element.isLearning == 1);
@@ -146,6 +145,20 @@ class DBProvider {
     return result;
   }
 
+  Future<List<SubTopic>> mapperSubTopic(
+      Database db, List<Map<String, Object?>> values) async {
+    Iterable<Future<SubTopic>> mappedList = values.isNotEmpty
+        ? values.map((c) async {
+            SubTopic subtopic = SubTopic.fromMap(c);
+            final numberLearn = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $_VOCABULARY_TABLE WHERE sub_topic_id = ${subtopic.id} AND isLearn = 1')) ?? 0;
+            final total = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $_VOCABULARY_TABLE WHERE sub_topic_id = ${subtopic.id}')) ?? 1;
+            subtopic.processLearn = numberLearn / total;
+            return subtopic;
+          }).toList()
+        : [];
+    return Future.wait(mappedList);
+  }
+
   Future<List<Vocabulary>> mapperVocabulary(
       Database db, List<Map<String, Object?>> values) async {
     Iterable<Future<Vocabulary>> mappedList = values.isNotEmpty
@@ -162,8 +175,9 @@ class DBProvider {
                 spellings.map((e) => Spelling.fromMap(e)).toList();
             vocabulary.examples = examples.map((e) {
               Example example = Example.fromMap(e);
-              example.sentence =
-                  example.sentence?.replaceAll('"', '').replaceAll(RegExp(r'^\d+\.\s'), "");
+              example.sentence = example.sentence
+                  ?.replaceAll('"', '')
+                  .replaceAll(RegExp(r'^\d+\.\s'), "");
               return example;
             }).toList();
             return vocabulary;

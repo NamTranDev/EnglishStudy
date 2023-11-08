@@ -8,6 +8,9 @@ class SubTopic {
   String? number_word;
   int? isLearnComplete;
   int? isLearning;
+
+  double? processLearn = 0;
+
   SubTopic({
     this.id,
     this.name,

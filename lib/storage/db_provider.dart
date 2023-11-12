@@ -45,6 +45,8 @@ class DBProvider {
     var databasesPath = await getDatabasesPath();
     var path = join(databasesPath, "CEFR_Wordlist.db");
 
+    // deleteDatabase(path);
+
     var exists = await databaseExists(path);
     if (!exists) {
       try {
@@ -99,7 +101,7 @@ class DBProvider {
     final db = await _db;
     var res = await db
         .query(_SUB_TOPIC_TABLE, where: 'topic_id = ?', whereArgs: [topicId]);
-    List<SubTopic> list = await mapperSubTopic(db, res);
+    List<SubTopic> list = await mapperSubTopic(res);
 
     bool hasLearning = list.any(
         (element) => element.isLearnComplete == 0 && element.isLearning == 1);
@@ -146,17 +148,27 @@ class DBProvider {
   }
 
   Future<List<SubTopic>> mapperSubTopic(
-      Database db, List<Map<String, Object?>> values) async {
+      List<Map<String, Object?>> values) async {
     Iterable<Future<SubTopic>> mappedList = values.isNotEmpty
         ? values.map((c) async {
             SubTopic subtopic = SubTopic.fromMap(c);
-            final numberLearn = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $_VOCABULARY_TABLE WHERE sub_topic_id = ${subtopic.id} AND isLearn = 1')) ?? 0;
-            final total = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $_VOCABULARY_TABLE WHERE sub_topic_id = ${subtopic.id}')) ?? 1;
-            subtopic.processLearn = numberLearn / total;
+
+            subtopic.processLearn = await progressSubTopic(subtopic);
             return subtopic;
           }).toList()
         : [];
     return Future.wait(mappedList);
+  }
+
+  Future<double> progressSubTopic(SubTopic subtopic) async {
+    final db = await _db;
+    final numberLearn = Sqflite.firstIntValue(await db.rawQuery(
+            'SELECT COUNT(*) FROM $_VOCABULARY_TABLE WHERE sub_topic_id = ${subtopic.id} AND isLearn = 1')) ??
+        0;
+    final total = Sqflite.firstIntValue(await db.rawQuery(
+            'SELECT COUNT(*) FROM $_VOCABULARY_TABLE WHERE sub_topic_id = ${subtopic.id}')) ??
+        1;
+    return numberLearn / total;
   }
 
   Future<List<Vocabulary>> mapperVocabulary(

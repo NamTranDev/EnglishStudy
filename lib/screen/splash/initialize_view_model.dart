@@ -13,56 +13,58 @@ class InitializeViewModel {
   ValueNotifier<String> get processText => _processText;
 
   Future initialize() async {
-    String fileName = 'CEFR_Wordlist.zip';
-    String folderName = 'CEFR_Wordlist';
+    // String fileName = 'CEFR_Wordlist.zip';
+    // String folderName = 'CEFR_Wordlist';
 
-    String folderPath = getIt<AppMemory>().pathFolderDocument;
+    // String folderPath = getIt<AppMemory>().pathFolderDocument;
 
-    final path = (await getTemporaryDirectory()).path;
+    // final path = (await getTemporaryDirectory()).path;
 
-    bool folderExists = await doesFolderExist("$folderPath/$folderName");
-    if (!folderExists) {
-      _processText.value = "Sync Data";
-      final file = File('$path/$fileName');
-      if (doesFileExist(file.path) == true) {
-        file.delete();
-      }
+    // bool folderExists = await doesFolderExist("$folderPath/$folderName");
+    // if (!folderExists) {
+    //   _processText.value = "Sync Data";
+    //   final file = File('$path/$fileName');
+    //   if (doesFileExist(file.path) == true) {
+    //     file.delete();
+    //   }
 
-      Dio dio = Dio();
-      await dio.download(
-        "https://dl.dropboxusercontent.com/scl/fi/vevyxj1iv56p3agg6gar0/CEFR_Wordlist.zip?rlkey=kmgtwbn21khwbftwkfpr3xlcm&dl=0",
-        file.path,
-        onReceiveProgress: (count, total) {
-          _processText.value =
-              'Downloading: ${((count / total) * 100).toStringAsFixed(0)}%';
+    //   Dio dio = Dio();
+    //   await dio.download(
+    //     "https://dl.dropboxusercontent.com/scl/fi/vevyxj1iv56p3agg6gar0/CEFR_Wordlist.zip?rlkey=kmgtwbn21khwbftwkfpr3xlcm&dl=0",
+    //     file.path,
+    //     onReceiveProgress: (count, total) {
+    //       _processText.value =
+    //           'Downloading: ${((count / total) * 100).toStringAsFixed(0)}%';
 
-          if (count == total) {
-            _processText.value = 'Downloading Completed';
-          }
-        },
-      );
+    //       if (count == total) {
+    //         _processText.value = 'Downloading Completed';
+    //       }
+    //     },
+    //   );
 
-      print('Download success');
-      var length = await file.length();
-      print('file.length : ' + length.toString());
+    //   print('Download success');
+    //   var length = await file.length();
+    //   print('file.length : ' + length.toString());
 
-      final destinationDir = Directory(folderPath);
-      try {
-        _processText.value = 'Extract File Zip';
-        await ZipFile.extractToDirectory(
-            zipFile: file,
-            destinationDir: destinationDir,
-            onExtracting: (zipEntry, progress) {
-              _processText.value =
-                  'Extracting : ${progress.toStringAsFixed(1)}%';
-              return ZipFileOperation.includeItem;
-            });
-      } catch (e) {
-        print(e);
-      }
-    } else {
-      Future.delayed(Duration(seconds: 2));
-    }
+    //   final destinationDir = Directory(folderPath);
+    //   try {
+    //     _processText.value = 'Extract File Zip';
+    //     await ZipFile.extractToDirectory(
+    //         zipFile: file,
+    //         destinationDir: destinationDir,
+    //         onExtracting: (zipEntry, progress) {
+    //           _processText.value =
+    //               'Extracting : ${progress.toStringAsFixed(1)}%';
+    //           return ZipFileOperation.includeItem;
+    //         });
+    //   } catch (e) {
+    //     print(e);
+    //   }
+    // } else {
+    //   Future.delayed(Duration(seconds: 2));
+    // }
+
+    Future.delayed(Duration(seconds: 2));
   }
 
   Future<bool> doesFileExist(String filePath) async {

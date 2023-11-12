@@ -1,6 +1,7 @@
 import 'package:english_study/constants.dart';
 import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/topic.dart';
+import 'package:english_study/reuse/component/back_screen_component.dart';
 import 'package:english_study/screen/sub_topic/sub_topic_screen.dart';
 import 'package:english_study/screen/topic/topic_view_model.dart';
 import 'package:flutter/material.dart';
@@ -58,31 +59,18 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
   }
 
   Widget buildListTopic(BuildContext context, List<Topic>? topics) {
-    return Stack(
-      children: [
-        GridView.builder(
-          padding: EdgeInsets.only(top: 50, left: 4, right: 4),
-          physics: BouncingScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              mainAxisSpacing: 2,
-              crossAxisSpacing: 2,
-              crossAxisCount: 2,
-              childAspectRatio: .8),
-          itemBuilder: (context, index) {
-            return widgetItemTopic(topics?[index]);
-          },
-          itemCount: topics?.length ?? 0,
-        ),
-        Positioned(
-            top: 10,
-            left: 10,
-            child: InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: widgetIcon('assets/icons/ic_arrow_prev.svg'),
-            ))
-      ],
+    return GridView.builder(
+      padding: EdgeInsets.only(top: 50, left: 4, right: 4),
+      physics: BouncingScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          mainAxisSpacing: 2,
+          crossAxisSpacing: 2,
+          crossAxisCount: 2,
+          childAspectRatio: .8),
+      itemBuilder: (context, index) {
+        return widgetItemTopic(topics?[index]);
+      },
+      itemCount: topics?.length ?? 0,
     );
   }
 

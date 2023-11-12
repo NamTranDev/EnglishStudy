@@ -16,6 +16,7 @@ const Color red_violet = Color(0xFFB91372);
 
 const Color disable = Color.fromARGB(255, 215, 215, 198);
 
+const int duration_animation_screen = 300;
 const int duration_animation_right_wrong = 200;
 const int duration_animation_next = 300;
 const double size_icon = 30;

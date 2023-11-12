@@ -11,6 +11,6 @@ enum GameType {
   ChooseAnswerDefinationToWord,
   InputDefinationToWord,
   
-  ChooseAnswerExampleToWord,
-  InputExampleToWord,
+  // ChooseAnswerExampleToWord,
+  // InputExampleToWord,
 }

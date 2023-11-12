@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:english_study/screen/category/category_screen.dart';
 import 'package:english_study/screen/flash_card/flash_card_vocabulary_screen.dart';
+import 'package:english_study/screen/main/main_screen.dart';
 import 'package:english_study/screen/splash/initialize_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -33,7 +34,7 @@ class SplashScreen extends StatelessWidget {
                   } else if (snapshot.connectionState == ConnectionState.done) {
                     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
                       Navigator.pushNamedAndRemoveUntil(
-                          context, CategoryScreen.routeName, (route) => false);
+                          context, MainScreen.routeName, (route) => false);
                     });
                   }
                   return ValueListenableBuilder(

@@ -140,8 +140,8 @@ class ChooseAnswerComponent extends StatelessWidget {
         return vocabulary?.description ?? '';
       case GameType.ChooseAnswerDefinationToWord:
         return vocabulary?.word ?? '';
-      case GameType.ChooseAnswerExampleToWord:
-        return vocabulary?.word ?? '';
+      // case GameType.ChooseAnswerExampleToWord:
+      //   return vocabulary?.word ?? '';
       case GameType.ChooseAnswerSpellingToWord:
         return vocabulary?.word ?? '';
       case GameType.ChooseAnswerSpellingToDefination:
@@ -155,15 +155,15 @@ class ChooseAnswerComponent extends StatelessWidget {
     switch (gameType) {
       case GameType.ChooseAnswerDefinationToWord:
         return gameVocabularyModel?.main.description ?? '';
-      case GameType.ChooseAnswerExampleToWord:
-        return gameVocabularyModel?.main.examples?.first.sentence
-                ?.replaceAllMapped(
-                    RegExp(
-                        r'\b' + (gameVocabularyModel?.main.word ?? '') + '\w*'),
-                    (match) {
-              return '_____';
-            }) ??
-            '';
+      // case GameType.ChooseAnswerExampleToWord:
+      //   return gameVocabularyModel?.main.examples?.first.sentence
+      //           ?.replaceAllMapped(
+      //               RegExp(
+      //                   r'\b' + (gameVocabularyModel?.main.word ?? '') + '\w*'),
+      //               (match) {
+      //         return '_____';
+      //       }) ??
+      //       '';
       default:
         return '';
     }

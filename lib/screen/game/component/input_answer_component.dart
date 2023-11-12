@@ -57,8 +57,9 @@ class InputAnswerComponent extends StatelessWidget {
                           decoration: InputDecoration(
                             disabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                    color: inputController.text ==
-                                            gameVocabularyModel?.main.word
+                                    color: viewModel.isAnswerRight(
+                                            gameVocabularyModel,
+                                            inputController.text)
                                         ? Colors.green
                                         : Colors.red)),
                             border: const OutlineInputBorder(
@@ -192,15 +193,15 @@ class InputAnswerComponent extends StatelessWidget {
     switch (gameType) {
       case GameType.InputDefinationToWord:
         return gameVocabularyModel?.main.description ?? '';
-      case GameType.InputExampleToWord:
-        return gameVocabularyModel?.main.examples?.first.sentence
-                ?.replaceAllMapped(
-                    RegExp(
-                        r'\b' + (gameVocabularyModel?.main.word ?? '') + '\w*'),
-                    (match) {
-              return '_____';
-            }) ??
-            '';
+      // case GameType.InputExampleToWord:
+      //   return gameVocabularyModel?.main.examples?.first.sentence
+      //           ?.replaceAllMapped(
+      //               RegExp(
+      //                   r'\b' + (gameVocabularyModel?.main.word ?? '') + '\w*'),
+      //               (match) {
+      //         return '_____';
+      //       }) ??
+      //       '';
       default:
         return '';
     }

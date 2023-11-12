@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:english_study/constants.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
@@ -9,6 +10,7 @@ class TopicViewModel {
   Stream<List<Topic>> get topicsList => _topicListController.stream;
 
   Future<void> initData(String? category) async {
+    await Future.delayed(Duration(milliseconds: 2 * duration_animation_screen));
     var db = getIt<DBProvider>();
     List<Topic> topics = await db.getTopics(category);
     _topicListController.sink.add(topics);

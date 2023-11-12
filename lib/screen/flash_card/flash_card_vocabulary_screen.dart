@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:english_study/model/vocabulary.dart';
+import 'package:english_study/reuse/component/back_screen_component.dart';
 import 'package:english_study/screen/flash_card/component/example_component.dart';
 import 'package:english_study/screen/flash_card/flash_card_view_model.dart';
 import 'package:english_study/services/service_locator.dart';
@@ -22,29 +23,30 @@ class FlashCardScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
-          child: Consumer<FlashCardViewModel>(
-            builder: (context, value, child) {
-              return FutureBuilder(
-                future: value.vocabularies(
-                    ModalRoute.of(context)?.settings.arguments as String?),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                          "Something wrong with message: ${snapshot.error.toString()}"),
-                    );
-                  } else if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else {
-                    return Center(
-                        child: buildCaroselCard(context, snapshot.data));
-                  }
-                },
-              );
-            },
+          child: BackScreenComponent(
+            child: Consumer<FlashCardViewModel>(
+              builder: (context, value, child) {
+                return FutureBuilder(
+                  future: value.vocabularies(
+                      ModalRoute.of(context)?.settings.arguments as String?),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                            "Something wrong with message: ${snapshot.error.toString()}"),
+                      );
+                    } else if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else {
+                      return buildCaroselCard(context, snapshot.data);
+                    }
+                  },
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -55,7 +57,6 @@ class FlashCardScreen extends StatelessWidget {
     var viewModel = Provider.of<FlashCardViewModel>(context);
     return CarouselSlider(
         options: CarouselOptions(
-          height: MediaQuery.of(context).size.height - 50,
           viewportFraction: 0.925,
           enlargeFactor: 0.2,
           enlargeCenterPage: true,

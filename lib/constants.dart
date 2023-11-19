@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:english_study/model/memory.dart';
 import 'package:english_study/services/service_locator.dart';
+import 'package:english_study/utils/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:path_provider/path_provider.dart';
@@ -49,12 +51,26 @@ ThemeData themeInfo = ThemeData(
 
 Widget widgetImage(String? image, {BoxFit? fit}) {
   return image != null
-      ? Image.file(
-          File(
-              "${getIt<AppMemory>().pathFolderDocument}/CEFR_Wordlist/image/$image"),
-          fit: fit,
-        )
+      ? loadImage(image, fit: fit)
       : Image.asset('assets/no_image.jpg');
+}
+
+Widget loadImage(String image, {BoxFit? fit}) {
+  var path =
+      "${getIt<AppMemory>().pathFolderDocument}/CEFR_Wordlist/image/$image";
+  var file = File(path);
+  var fileExist = file.existsSync();
+
+  if (fileExist) {
+    return Image.file(
+      file,
+      fit: fit,
+    );
+  }
+  return Image.asset(
+    'assets/image/$image',
+    fit: fit,
+  );
 }
 
 Widget widgetIcon(String path, {double? size, Color? color}) {

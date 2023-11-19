@@ -7,10 +7,13 @@ import 'dart:math';
 import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
+import 'package:english_study/model/memory.dart';
 import 'package:english_study/model/spelling.dart';
 import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/model/vocabulary.dart';
+import 'package:english_study/services/service_locator.dart';
+import 'package:english_study/utils/file_util.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
@@ -74,8 +77,15 @@ class DBProvider {
     final db = await _db;
     var res = await db
         .query(_TOPIC_TABLE, where: 'category = ?', whereArgs: [category]);
-    List<Topic> list =
-        res.isNotEmpty ? res.map((c) => Topic.fromMap(c)).toList() : [];
+    List<Topic> list = res.isNotEmpty
+        ? res.map((c) {
+            Topic topic = Topic.fromMap(c);
+            var path =
+                "${getIt<AppMemory>().pathFolderDocument}/CEFR_Wordlist/${topic.name}";
+            topic.isDownload = Directory(path).existsSync();
+            return topic;
+          }).toList()
+        : [];
     bool hasLearning = list.any(
         (element) => element.isLearnComplete == 0 && element.isLearning == 1);
     if (!hasLearning) {

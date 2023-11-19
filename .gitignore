@@ -26,10 +26,6 @@ doc/api/
 .flutter-plugins
 .flutter-plugins-dependencies
 
-/assets/audio
-/assets/image
-
-/crawled/langeek_co/CEFR_Wordlist/audio 
-/crawled/langeek_co/CEFR_Wordlist/image
+/crawled/langeek_co/CEFR_Wordlist
 /.vscode/launch.json
 /.vscode/settings.json

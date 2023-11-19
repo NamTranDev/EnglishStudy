@@ -1,3 +1,4 @@
+import 'package:english_study/download/download_manager.dart';
 import 'package:english_study/model/memory.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:english_study/storage/preference.dart';
@@ -9,6 +10,5 @@ Future<void> setupServiceLocator() async {
   getIt.registerSingleton<DBProvider>(await initDBProvider());
   getIt.registerSingleton<Preference>(await initPreference());
   getIt.registerSingleton<AppMemory>(await initMemory());
+  getIt.registerLazySingleton<DownloadManager>(() => DownloadManager());
 }
-
-

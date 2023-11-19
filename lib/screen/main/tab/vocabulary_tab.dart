@@ -1,3 +1,4 @@
+import 'package:english_study/screen/category/category_screen.dart';
 import 'package:flutter/cupertino.dart';
 
 class VocabularyTab extends StatelessWidget {
@@ -5,10 +6,6 @@ class VocabularyTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Text('Vocabulary Tab'),
-      ),
-    );
+    return CategoryScreen();
   }
 }

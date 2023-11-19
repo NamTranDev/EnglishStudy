@@ -24,7 +24,7 @@ class SplashScreen extends StatelessWidget {
           body: SafeArea(child: Consumer<InitializeViewModel>(
             builder: (context, value, child) {
               return FutureBuilder(
-                future: value.initialize(),
+                future: Future.delayed(Duration(seconds: 2)),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return Center(

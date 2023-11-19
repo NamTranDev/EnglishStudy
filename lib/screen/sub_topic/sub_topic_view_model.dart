@@ -7,20 +7,18 @@ import 'package:english_study/storage/db_provider.dart';
 import 'package:flutter/material.dart';
 
 class SubTopicViewModel {
-  StreamController<List<SubTopic>> _subTopicListController = StreamController();
-  Stream<List<SubTopic>> get subTopicsList => _subTopicListController.stream;
+  final ValueNotifier<int> _updateLessionStatus = ValueNotifier<int>(0);
+  ValueNotifier<int> get updateLessionStatus => _updateLessionStatus;
 
-  final ValueNotifier<int> _progressStatus = ValueNotifier<int>(0);
-  ValueNotifier<int> get progressStatus => _progressStatus;
+  final ValueNotifier<bool> _isDownloaded = ValueNotifier<bool>(false);
+  ValueNotifier<bool> get isDownloaded => _isDownloaded;
 
-  Future<void> initData(String? topicId) async {
+  Future<List<SubTopic>> initData(String? topicId) async {
     await Future.delayed(Duration(milliseconds: duration_animation_screen));
     var db = getIt<DBProvider>();
     List<SubTopic> topics = await db.getSubTopics(topicId);
-    _subTopicListController.sink.add(topics);
+    return topics;
   }
-
-  Future<void> dispose() => _subTopicListController.close();
 
   Future<bool> syncSubTopic(String? subTopicId) async {
     var db = getIt<DBProvider>();
@@ -30,6 +28,19 @@ class SubTopicViewModel {
   Future<void> syncProgress(SubTopic? subTopic) async {
     var db = getIt<DBProvider>();
     subTopic?.processLearn = await db.progressSubTopic(subTopic);
-    _progressStatus.value = _progressStatus.value++;
+    _updateLessionStatus.value = _updateLessionStatus.value++;
+  }
+
+  Future<void> updateSubTopicComplete(
+      List<SubTopic>? subTopics, int index) async {
+    SubTopic? subTopic = subTopics?[index];
+    subTopic?.isLearnComplete = 1;
+    subTopic?.processLearn = 100;
+
+    if ((index + 1) < (subTopics?.length ?? 0)) {
+      SubTopic? nextSubTopic = subTopics?[index + 1];
+      nextSubTopic?.isLearning = 1;
+    }
+    _updateLessionStatus.value = _updateLessionStatus.value++;
   }
 }

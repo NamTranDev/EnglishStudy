@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:english_study/constants.dart';
 import 'package:english_study/download/download_manager.dart';
+import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/memory.dart';
 import 'package:english_study/model/topic.dart';
@@ -18,46 +20,53 @@ class TopicViewModel {
   final ValueNotifier<bool> _needDownload = ValueNotifier<bool>(false);
   ValueNotifier<bool> get needDownload => _needDownload;
 
-  late final DownloadManager _downloadManager;
+  final DownloadManager _downloadManager = getIt<DownloadManager>();
   DownloadManager get downloadManager => _downloadManager;
 
   Future<List<Topic>> initData(String? category) async {
     await Future.delayed(Duration(milliseconds: 2 * duration_animation_screen));
     var db = getIt<DBProvider>();
     List<Topic> topics = await db.getTopics(category);
-    var isNeedDownload = topics.firstWhere(
-            (element) => element.isDownload == false,
-            orElse: null) !=
-        null;
+
+    var isNeedDownload = topics.where((element) => element.isDownload == false).firstOrNull != null;
     _needDownload.value = isNeedDownload;
     if (isNeedDownload) {
-      _downloadManager = getIt<DownloadManager>();
       String category = getIt<Preference>().catabularyVocabularyCurrent();
       final path = (await getTemporaryDirectory()).path;
+      var directory =
+          Directory("${getIt<AppMemory>().pathFolderDocument}/${category}");
+      if (await directory.exists() == false) {
+        await directory.create();
+      }
       getIt<DownloadManager>().initFileInfos(
           category,
           topics
-              .map((e) => FileInfo(e.link_resource, "${path}/${e.name}.zip",
-                  "${getIt<AppMemory>().pathFolderDocument}/${category}/${e.name}"))
+              .map(
+                (e) => FileInfo(
+                    e.link_resource, "${path}/${e.name}.zip", directory.path,
+                    status: e.isDownload
+                        ? DownloadStatus.COMPLETE
+                        : DownloadStatus.NONE),
+              )
               .toList());
     }
     return topics;
   }
 
-  Future<void> syncTopic(String? topicId) async {
+  Future<void> syncTopic(Topic? topic) async {
     var db = getIt<DBProvider>();
-    if (await db.syncTopic(topicId)) {
+    if (await db.syncTopic(topic?.id?.toString())) {
       _updateLessionStatus.value = _updateLessionStatus.value++;
     }
   }
 
   void downloadAll() async {
     await _downloadManager.downloadAll();
-    _needDownload.value = false;
+    // _needDownload.value = false;
   }
 
   void downloadTopic(FileInfo fileInfo) async {
     await _downloadManager.download(fileInfo.link);
-    _needDownload.value = _downloadManager.checkAllDownload();
+    _needDownload.value = _downloadManager.checkNeedDownload();
   }
 }

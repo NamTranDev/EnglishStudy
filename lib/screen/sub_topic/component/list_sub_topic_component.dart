@@ -1,5 +1,8 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/download/download_status.dart';
+import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/sub_topic.dart';
+import 'package:english_study/model/topic.dart';
 import 'package:english_study/screen/flash_card/flash_card_vocabulary_screen.dart';
 import 'package:english_study/screen/game/game_vocabulary_screen.dart';
 import 'package:english_study/screen/sub_topic/sub_topic_view_model.dart';
@@ -7,8 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ListSubTopicComponent extends StatelessWidget {
-  final String? topicId;
-  ListSubTopicComponent({super.key, this.topicId});
+  final Topic? topic;
+  ListSubTopicComponent({super.key, this.topic});
 
   late SubTopicViewModel _viewModel;
 
@@ -24,7 +27,7 @@ class ListSubTopicComponent extends StatelessWidget {
       builder: (context, viewmodel, child) {
         _viewModel = viewmodel;
         return FutureBuilder(
-          future: viewmodel.initData(topicId),
+          future: viewmodel.initData(topic?.id?.toString()),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -32,15 +35,62 @@ class ListSubTopicComponent extends StatelessWidget {
                     "Something wrong with message: ${snapshot.error.toString()}"),
               );
             } else if (snapshot.hasData) {
-              return ListView.builder(
-                padding: EdgeInsets.only(top: 50),
-                itemBuilder: (context, index) {
-                  // print(snapshot.data?.length);
-                  // print(index);
-                  // print(isLast);
-                  return widgetSubTopicItem(snapshot.data, index);
-                },
-                itemCount: snapshot.data?.length ?? 0,
+              return Column(
+                children: [
+                  SizedBox(
+                    height: 50,
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: _viewModel.downloadManager.processItems,
+                    builder: (context, value, child) {
+                      FileInfo? fileInfo = value?[topic?.link_resource];
+                      return fileInfo != null &&
+                              fileInfo.status != DownloadStatus.COMPLETE
+                          ? Card(
+                              margin: EdgeInsets.only(left: 8, right: 8),
+                              elevation: 5,
+                              child: Container(
+                                  padding: EdgeInsets.all(5),
+                                  child: fileInfo.status == DownloadStatus.NONE
+                                      ? Row(
+                                          children: [
+                                            Expanded(
+                                              child: Container(
+                                                child: Text(
+                                                    'Download all lession of category'),
+                                              ),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                _viewModel.downloadManager
+                                                    .download(
+                                                        topic?.link_resource);
+                                              },
+                                              child: Text('Download'),
+                                            )
+                                          ],
+                                        )
+                                      : fileInfo.progress == 100
+                                          ? SizedBox()
+                                          : Text(fileInfo.progress
+                                                  ?.toStringAsFixed(2) ??
+                                              '')),
+                            )
+                          : SizedBox();
+                    },
+                  ),
+                  Expanded(
+                      child: ListView.builder(
+                    padding: EdgeInsets.only(top: 20),
+                    itemBuilder: (context, index) {
+                      // print(snapshot.data?.length);
+                      // print(index);
+                      // print(isLast);
+                      return widgetSubTopicItem(snapshot.data, index);
+                    },
+                    itemCount: snapshot.data?.length ?? 0,
+                  )),
+                ],
               );
             } else {
               return const Center(

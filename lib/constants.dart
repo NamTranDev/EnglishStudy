@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:english_study/model/memory.dart';
 import 'package:english_study/services/service_locator.dart';
+import 'package:english_study/storage/preference.dart';
 import 'package:english_study/utils/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -57,7 +58,7 @@ Widget widgetImage(String? image, {BoxFit? fit}) {
 
 Widget loadImage(String image, {BoxFit? fit}) {
   var path =
-      "${getIt<AppMemory>().pathFolderDocument}/CEFR_Wordlist/image/$image";
+      "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/image/$image";
   var file = File(path);
   var fileExist = file.existsSync();
 

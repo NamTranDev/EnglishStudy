@@ -10,5 +10,5 @@ Future<void> setupServiceLocator() async {
   getIt.registerSingleton<DBProvider>(await initDBProvider());
   getIt.registerSingleton<Preference>(await initPreference());
   getIt.registerSingleton<AppMemory>(await initMemory());
-  getIt.registerLazySingleton<DownloadManager>(() => DownloadManager());
+  getIt.registerSingleton<DownloadManager>(DownloadManager());
 }

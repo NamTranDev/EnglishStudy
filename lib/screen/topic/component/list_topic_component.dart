@@ -58,7 +58,6 @@ class ListTopicComponent extends StatelessWidget {
                           valueListenable:
                               _viewModel.downloadManager.processAll,
                           builder: (context, value, child) {
-                            print(value);
                             return value == null
                                 ? Row(
                                     children: [
@@ -76,7 +75,11 @@ class ListTopicComponent extends StatelessWidget {
                                       )
                                     ],
                                   )
-                                : Text(value.toString());
+                                : value == 100
+                                    ? SizedBox(
+                                        height: 0,
+                                      )
+                                    : Text(value.toStringAsFixed(2));
                           },
                         )),
                   )
@@ -158,14 +161,13 @@ class ListTopicComponent extends StatelessWidget {
                           topic?.isLearning == 0) {
                         return;
                       }
-                      var topicId = topic?.id.toString();
                       await Navigator.pushNamed(
                           context, SubTopicScreen.routeName,
-                          arguments: topicId);
+                          arguments: topic);
                       if (topic?.isLearnComplete == 1) {
                         return;
                       }
-                      await _viewModel.syncTopic(topicId);
+                      await _viewModel.syncTopic(topic);
                     },
                   ),
                 ),
@@ -209,13 +211,16 @@ class ListTopicComponent extends StatelessWidget {
         return Row(
           children: [
             Text(
-              fileInfo.progress.toString(),
+              fileInfo.progress?.toInt().toString() ?? '',
               style: TextStyle(color: isLock ? Colors.white : Colors.black),
+            ),
+            SizedBox(
+              width: 5,
             ),
             CircularProgressIndicator(
               color: turquoise,
               backgroundColor: isLock ? Colors.white : Colors.black,
-              value: fileInfo.progress,
+              value: (fileInfo.progress ?? 0) / 100,
             )
           ],
         );

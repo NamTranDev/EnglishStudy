@@ -13,6 +13,7 @@ import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/services/service_locator.dart';
+import 'package:english_study/storage/preference.dart';
 import 'package:english_study/utils/file_util.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
@@ -73,6 +74,20 @@ class DBProvider {
     return list;
   }
 
+  Future<Topic?> getTopicFromId(String topicId) async {
+    final db = await _db;
+    var res =
+        await db.query(_TOPIC_TABLE, where: 'id = ?', whereArgs: [topicId]);
+    return res.map((c) {
+      Topic topic = Topic.fromMap(c);
+      var path =
+          "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/${topic.name}";
+      print(path);
+      topic.isDownload = Directory(path).existsSync();
+      return topic;
+    }).firstOrNull;
+  }
+
   Future<List<Topic>> getTopics(String? category) async {
     final db = await _db;
     var res = await db
@@ -81,7 +96,8 @@ class DBProvider {
         ? res.map((c) {
             Topic topic = Topic.fromMap(c);
             var path =
-                "${getIt<AppMemory>().pathFolderDocument}/CEFR_Wordlist/${topic.name}";
+                "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/${topic.name}";
+            print(path);
             topic.isDownload = Directory(path).existsSync();
             return topic;
           }).toList()

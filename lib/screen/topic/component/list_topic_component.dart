@@ -1,4 +1,6 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/download/download_status.dart';
+import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/screen/sub_topic/sub_topic_screen.dart';
 import 'package:english_study/screen/topic/topic_view_model.dart';
@@ -148,27 +150,77 @@ class ListTopicComponent extends StatelessWidget {
                   ),
                 ),
               Positioned.fill(
-                  child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () async {
-                    if (topic?.isLearnComplete == 0 && topic?.isLearning == 0) {
-                      return;
-                    }
-                    var topicId = topic?.id.toString();
-                    await Navigator.pushNamed(context, SubTopicScreen.routeName,
-                        arguments: topicId);
-                    if (topic?.isLearnComplete == 1) {
-                      return;
-                    }
-                    await _viewModel.syncTopic(topicId);
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () async {
+                      if (topic?.isLearnComplete == 0 &&
+                          topic?.isLearning == 0) {
+                        return;
+                      }
+                      var topicId = topic?.id.toString();
+                      await Navigator.pushNamed(
+                          context, SubTopicScreen.routeName,
+                          arguments: topicId);
+                      if (topic?.isLearnComplete == 1) {
+                        return;
+                      }
+                      await _viewModel.syncTopic(topicId);
+                    },
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 10,
+                right: 10,
+                child: ValueListenableBuilder(
+                  valueListenable: _viewModel.downloadManager.processItems,
+                  builder: (context, value, child) {
+                    var info = value?[topic?.link_resource];
+                    return info == null
+                        ? SizedBox()
+                        : widgetDownload(
+                            info,
+                            topic?.isLearnComplete == 0 &&
+                                topic?.isLearning == 0);
                   },
                 ),
-              ))
+              )
             ],
           ),
         );
       },
     );
+  }
+
+  Widget widgetDownload(FileInfo fileInfo, bool isLock) {
+    switch (fileInfo.status) {
+      case DownloadStatus.NONE:
+        return ElevatedButton(
+          onPressed: () {
+            _viewModel.downloadTopic(fileInfo);
+          },
+          child: Icon(
+            Icons.download,
+            color: isLock ? Colors.white : Colors.black,
+          ),
+        );
+      case DownloadStatus.DOWNLOADING:
+        return Row(
+          children: [
+            Text(
+              fileInfo.progress.toString(),
+              style: TextStyle(color: isLock ? Colors.white : Colors.black),
+            ),
+            CircularProgressIndicator(
+              color: turquoise,
+              backgroundColor: isLock ? Colors.white : Colors.black,
+              value: fileInfo.progress,
+            )
+          ],
+        );
+      default:
+        return SizedBox();
+    }
   }
 }

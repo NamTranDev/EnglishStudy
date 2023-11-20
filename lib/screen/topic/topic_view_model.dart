@@ -18,7 +18,7 @@ class TopicViewModel {
   final ValueNotifier<bool> _needDownload = ValueNotifier<bool>(false);
   ValueNotifier<bool> get needDownload => _needDownload;
 
-  final DownloadManager _downloadManager = getIt<DownloadManager>();
+  late final DownloadManager _downloadManager;
   DownloadManager get downloadManager => _downloadManager;
 
   Future<List<Topic>> initData(String? category) async {
@@ -31,6 +31,7 @@ class TopicViewModel {
         null;
     _needDownload.value = isNeedDownload;
     if (isNeedDownload) {
+      _downloadManager = getIt<DownloadManager>();
       String category = getIt<Preference>().catabularyVocabularyCurrent();
       final path = (await getTemporaryDirectory()).path;
       getIt<DownloadManager>().initFileInfos(
@@ -53,5 +54,10 @@ class TopicViewModel {
   void downloadAll() async {
     await _downloadManager.downloadAll();
     _needDownload.value = false;
+  }
+
+  void downloadTopic(FileInfo fileInfo) async {
+    await _downloadManager.download(fileInfo.link);
+    _needDownload.value = _downloadManager.checkAllDownload();
   }
 }

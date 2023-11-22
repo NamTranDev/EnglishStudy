@@ -18,6 +18,8 @@ class Vocabulary {
   List<Spelling>? spellings;
   List<Example>? examples;
 
+  String? folderName;
+
   Vocabulary({
     this.id,
     this.sub_topic_id,
@@ -68,7 +70,8 @@ class Vocabulary {
       word: map['vocabulary'] != null ? map['vocabulary'] as String : null,
       image: map['image'] != null ? map['image'] as String : null,
       word_type: map['word_type'] != null ? map['word_type'] as String : null,
-      description: map['description'] != null ? map['description'] as String : null,
+      description:
+          map['description'] != null ? map['description'] as String : null,
       isLearn: map['isLearn'] != null ? map['isLearn'] as int : null,
     );
   }

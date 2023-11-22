@@ -5,7 +5,7 @@ import 'package:english_study/constants.dart';
 import 'package:english_study/download/download_manager.dart';
 import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
-import 'package:english_study/model/memory.dart';
+import 'package:english_study/storage/memory.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';

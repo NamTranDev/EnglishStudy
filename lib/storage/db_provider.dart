@@ -7,7 +7,7 @@ import 'dart:math';
 import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
-import 'package:english_study/model/memory.dart';
+import 'package:english_study/storage/memory.dart';
 import 'package:english_study/model/spelling.dart';
 import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/topic.dart';
@@ -74,34 +74,11 @@ class DBProvider {
     return list;
   }
 
-  Future<Topic?> getTopicFromId(String topicId) async {
-    final db = await _db;
-    var res =
-        await db.query(_TOPIC_TABLE, where: 'id = ?', whereArgs: [topicId]);
-    return res.map((c) {
-      Topic topic = Topic.fromMap(c);
-      var path =
-          "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/${topic.name}";
-      print(path);
-      topic.isDownload = Directory(path).existsSync();
-      return topic;
-    }).firstOrNull;
-  }
-
   Future<List<Topic>> getTopics(String? category) async {
     final db = await _db;
     var res = await db
         .query(_TOPIC_TABLE, where: 'category = ?', whereArgs: [category]);
-    List<Topic> list = res.isNotEmpty
-        ? res.map((c) {
-            Topic topic = Topic.fromMap(c);
-            var path =
-                "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/${topic.name}";
-            print(path);
-            topic.isDownload = Directory(path).existsSync();
-            return topic;
-          }).toList()
-        : [];
+    List<Topic> list = await mapperTopic(db, res);
     bool hasLearning = list.any(
         (element) => element.isLearnComplete == 0 && element.isLearning == 1);
     if (!hasLearning) {
@@ -180,6 +157,7 @@ class DBProvider {
             SubTopic subtopic = SubTopic.fromMap(c);
 
             subtopic.processLearn = await progressSubTopic(subtopic);
+            subtopic.folderName = await getFolderName(subtopic.id.toString());
             return subtopic;
           }).toList()
         : [];
@@ -197,18 +175,50 @@ class DBProvider {
     return numberLearn / total;
   }
 
+  Future<String?> getFolderName(String id) async {
+    final db = await _db;
+    final Map<String, dynamic>? result = (await db.rawQuery(
+      'SELECT topic_name FROM topics where id = (SELECT topic_id FROM sub_topics where id = ?)',
+      [id],
+    ))
+        .first;
+    return result?['topic_name'] as String?;
+  }
+
+  Future<List<Topic>> mapperTopic(
+      Database db, List<Map<String, Object?>> values) async {
+    Iterable<Future<Topic>> mappedList = values.isNotEmpty
+        ? values.map((c) async {
+            Topic topic = Topic.fromMap(c);
+            var path =
+                  "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/${topic.name}";
+              topic.isDownload =
+                  await equalSizeFolder(path, topic.folder_size ?? 0);
+            return topic;
+          }).toList()
+        : [];
+    return Future.wait(mappedList);
+  }
+
   Future<List<Vocabulary>> mapperVocabulary(
       Database db, List<Map<String, Object?>> values) async {
     Iterable<Future<Vocabulary>> mappedList = values.isNotEmpty
         ? values.map((c) async {
             Vocabulary vocabulary = Vocabulary.fromMap(c);
+            var folderName =
+                await getFolderName(vocabulary.sub_topic_id.toString());
+            vocabulary.folderName = folderName;
             var audios = await db.query(_AUDIO_TABLE,
                 where: 'vocabulary_id = ?', whereArgs: [vocabulary.id]);
             var spellings = await db.query(_SPELLING_TABLE,
                 where: 'vocabulary_id = ?', whereArgs: [vocabulary.id]);
             var examples = await db.query(_EXAMPLE_TABLE,
                 where: 'vocabulary_id = ?', whereArgs: [vocabulary.id]);
-            vocabulary.audios = audios.map((e) => Audio.fromMap(e)).toList();
+            vocabulary.audios = audios.map((e) {
+              Audio audio = Audio.fromMap(e);
+              audio.folderName = folderName;
+              return audio;
+            }).toList();
             vocabulary.spellings =
                 spellings.map((e) => Spelling.fromMap(e)).toList();
             vocabulary.examples = examples.map((e) {

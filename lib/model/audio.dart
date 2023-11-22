@@ -3,6 +3,7 @@ import 'dart:convert';
 
 class Audio {
   String? path;
+  String? folderName;
   Audio({
     this.path,
   });
@@ -29,7 +30,8 @@ class Audio {
 
   String toJson() => json.encode(toMap());
 
-  factory Audio.fromJson(String source) => Audio.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory Audio.fromJson(String source) =>
+      Audio.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
   String toString() => 'Audio(path: $path)';
@@ -37,9 +39,8 @@ class Audio {
   @override
   bool operator ==(covariant Audio other) {
     if (identical(this, other)) return true;
-  
-    return 
-      other.path == path;
+
+    return other.path == path;
   }
 
   @override

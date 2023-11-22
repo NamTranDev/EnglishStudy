@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:english_study/model/topic.dart';
+
 class SubTopic {
   int? id;
   String? name;
@@ -10,6 +12,7 @@ class SubTopic {
   int? isLearning;
 
   double? processLearn = 0;
+  String? folderName;
 
   SubTopic({
     this.id,

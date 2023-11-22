@@ -164,7 +164,8 @@ class ListSubTopicComponent extends StatelessWidget {
                                       fit: BoxFit.scaleDown,
                                     ),
                                   )
-                                : widgetImage(subTopic?.image,
+                                : widgetImage(
+                                    subTopic?.folderName, subTopic?.image,
                                     fit: BoxFit.contain),
                           ),
                         ),

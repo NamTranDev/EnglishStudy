@@ -118,7 +118,7 @@ class ListTopicComponent extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              widgetImage(topic?.image, fit: BoxFit.fitHeight),
+              widgetImage(topic?.name, topic?.image, fit: BoxFit.fitHeight),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,

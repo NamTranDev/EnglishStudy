@@ -17,8 +17,8 @@ class SubTopicViewModel {
   Future<List<SubTopic>> initData(String? topicId) async {
     await Future.delayed(Duration(milliseconds: duration_animation_screen));
     var db = getIt<DBProvider>();
-    List<SubTopic> topics = await db.getSubTopics(topicId);
-    return topics;
+    List<SubTopic> subTopics = await db.getSubTopics(topicId);
+    return subTopics;
   }
 
   Future<bool> syncSubTopic(String? subTopicId) async {

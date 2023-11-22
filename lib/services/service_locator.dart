@@ -1,5 +1,5 @@
 import 'package:english_study/download/download_manager.dart';
-import 'package:english_study/model/memory.dart';
+import 'package:english_study/storage/memory.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:english_study/storage/preference.dart';
 import 'package:get_it/get_it.dart';

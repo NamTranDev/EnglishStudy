@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:english_study/model/memory.dart';
+import 'package:english_study/storage/memory.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/preference.dart';
 import 'package:english_study/utils/file_util.dart';
@@ -50,15 +50,15 @@ ThemeData themeInfo = ThemeData(
   ),
 );
 
-Widget widgetImage(String? image, {BoxFit? fit}) {
+Widget widgetImage(String? folderName, String? image, {BoxFit? fit}) {
   return image != null
-      ? loadImage(image, fit: fit)
+      ? loadImage(folderName, image, fit: fit)
       : Image.asset('assets/no_image.jpg');
 }
 
-Widget loadImage(String image, {BoxFit? fit}) {
+Widget loadImage(String? folderName, String image, {BoxFit? fit}) {
   var path =
-      "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/image/$image";
+      "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/${folderName}/image/$image";
   var file = File(path);
   var fileExist = file.existsSync();
 
@@ -68,10 +68,14 @@ Widget loadImage(String image, {BoxFit? fit}) {
       fit: fit,
     );
   }
-  return Image.asset(
-    'assets/image/$image',
-    fit: fit,
-  );
+  try {
+    return Image.asset(
+      'assets/image/$image',
+      fit: fit,
+    );
+  } catch (e) {
+    return Image.asset('assets/no_image.jpg');
+  }
 }
 
 Widget widgetIcon(String path, {double? size, Color? color}) {

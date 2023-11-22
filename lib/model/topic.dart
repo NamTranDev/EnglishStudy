@@ -9,6 +9,7 @@ class Topic {
   String? total_word;
   String? description;
   String? link_resource;
+  int? folder_size;
   int? isLearnComplete;
   int? isLearning;
   bool isDownload = false;
@@ -20,6 +21,7 @@ class Topic {
     this.total_word,
     this.description,
     this.link_resource,
+    this.folder_size,
     this.isLearnComplete,
     this.isLearning,
   });
@@ -32,6 +34,7 @@ class Topic {
     String? total_word,
     String? description,
     String? link_resource,
+    int? folder_size,
     int? isLearnComplete,
     int? isLearning,
   }) {
@@ -43,6 +46,7 @@ class Topic {
       total_word: total_word ?? this.total_word,
       description: description ?? this.description,
       link_resource: link_resource ?? this.link_resource,
+      folder_size: folder_size ?? this.folder_size,
       isLearnComplete: isLearnComplete ?? this.isLearnComplete,
       isLearning: isLearning ?? this.isLearning,
     );
@@ -57,6 +61,7 @@ class Topic {
       'total_words': total_word,
       'description_topic': description,
       'link_topic': link_resource,
+      'length': folder_size,
       'isLearnComplete': isLearnComplete,
       'isLearning': isLearning,
     };
@@ -77,6 +82,8 @@ class Topic {
           : null,
       link_resource:
           map['link_topic'] != null ? map['link_topic'] as String : null,
+      folder_size:
+          map['length'] != null ? map['length'] as int : null,
       isLearnComplete:
           map['isLearnComplete'] != null ? map['isLearnComplete'] as int : null,
       isLearning: map['isLearning'] != null ? map['isLearning'] as int : null,
@@ -90,7 +97,7 @@ class Topic {
 
   @override
   String toString() {
-    return 'Topic(id: $id, name: $name, image: $image, number_sub_topic: $number_sub_topic, total_word: $total_word, description: $description,link_resource: $link_resource, isLearnComplete: $isLearnComplete)';
+    return 'Topic(id: $id, name: $name, image: $image, number_sub_topic: $number_sub_topic, total_word: $total_word, description: $description,link_resource: $link_resource,folder_size: $folder_size, isLearnComplete: $isLearnComplete, isLearning: $isLearning)';
   }
 
   @override
@@ -104,6 +111,7 @@ class Topic {
         other.total_word == total_word &&
         other.description == description &&
         other.link_resource == link_resource &&
+        other.folder_size == folder_size &&
         other.isLearning == isLearning &&
         other.isLearnComplete == isLearnComplete;
   }
@@ -117,6 +125,7 @@ class Topic {
         total_word.hashCode ^
         description.hashCode ^
         link_resource.hashCode ^
+        folder_size.hashCode ^
         isLearning.hashCode ^
         isLearnComplete.hashCode;
   }

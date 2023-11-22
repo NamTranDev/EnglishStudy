@@ -126,7 +126,9 @@ class DownloadManager {
 
   void updateProgressAll() {
     var total = _processItems.value?.values
-            .where((element) => element.progress != null)
+            .where((element) =>
+                element.progress != null &&
+                element.status == DownloadStatus.DOWNLOADING)
             .fold(0.0, (sum, item) => sum + (item.progress ?? 0)) ??
         0;
 
@@ -147,6 +149,7 @@ class DownloadManager {
               fileInfoCurrent.progress = progressValue;
               if (progress == 100) {
                 fileInfoCurrent.status = DownloadStatus.COMPLETE;
+                updateTotalDownload();
               }
               processItems.value = Map.from(processCurrents);
 
@@ -162,10 +165,20 @@ class DownloadManager {
 
   bool checkNeedDownload() {
     if (_processItems.value == null) return false;
+
+    if (_processAll.value == null) {
+      updateTotalDownload();
+      return totalNeedDownload > 0;
+    } else {
+      return (_processAll.value ?? 0) >= 100;
+    }
+  }
+
+  void updateTotalDownload() {
+    if (_processItems.value == null) return;
     totalNeedDownload = 0;
-    _processItems.value?.values?.forEach((fileInfo) {
-      totalNeedDownload += fileInfo.status == DownloadStatus.NONE ? 1 : 0;
+    _processItems.value?.values.forEach((fileInfo) {
+      totalNeedDownload += fileInfo.status == DownloadStatus.COMPLETE ? 0 : 1;
     });
-    return totalNeedDownload > 0;
   }
 }

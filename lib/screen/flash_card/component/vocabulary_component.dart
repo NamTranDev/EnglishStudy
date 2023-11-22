@@ -32,11 +32,12 @@ class VocabularyComponent extends StatelessWidget {
               children: [
                 Expanded(
                   child: Container(
-                    child: widgetImage(vocabulary?.image),
+                    child: widgetImage(vocabulary?.folderName,vocabulary?.image),
                   ),
                   flex: 3,
                 ),
                 Expanded(
+                  
                   flex: 3,
                   child: Container(
                     alignment: Alignment.center,

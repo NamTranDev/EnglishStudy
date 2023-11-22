@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:english_study/model/memory.dart';
+import 'package:english_study/storage/memory.dart';
 import 'package:english_study/reuse/component/back_screen_component.dart';
 import 'package:english_study/screen/topic/component/list_topic_component.dart';
 import 'package:english_study/screen/topic/topic_view_model.dart';

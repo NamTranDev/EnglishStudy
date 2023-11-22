@@ -1,5 +1,5 @@
 import 'package:english_study/model/audio.dart';
-import 'package:english_study/model/memory.dart';
+import 'package:english_study/storage/memory.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/reuse/audio_view_model.dart';
 import 'package:english_study/services/service_locator.dart';

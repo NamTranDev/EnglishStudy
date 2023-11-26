@@ -16,28 +16,28 @@ Future<bool> doesFolderExist(String folderPath) async {
 Future<bool> equalSizeFolder(String folderPath, int fileSizeCheck) async {
   Directory directory = Directory(folderPath);
 
-  int size = 0;
-
   if (directory.existsSync()) {
     var folderSizeMemory = getIt<AppMemory>().folderSize;
     print(folderSizeMemory);
     var isExist = (folderSizeMemory?[folderPath] ?? 0) >= fileSizeCheck;
     print(isExist);
     if (isExist) return true;
-    await for (FileSystemEntity entity in directory.list(recursive: true)) {
-      if (entity is File) {
-        size += await entity.length();
-      }
-    }
+    var size = await sizeDirectory(directory);
     if (size >= fileSizeCheck) {
       getIt<AppMemory>().folderSize ??= <String, int>{};
       getIt<AppMemory>().folderSize?[folderPath] = size;
       print(getIt<AppMemory>().folderSize);
       return true;
     }
-    directory.delete();
+    // directory.deleteSync(recursive: true);
     return false;
   } else {
     return false;
   }
+}
+
+Future<int> sizeDirectory(Directory dir) async {
+  var files = await dir.list(recursive: true).toList();
+  var dirSize = files.fold(0, (int sum, file) => sum + file.statSync().size);
+  return dirSize;
 }

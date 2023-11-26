@@ -28,7 +28,7 @@ class TopicViewModel {
     var db = getIt<DBProvider>();
     List<Topic> topics = await db.getTopics(category);
 
-    var isNeedDownload = topics.where((element) => element.isDownload == false).firstOrNull != null;
+    var isNeedDownload = topics.where((element) => element.isDownload == 0).firstOrNull != null;
     _needDownload.value = isNeedDownload;
     if (isNeedDownload) {
       String category = getIt<Preference>().catabularyVocabularyCurrent();
@@ -44,7 +44,7 @@ class TopicViewModel {
               .map(
                 (e) => FileInfo(
                     e.link_resource, "${path}/${e.name}.zip", directory.path,
-                    status: e.isDownload
+                    status: e.isDownload == 1
                         ? DownloadStatus.COMPLETE
                         : DownloadStatus.NONE),
               )
@@ -62,11 +62,10 @@ class TopicViewModel {
 
   void downloadAll() async {
     await _downloadManager.downloadAll();
-    // _needDownload.value = false;
   }
 
-  void downloadTopic(FileInfo fileInfo) async {
-    await _downloadManager.download(fileInfo.link);
+  void downloadTopic(FileInfo? fileInfo) async {
+    await _downloadManager.download(fileInfo?.link);
     _needDownload.value = _downloadManager.checkNeedDownload();
   }
 }

@@ -1,9 +1,11 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
+import 'package:english_study/services/service_locator.dart';
+import 'package:english_study/storage/db_provider.dart';
+import 'package:english_study/utils/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 
@@ -18,8 +20,27 @@ class DownloadManager {
 
   void initFileInfos(String category, List<FileInfo> fileInfos) {
     if (_category == category) {
+      // processAll.value = null;
+      // var processCurrents = processItems.value;
+      // if (processCurrents != null) {
+      //   processCurrents.values
+      //       .where((element) => element.status == DownloadStatus.COMPLETE)
+      //       .forEach((element) {
+      //     var fileInfo = fileInfos
+      //         .where((fileInfo) =>
+      //             fileInfo.status == DownloadStatus.NONE &&
+      //             fileInfo.link == element.link)
+      //         .firstOrNull;
+      //     if (fileInfo != null) {
+      //       processCurrents[fileInfo.link] = fileInfo;
+      //     }
+      //   });
+
+      //   processItems.value = processCurrents;
+      // }
       return;
     }
+
     _category = category;
     _processItems.value = fileInfos.fold({}, (map, fileInfo) {
       map?[fileInfo.link] = fileInfo;
@@ -32,17 +53,6 @@ class DownloadManager {
     if (_processItems.value == null) {
       return;
     }
-    // _processAll.value = 0.0;
-    // var processCurrentTests = processItems.value;
-    // if (processCurrentTests != null) {
-    //   processCurrentTests.forEach((key, value) {
-    //     if (value.status == DownloadStatus.NONE) {
-    //       download(value.link);
-    //     }
-    //   });
-    // }
-
-    // return;
     _processAll.value = 0.0;
 
     var processCurrents = processItems.value;
@@ -62,32 +72,8 @@ class DownloadManager {
     }
 
     var fileInfoNeedDownload = _processItems.value?[link];
-    // print(fileInfoNeedDownload);
     if (fileInfoNeedDownload != null &&
         fileInfoNeedDownload.status == DownloadStatus.NONE) {
-      // fileInfoNeedDownload.status = DownloadStatus.DOWNLOADING;
-      // for (int i = 0; i < 100; i++) {
-      //   await Future.delayed(
-      //       Duration(milliseconds: Random().nextInt(1000) + 1000));
-
-      //   var processCurrents = processItems.value;
-      //   if (processCurrents != null) {
-      //     processCurrents.forEach((key, value) {
-      //       if (key == fileInfoNeedDownload.link) {
-      //         value.progress = i + 1;
-      //         if (processAll.value != null && totalNeedDownload > 0) {
-      //           _processAll.value =
-      //               (_processAll.value! + value.progress) / (totalNeedDownload);
-      //         }
-      //       }
-      //     });
-
-      //     processItems.value = Map.from(processCurrents);
-      //   }
-      // }
-
-      // return;
-
       await _downloadFile(fileInfoNeedDownload);
     }
   }
@@ -97,10 +83,9 @@ class DownloadManager {
     if (link == null) return;
     fileInfo.status = DownloadStatus.DOWNLOADING;
     final file = File(fileInfo.filePath);
-    // print(file.existsSync());
+
     Dio dio = Dio();
-    // print(file.path);
-    // print(link);
+
     await dio.download(
       link,
       file.path,
@@ -137,30 +122,39 @@ class DownloadManager {
 
   Future<void> extractFile(FileInfo fileInfo, File file) async {
     // print(fileInfo.folderPath);
+    var directory = Directory(fileInfo.folderPath);
     await ZipFile.extractToDirectory(
-        zipFile: file,
-        destinationDir: Directory(fileInfo.folderPath),
-        onExtracting: (zipEntry, progress) {
-          var processCurrents = processItems.value;
-          if (processCurrents != null) {
-            var fileInfoCurrent = processCurrents[fileInfo.link];
-            if (fileInfoCurrent != null) {
-              var progressValue = (100 + progress) / 2;
-              fileInfoCurrent.progress = progressValue;
-              if (progress == 100) {
-                fileInfoCurrent.status = DownloadStatus.COMPLETE;
-                updateTotalDownload();
-              }
-              processItems.value = Map.from(processCurrents);
+      zipFile: file,
+      destinationDir: directory,
+      onExtracting: (zipEntry, progress) {
+        var processCurrents = processItems.value;
+        if (processCurrents != null) {
+          var fileInfoCurrent = processCurrents[fileInfo.link];
+          if (fileInfoCurrent != null) {
+            var progressValue = (100 + progress) / 2;
+            fileInfoCurrent.progress = progressValue;
+            if (progress == 100) {
+              fileInfoCurrent.status = DownloadStatus.COMPLETE;
+              updateTotalDownload();
+              updateLengthDatabase(fileInfo.link);
+            }
+            processItems.value = Map.from(processCurrents);
 
-              if (processAll.value != null && totalNeedDownload > 0) {
-                updateProgressAll();
-              }
+            if (processAll.value != null && totalNeedDownload > 0) {
+              updateProgressAll();
             }
           }
-          return ZipFileOperation.includeItem;
-        });
+        }
+        return ZipFileOperation.includeItem;
+      },
+    );
+    var size = await sizeDirectory(directory);
+    print('size : ' + size.toString());
     file.delete();
+  }
+
+  void updateLengthDatabase(String? key) async {
+    getIt<DBProvider>().updateDownloadTopic(key, '1');
   }
 
   bool checkNeedDownload() {
@@ -180,5 +174,10 @@ class DownloadManager {
     _processItems.value?.values.forEach((fileInfo) {
       totalNeedDownload += fileInfo.status == DownloadStatus.COMPLETE ? 0 : 1;
     });
+  }
+
+  bool checkHasResource(String? link_resource) {
+    FileInfo? fileInfo = processItems.value?[link_resource];
+    return fileInfo == null || fileInfo.status == DownloadStatus.COMPLETE;
   }
 }

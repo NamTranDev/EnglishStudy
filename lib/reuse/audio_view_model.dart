@@ -9,7 +9,7 @@ mixin AudioViewModel {
   AudioPlayer audioPlayer = AudioPlayer();
 
   void playAudio(Audio? audio) async {
-    audioPlayer.stop();
+    // audioPlayer.stop();
     var path =
         "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/${audio?.folderName}/audio/${audio?.path}";
     print(path);
@@ -24,5 +24,9 @@ mixin AudioViewModel {
     } catch (e) {
       print(e);
     }
+  }
+
+  void disposeAudio() {
+    audioPlayer.stop();
   }
 }

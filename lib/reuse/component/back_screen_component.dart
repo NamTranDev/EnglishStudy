@@ -3,7 +3,15 @@ import 'package:flutter/material.dart';
 
 class BackScreenComponent extends StatelessWidget {
   final Widget child;
-  const BackScreenComponent({super.key, required this.child});
+  final String? icon_asset;
+  final double? margin_top;
+  final double? margin_left;
+  const BackScreenComponent(
+      {super.key,
+      required this.child,
+      this.icon_asset,
+      this.margin_top,
+      this.margin_left});
 
   @override
   Widget build(BuildContext context) {
@@ -11,13 +19,14 @@ class BackScreenComponent extends StatelessWidget {
       children: [
         Positioned.fill(child: child),
         Positioned(
-          top: 10,
-          left: 10,
-          child: InkWell(
+          top: margin_top ?? 10,
+          left: margin_left ?? 10,
+          child: GestureDetector(
             onTap: () {
               Navigator.pop(context);
             },
-            child: widgetIcon('assets/icons/ic_arrow_prev.svg'),
+            child: widgetIcon(icon_asset ?? 'assets/icons/ic_arrow_prev.svg',
+                size: 32, fit: BoxFit.fitHeight),
           ),
         ),
       ],

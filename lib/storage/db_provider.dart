@@ -4,6 +4,8 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:english_study/download/download_manager.dart';
+import 'package:english_study/download/download_status.dart';
 import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
@@ -131,22 +133,17 @@ class DBProvider {
     final db = await _db;
     var res = await db.query(_VOCABULARY_TABLE,
         where: 'sub_topic_id = ?', whereArgs: [sub_topic_id]);
-    // ,orderBy: 'isLearn'
 
     List<Vocabulary> result = await mapperVocabulary(db, res);
     result.sort((a, b) {
-      // Compare by isLearn, with items having isLearn equal to 0 first
-      if (a.isLearn == 0 && b.isLearn != 0) {
-        return -1; // a should come before b
-      } else if (a.isLearn != 0 && b.isLearn == 0) {
-        return 1; // b should come before a
+      if (b.isLearn == null && a.isLearn != null) {
+        return 1; // Nulls go to the end
+      } else if (a.isLearn == null && b.isLearn != null) {
+        return -1; // Nulls go to the end
       } else {
-        // If both have isLearn equal to 0 or both have isLearn not equal to 0, compare by ID or other criteria if needed
-        return a.id!.compareTo(b.id!);
+        return (b.isLearn ?? 0).compareTo(a.isLearn ?? 0);
       }
     });
-    result[0].isLearn = 1;
-    updateVocabulary(result[0]);
     return result;
   }
 
@@ -191,9 +188,26 @@ class DBProvider {
         ? values.map((c) async {
             Topic topic = Topic.fromMap(c);
             var path =
-                  "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/${topic.name}";
-              topic.isDownload =
-                  await equalSizeFolder(path, topic.folder_size ?? 0);
+                "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/${topic.name}";
+            var _downloadManager = getIt<DownloadManager>();
+            var processItems = _downloadManager.processItems.value;
+            if (processItems != null) {
+              topic.isDownload = processItems[topic.link_resource]?.status ==
+                      DownloadStatus.COMPLETE
+                  ? 1
+                  : 0;
+            } else {
+              Directory dir = Directory(path);
+              var isExist = dir.existsSync();
+              if (!isExist) {
+                updateDownloadTopic(topic.link_resource, '0');
+              } else {
+                if (topic.isDownload == 0) {
+                  dir.deleteSync(recursive: true);
+                }
+              }
+              topic.isDownload = topic.isDownload == 1 && isExist ? 1 : 0;
+            }
             return topic;
           }).toList()
         : [];
@@ -247,11 +261,16 @@ class DBProvider {
         where: 'id = ?', whereArgs: [subTopic.id]);
   }
 
-  Future<void> updateVocabulary(Vocabulary? vocabulary) async {
-    if (vocabulary == null) return;
+  Future<bool> updateVocabulary(Vocabulary? vocabulary) async {
+    if (vocabulary == null) return false;
     final db = await _db;
     await db.update(_VOCABULARY_TABLE, vocabulary.toMap(),
         where: 'id = ?', whereArgs: [vocabulary.id]);
+
+    var result = await db.query(_VOCABULARY_TABLE,
+        where: 'sub_topic_id = ? and isLearn = 0',
+        whereArgs: [vocabulary.sub_topic_id]);
+    return result.isEmpty;
   }
 
   Future<bool> syncSubTopic(String? subTopicId) async {
@@ -280,6 +299,15 @@ class DBProvider {
       return true;
     }
     return false;
+  }
+
+  Future<void> updateDownloadTopic(String? key, String value) async {
+    final db = await _db;
+    var count = await db.rawUpdate(
+        'UPDATE ${_TOPIC_TABLE} SET isDownload = ? WHERE link_topic = ?',
+        [value, key]);
+    print(key);
+    print(count);
   }
 
   Future<List<GameVocabularyModel>> vocabularyGameSubTopic(

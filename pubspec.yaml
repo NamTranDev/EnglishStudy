@@ -7,6 +7,7 @@ version: 1.0.0
 environment:
   sdk: '>=3.1.4'
 
+# flutter pub upgrade --major-versions
 dependencies:
   flutter:
     sdk: flutter
@@ -32,11 +33,12 @@ dependencies:
 
   dio: ^4.0.0
   path_provider: ^2.0.2
-  # permission_handler: ^8.1.2
 
   flutter_archive: ^5.0.0
 
   just_audio: ^0.9.35
+
+  just_the_tooltip: ^0.0.12
 
 dev_dependencies:
   flutter_test:

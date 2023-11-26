@@ -3,6 +3,7 @@ import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/topic.dart';
+import 'package:english_study/reuse/component/game_button_component.dart';
 import 'package:english_study/screen/flash_card/flash_card_vocabulary_screen.dart';
 import 'package:english_study/screen/game/game_vocabulary_screen.dart';
 import 'package:english_study/screen/sub_topic/sub_topic_view_model.dart';
@@ -119,6 +120,19 @@ class ListSubTopicComponent extends StatelessWidget {
                   onTap: () async {
                     if (subTopic?.isLearnComplete == 0 &&
                         subTopic?.isLearning == 0) {
+                      showSnackBar(
+                          context, 'You need to study the open topics first');
+                      return;
+                    }
+
+                    var isHasResource = _viewModel.downloadManager
+                        .checkHasResource(topic?.link_resource);
+
+                    var isDefault = index == 0 && topic?.isDefault == 1;
+
+                    if (!isHasResource && !isDefault) {
+                      showSnackBar(
+                          context, 'You must download data lession first');
                       return;
                     }
 
@@ -180,6 +194,10 @@ class ListSubTopicComponent extends StatelessWidget {
                                 Radius.circular(sizeCircle),
                               ),
                             ),
+                            child: Center(
+                              child: widgetIcon('assets/icons/ic_lock.svg',
+                                  size: 30, color: Colors.white),
+                            ),
                           ),
                         )
                     ]),
@@ -207,26 +225,11 @@ class ListSubTopicComponent extends StatelessWidget {
                                     color: turquoise,
                                   ),
                                 ),
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        width: 1, color: maastricht_blue),
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: InkWell(
-                                    onTap: () {
-                                      Navigator.pushNamed(context,
-                                          GameVocabularyScreen.routeName,
-                                          arguments: subTopic?.id.toString());
-                                    },
-                                    child: widgetIcon(
-                                        'assets/icons/ic_game.svg',
-                                        color: maastricht_blue),
-                                  ),
-                                ),
+                                GameButtonComponent(onClick: () {
+                                  Navigator.pushNamed(
+                                      context, GameVocabularyScreen.routeName,
+                                      arguments: subTopic?.id.toString());
+                                }),
                                 SizedBox(
                                   width: 30,
                                 )

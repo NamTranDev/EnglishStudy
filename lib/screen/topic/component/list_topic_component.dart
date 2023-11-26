@@ -159,6 +159,18 @@ class ListTopicComponent extends StatelessWidget {
                     onTap: () async {
                       if (topic?.isLearnComplete == 0 &&
                           topic?.isLearning == 0) {
+                        showSnackBar(
+                            context, 'You need to study the open topics first');
+                        return;
+                      }
+                      var isHasResource = _viewModel.downloadManager
+                          .checkHasResource(topic?.link_resource);
+
+                      var isDefault = topic?.isDefault == 1;
+
+                      if (!isHasResource && !isDefault) {
+                        showSnackBar(
+                            context, 'You must download data lession first');
                         return;
                       }
                       await Navigator.pushNamed(
@@ -179,12 +191,8 @@ class ListTopicComponent extends StatelessWidget {
                   valueListenable: _viewModel.downloadManager.processItems,
                   builder: (context, value, child) {
                     var info = value?[topic?.link_resource];
-                    return info == null
-                        ? SizedBox()
-                        : widgetDownload(
-                            info,
-                            topic?.isLearnComplete == 0 &&
-                                topic?.isLearning == 0);
+                    return widgetDownload(info,
+                        topic?.isLearnComplete == 0 && topic?.isLearning == 0);
                   },
                 ),
               )
@@ -195,8 +203,8 @@ class ListTopicComponent extends StatelessWidget {
     );
   }
 
-  Widget widgetDownload(FileInfo fileInfo, bool isLock) {
-    switch (fileInfo.status) {
+  Widget widgetDownload(FileInfo? fileInfo, bool isLock) {
+    switch (fileInfo?.status) {
       case DownloadStatus.NONE:
         return ElevatedButton(
           onPressed: () {
@@ -211,7 +219,7 @@ class ListTopicComponent extends StatelessWidget {
         return Row(
           children: [
             Text(
-              fileInfo.progress?.toInt().toString() ?? '',
+              fileInfo?.progress?.toInt().toString() ?? '',
               style: TextStyle(color: isLock ? Colors.white : Colors.black),
             ),
             SizedBox(
@@ -220,7 +228,7 @@ class ListTopicComponent extends StatelessWidget {
             CircularProgressIndicator(
               color: turquoise,
               backgroundColor: isLock ? Colors.white : Colors.black,
-              value: (fileInfo.progress ?? 0) / 100,
+              value: (fileInfo?.progress ?? 0) / 100,
             )
           ],
         );

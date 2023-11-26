@@ -32,12 +32,12 @@ class VocabularyComponent extends StatelessWidget {
               children: [
                 Expanded(
                   child: Container(
-                    child: widgetImage(vocabulary?.folderName,vocabulary?.image),
+                    child:
+                        widgetImage(vocabulary?.folderName, vocabulary?.image),
                   ),
                   flex: 3,
                 ),
                 Expanded(
-                  
                   flex: 3,
                   child: Container(
                     alignment: Alignment.center,
@@ -50,25 +50,21 @@ class VocabularyComponent extends StatelessWidget {
                               style: Theme.of(context).textTheme.headlineMedium,
                               textAlign: TextAlign.center),
                           SizedBox(
-                            height: 15,
+                            height: 5,
                           ),
-                          Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                              color: maastricht_blue,
-                              width: 0.5,
-                            )),
-                            padding: EdgeInsets.all(5),
-                            child: Text(vocabulary?.word_type ?? '',
-                                style: Theme.of(context).textTheme.bodySmall,
-                                textAlign: TextAlign.center),
-                          ),
+                          Text(vocabulary?.word_type ?? '',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(fontStyle: FontStyle.italic),
+                              textAlign: TextAlign.center),
                         ],
                       ),
                     ),
                   ),
                 ),
-                if (vocabulary?.audios != null && vocabulary?.spellings != null)
+                if ((vocabulary?.audios?.length ?? 0) > 0 &&
+                    (vocabulary?.spellings?.length ?? 0) > 0)
                   Expanded(
                     flex: 2,
                     child: WidgetAudioSpellig(

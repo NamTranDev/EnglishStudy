@@ -25,7 +25,12 @@ const int duration_animation_next = 300;
 const double size_icon = 30;
 
 ThemeData themeInfo = ThemeData(
+  useMaterial3: true,
   fontFamily: 'Roboto',
+  cardTheme: CardTheme(
+    color: Colors.white,
+    surfaceTintColor: Colors.white,
+  ),
   textTheme: const TextTheme(
     headlineMedium: TextStyle(
       fontSize: 50,
@@ -78,11 +83,54 @@ Widget loadImage(String? folderName, String image, {BoxFit? fit}) {
   }
 }
 
-Widget widgetIcon(String path, {double? size, Color? color}) {
+Widget widgetIcon(String path, {double? size, Color? color,BoxFit? fit}) {
   return SvgPicture.asset(
     path,
     width: size ?? size_icon,
     height: size ?? size_icon,
     color: color,
+    fit: fit ?? BoxFit.contain,
   );
+}
+
+void showSnackBar(BuildContext context, String text) {
+  final snackBar = SnackBar(
+    backgroundColor: Colors.transparent,
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+    elevation: 0,
+    duration: const Duration(milliseconds: 2000),
+    content: Card(
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.warning,
+              color: Colors.orange,
+              size: 32,
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            Flexible(
+              child: Text(
+                text,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(fontSize: 15),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  ScaffoldMessenger.of(context)
+      .showSnackBar(snackBar)
+      .closed
+      .then((value) => ScaffoldMessenger.of(context).clearSnackBars());
+  ;
 }

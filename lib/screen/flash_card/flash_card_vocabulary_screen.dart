@@ -134,7 +134,7 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: maastricht_blue,
-                        width: 0.5,
+                        width: 1,
                       ),
                     ),
                     alignment: Alignment.center,
@@ -187,10 +187,7 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                                   ),
                                   onAnimationComplete: () async {
                                     if (_viewModel.isShowGuideLearnWithGame()) {
-                                      await Future.delayed(
-                                          Duration(milliseconds: 200), () {
-                                        tooltipController.showTooltip();
-                                      });
+                                      tooltipController.showTooltip();
                                     }
                                   },
                                 ),

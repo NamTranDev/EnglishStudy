@@ -82,6 +82,12 @@ class DownloadManager {
     var link = fileInfo.link;
     if (link == null) return;
     fileInfo.status = DownloadStatus.DOWNLOADING;
+    fileInfo.progress = 0;
+    var processCurrents = processItems.value;
+    if (processCurrents != null) {
+      processItems.value = Map.from(processCurrents);
+    }
+
     final file = File(fileInfo.filePath);
 
     Dio dio = Dio();
@@ -90,7 +96,6 @@ class DownloadManager {
       link,
       file.path,
       onReceiveProgress: (count, total) {
-        // print(total);
         var processCurrents = processItems.value;
         if (processCurrents != null) {
           var fileInfoCurrent = processCurrents[fileInfo.link];
@@ -121,7 +126,6 @@ class DownloadManager {
   }
 
   Future<void> extractFile(FileInfo fileInfo, File file) async {
-    // print(fileInfo.folderPath);
     var directory = Directory(fileInfo.folderPath);
     await ZipFile.extractToDirectory(
       zipFile: file,
@@ -149,7 +153,7 @@ class DownloadManager {
       },
     );
     var size = await sizeDirectory(directory);
-    print('size : ' + size.toString());
+    print('size : $size');
     file.delete();
   }
 

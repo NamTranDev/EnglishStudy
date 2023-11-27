@@ -3,6 +3,7 @@ import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/topic.dart';
+import 'package:english_study/reuse/component/download_banner_component.dart';
 import 'package:english_study/reuse/component/game_button_component.dart';
 import 'package:english_study/screen/flash_card/flash_card_vocabulary_screen.dart';
 import 'package:english_study/screen/game/game_vocabulary_screen.dart';
@@ -51,31 +52,17 @@ class ListSubTopicComponent extends StatelessWidget {
                               margin: EdgeInsets.only(left: 8, right: 8),
                               elevation: 5,
                               child: Container(
-                                  padding: EdgeInsets.all(5),
-                                  child: fileInfo.status == DownloadStatus.NONE
-                                      ? Row(
-                                          children: [
-                                            Expanded(
-                                              child: Container(
-                                                child: Text(
-                                                    'Download all lession of category'),
-                                              ),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                _viewModel.downloadManager
-                                                    .download(
-                                                        topic?.link_resource);
-                                              },
-                                              child: Text('Download'),
-                                            )
-                                          ],
-                                        )
-                                      : fileInfo.progress == 100
-                                          ? SizedBox()
-                                          : Text(fileInfo.progress
-                                                  ?.toStringAsFixed(2) ??
-                                              '')),
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 10),
+                                child: DownloadBannerComponent(
+                                  text: 'Download this lession',
+                                  process: fileInfo.progress,
+                                  onDownloadClick: () {
+                                    _viewModel.downloadManager
+                                        .download(topic?.link_resource);
+                                  },
+                                ),
+                              ),
                             )
                           : SizedBox();
                     },

@@ -2,6 +2,7 @@ import 'package:english_study/constants.dart';
 import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/topic.dart';
+import 'package:english_study/reuse/component/download_banner_component.dart';
 import 'package:english_study/screen/sub_topic/sub_topic_screen.dart';
 import 'package:english_study/screen/topic/topic_view_model.dart';
 import 'package:flutter/material.dart';
@@ -12,9 +13,11 @@ class ListTopicComponent extends StatelessWidget {
   ListTopicComponent({super.key, this.category});
 
   late TopicViewModel _viewModel;
+  late BuildContext _context;
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     return Consumer<TopicViewModel>(
       builder: (context, viewmodel, child) {
         _viewModel = viewmodel;
@@ -27,7 +30,7 @@ class ListTopicComponent extends StatelessWidget {
                     "Something wrong with message: ${snapshot.error.toString()}"),
               );
             } else if (snapshot.hasData) {
-              return buildListTopic(context, snapshot.data);
+              return buildListTopic(snapshot.data);
             } else {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -39,7 +42,7 @@ class ListTopicComponent extends StatelessWidget {
     );
   }
 
-  Widget buildListTopic(BuildContext context, List<Topic>? topics) {
+  Widget buildListTopic(List<Topic>? topics) {
     return Column(
       children: [
         SizedBox(
@@ -53,33 +56,20 @@ class ListTopicComponent extends StatelessWidget {
                     margin: EdgeInsets.only(left: 8, right: 8),
                     elevation: 5,
                     child: Container(
-                        padding: EdgeInsets.all(5),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                         child: ValueListenableBuilder(
                           valueListenable:
                               _viewModel.downloadManager.processAll,
                           builder: (context, value, child) {
-                            return value == null
-                                ? Row(
-                                    children: [
-                                      Expanded(
-                                        child: Container(
-                                          child: Text(
-                                              'Download all lession of category'),
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          _viewModel.downloadAll();
-                                        },
-                                        child: Text('Download'),
-                                      )
-                                    ],
-                                  )
-                                : value == 100
-                                    ? SizedBox(
-                                        height: 0,
-                                      )
-                                    : Text(value.toStringAsFixed(2));
+                            print(value);
+                            return DownloadBannerComponent(
+                              text: 'Download all lession',
+                              process: value,
+                              onDownloadClick: () {
+                                _viewModel.downloadAll();
+                              },
+                            );
                           },
                         )),
                   )
@@ -185,8 +175,8 @@ class ListTopicComponent extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: 10,
-                right: 10,
+                bottom: 5,
+                right: 5,
                 child: ValueListenableBuilder(
                   valueListenable: _viewModel.downloadManager.processItems,
                   builder: (context, value, child) {
@@ -206,31 +196,51 @@ class ListTopicComponent extends StatelessWidget {
   Widget widgetDownload(FileInfo? fileInfo, bool isLock) {
     switch (fileInfo?.status) {
       case DownloadStatus.NONE:
-        return ElevatedButton(
-          onPressed: () {
+        return GestureDetector(
+          onTap: () {
             _viewModel.downloadTopic(fileInfo);
           },
-          child: Icon(
-            Icons.download,
-            color: isLock ? Colors.white : Colors.black,
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                    width: 2, color: isLock ? baby_powder : maastricht_blue)),
+            alignment: Alignment.center,
+            child: widgetIcon(
+              'assets/icons/ic_download.svg',
+              size: 24,
+              color: isLock ? baby_powder : maastricht_blue,
+            ),
           ),
         );
       case DownloadStatus.DOWNLOADING:
-        return Row(
-          children: [
-            Text(
-              fileInfo?.progress?.toInt().toString() ?? '',
-              style: TextStyle(color: isLock ? Colors.white : Colors.black),
-            ),
-            SizedBox(
-              width: 5,
-            ),
-            CircularProgressIndicator(
-              color: turquoise,
-              backgroundColor: isLock ? Colors.white : Colors.black,
-              value: (fileInfo?.progress ?? 0) / 100,
-            )
-          ],
+        return Container(
+          width: 40,
+          height: 40,
+          child: Stack(
+            children: [
+              if ((fileInfo?.progress ?? 0) > 0)
+                Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    fileInfo?.progress?.toInt().toString() ?? '',
+                    style: Theme.of(_context).textTheme.bodyMedium?.copyWith(
+                        color: isLock ? baby_powder : maastricht_blue),
+                  ),
+                ),
+              Positioned.fill(
+                child: CircularProgressIndicator(
+                  color: turquoise,
+                  backgroundColor: isLock ? baby_powder : maastricht_blue,
+                  value: (fileInfo?.progress ?? 0) > 0
+                      ? (fileInfo?.progress ?? 0) / 100
+                      : null,
+                ),
+              )
+            ],
+          ),
         );
       default:
         return SizedBox();

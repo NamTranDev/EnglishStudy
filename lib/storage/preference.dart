@@ -28,4 +28,8 @@ class Preference {
     _prefs?.setBool(_KEY_GUIDE_LEARN_WITH_GAME, false);
     return isGuideLearnWithGame;
   }
+
+  void harcodeText(){
+    _prefs?.setBool(_KEY_GUIDE_LEARN_WITH_GAME, true);
+  }
 }

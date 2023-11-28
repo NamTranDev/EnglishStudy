@@ -1,5 +1,6 @@
 import 'package:english_study/constants.dart';
 import 'package:english_study/download/download_manager.dart';
+import 'package:english_study/reuse/component/download_process_component.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:flutter/material.dart';
 
@@ -51,24 +52,8 @@ class DownloadBannerComponent extends StatelessWidget {
                     color: maastricht_blue,
                   ),
                 )
-              : Stack(
-                  children: [
-                    if ((process ?? 0) > 0)
-                      Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          process?.toInt().toString() ?? '',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ),
-                    Positioned.fill(
-                      child: CircularProgressIndicator(
-                        color: turquoise,
-                        backgroundColor: maastricht_blue,
-                        value: (process ?? 0) / 100,
-                      ),
-                    ),
-                  ],
+              : DownloadComponent(
+                  process: process,
                 ),
         )
       ],

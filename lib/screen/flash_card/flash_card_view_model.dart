@@ -23,7 +23,7 @@ class FlashCardViewModel with AudioViewModel {
         vocabularies.where((element) => element.isLearn == 0).isEmpty == true;
     _canPlayGame.value = isCanGame;
 
-    getIt<Preference>().harcodeText();
+    // getIt<Preference>().harcodeText();
 
     var firstNotLearn =
         vocabularies.indexWhere((element) => element.isLearn == 0);

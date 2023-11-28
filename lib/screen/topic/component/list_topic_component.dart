@@ -3,26 +3,40 @@ import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/reuse/component/download_banner_component.dart';
+import 'package:english_study/reuse/component/download_process_component.dart';
 import 'package:english_study/screen/sub_topic/sub_topic_screen.dart';
 import 'package:english_study/screen/topic/topic_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ListTopicComponent extends StatelessWidget {
+class ListTopicComponent extends StatefulWidget {
   final String? category;
   ListTopicComponent({super.key, this.category});
 
+  @override
+  State<ListTopicComponent> createState() => _ListTopicComponentState();
+}
+
+class _ListTopicComponentState extends State<ListTopicComponent> {
   late TopicViewModel _viewModel;
-  late BuildContext _context;
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    _context = context;
     return Consumer<TopicViewModel>(
       builder: (context, viewmodel, child) {
         _viewModel = viewmodel;
+        _viewModel.downloadManager.onDownloadErrorListener = () {
+          showSnackBar(context, 'An error occurred during the download process',
+              iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
+        };
         return FutureBuilder(
-          future: viewmodel.initData(category),
+          future: viewmodel.initData(widget.category),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -219,27 +233,9 @@ class ListTopicComponent extends StatelessWidget {
         return Container(
           width: 40,
           height: 40,
-          child: Stack(
-            children: [
-              if ((fileInfo?.progress ?? 0) > 0)
-                Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                    fileInfo?.progress?.toInt().toString() ?? '',
-                    style: Theme.of(_context).textTheme.bodyMedium?.copyWith(
-                        color: isLock ? baby_powder : maastricht_blue),
-                  ),
-                ),
-              Positioned.fill(
-                child: CircularProgressIndicator(
-                  color: turquoise,
-                  backgroundColor: isLock ? baby_powder : maastricht_blue,
-                  value: (fileInfo?.progress ?? 0) > 0
-                      ? (fileInfo?.progress ?? 0) / 100
-                      : null,
-                ),
-              )
-            ],
+          child: DownloadComponent(
+            process: fileInfo?.progress,
+            colorProcess: isLock ? baby_powder : maastricht_blue,
           ),
         );
       default:

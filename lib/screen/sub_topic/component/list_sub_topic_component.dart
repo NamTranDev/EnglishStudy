@@ -28,6 +28,10 @@ class ListSubTopicComponent extends StatelessWidget {
     return Consumer<SubTopicViewModel>(
       builder: (context, viewmodel, child) {
         _viewModel = viewmodel;
+        _viewModel.downloadManager.onDownloadErrorListener = () {
+          showSnackBar(context, 'An error occurred during the download process',
+              iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
+        };
         return FutureBuilder(
           future: viewmodel.initData(topic?.id?.toString()),
           builder: (context, snapshot) {

@@ -16,6 +16,7 @@ const Color ruddy = Color(0xFFF89292);
 const Color turquoise = Color(0xFF6DD2A0);
 const Color baby_powder = Color(0xFFFDFFFC);
 const Color red_violet = Color(0xFFB91372);
+const Color yellow = Color(0xFFE9D502);
 
 const Color disable = Color.fromARGB(255, 215, 215, 198);
 
@@ -83,7 +84,7 @@ Widget loadImage(String? folderName, String image, {BoxFit? fit}) {
   }
 }
 
-Widget widgetIcon(String path, {double? size, Color? color,BoxFit? fit}) {
+Widget widgetIcon(String path, {double? size, Color? color, BoxFit? fit}) {
   return SvgPicture.asset(
     path,
     width: size ?? size_icon,
@@ -93,7 +94,8 @@ Widget widgetIcon(String path, {double? size, Color? color,BoxFit? fit}) {
   );
 }
 
-void showSnackBar(BuildContext context, String text) {
+void showSnackBar(BuildContext context, String text,
+    {String? iconSvg, Color? iconSvgColor}) {
   final snackBar = SnackBar(
     backgroundColor: Colors.transparent,
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -105,11 +107,8 @@ void showSnackBar(BuildContext context, String text) {
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         child: Row(
           children: [
-            const Icon(
-              Icons.warning,
-              color: Colors.orange,
-              size: 32,
-            ),
+            widgetIcon(iconSvg ?? 'assets/icons/ic_warning.svg',
+                color: iconSvgColor ?? yellow, size: 32),
             const SizedBox(
               width: 10,
             ),

@@ -11,10 +11,15 @@ import 'package:english_study/screen/sub_topic/sub_topic_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ListSubTopicComponent extends StatelessWidget {
+class ListSubTopicComponent extends StatefulWidget {
   final Topic? topic;
   ListSubTopicComponent({super.key, this.topic});
 
+  @override
+  State<ListSubTopicComponent> createState() => _ListSubTopicComponentState();
+}
+
+class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
   late SubTopicViewModel _viewModel;
 
   double marginLeft = 30;
@@ -22,6 +27,12 @@ class ListSubTopicComponent extends StatelessWidget {
   double sizeCircle = 120;
 
   int animationDuration = 2000;
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +44,7 @@ class ListSubTopicComponent extends StatelessWidget {
               iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
         };
         return FutureBuilder(
-          future: viewmodel.initData(topic?.id?.toString()),
+          future: viewmodel.initData(widget.topic?.id?.toString()),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -49,7 +60,7 @@ class ListSubTopicComponent extends StatelessWidget {
                   ValueListenableBuilder(
                     valueListenable: _viewModel.downloadManager.processItems,
                     builder: (context, value, child) {
-                      FileInfo? fileInfo = value?[topic?.link_resource];
+                      FileInfo? fileInfo = value?[widget.topic?.link_resource];
                       return fileInfo != null &&
                               fileInfo.status != DownloadStatus.COMPLETE
                           ? Card(
@@ -63,7 +74,7 @@ class ListSubTopicComponent extends StatelessWidget {
                                   process: fileInfo.progress,
                                   onDownloadClick: () {
                                     _viewModel.downloadManager
-                                        .download(topic?.link_resource);
+                                        .download(widget.topic?.link_resource);
                                   },
                                 ),
                               ),
@@ -117,9 +128,9 @@ class ListSubTopicComponent extends StatelessWidget {
                     }
 
                     var isHasResource = _viewModel.downloadManager
-                        .checkHasResource(topic?.link_resource);
+                        .checkHasResource(widget.topic?.link_resource);
 
-                    var isDefault = index == 0 && topic?.isDefault == 1;
+                    var isDefault = index == 0 && widget.topic?.isDefault == 1;
 
                     if (!isHasResource && !isDefault) {
                       showSnackBar(

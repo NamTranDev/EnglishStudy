@@ -59,6 +59,7 @@ class TopicViewModel {
 
   void dispose() {
     _downloadManager.onNeedDownloadListener = null;
+    _downloadManager.onDownloadErrorListener = null;
   }
 
   Future<void> syncTopic(Topic? topic) async {

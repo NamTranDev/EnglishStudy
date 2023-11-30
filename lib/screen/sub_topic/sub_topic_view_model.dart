@@ -44,4 +44,8 @@ class SubTopicViewModel {
     }
     _updateLessionStatus.value = _updateLessionStatus.value++;
   }
+
+  void dispose() {
+    _downloadManager.onDownloadErrorListener = null;
+  }
 }

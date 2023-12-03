@@ -3,11 +3,14 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
+import 'package:english_study/model/topic.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
+import 'package:english_study/storage/memory.dart';
 import 'package:english_study/utils/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_archive/flutter_archive.dart';
+import 'package:path_provider/path_provider.dart';
 
 class DownloadManager {
   String? _category;
@@ -21,7 +24,37 @@ class DownloadManager {
   Function? onNeedDownloadListener;
   Function? onDownloadErrorListener;
 
-  void initFileInfos(String category, List<FileInfo> fileInfos) {
+  Future<void> checkNeedDownload(String? category, List<Topic>? topics,
+      {Function? onSyncUI}) async {
+    if (topics == null) return;
+    var isNeedDownload =
+        topics.where((element) => element.isDownload == 0).firstOrNull != null;
+    onSyncUI?.call(isNeedDownload);
+    if (isNeedDownload) {
+      final path = (await getTemporaryDirectory()).path;
+      var directory =
+          Directory("${getIt<AppMemory>().pathFolderDocument}/${category}");
+      if (await directory.exists() == false) {
+        await directory.create();
+      }
+      initFileInfos(
+          category,
+          topics
+              .map(
+                (e) => FileInfo(
+                    e.link_resource, "${path}/${e.name}.zip", directory.path,
+                    status: e.isDownload == 1
+                        ? DownloadStatus.COMPLETE
+                        : DownloadStatus.NONE),
+              )
+              .toList());
+      onNeedDownloadListener = (needDownload) {
+        onSyncUI?.call(needDownload);
+      };
+    }
+  }
+
+  void initFileInfos(String? category, List<FileInfo> fileInfos) {
     if (_category == category) {
       return;
     }

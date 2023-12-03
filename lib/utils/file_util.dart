@@ -1,7 +1,25 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/memory.dart';
+import 'package:flutter/services.dart';
+
+Future<bool> doesImageExistInAssets(String imagePath) async {
+  try {
+    // Simulate an asynchronous behavior with Future.delayed
+    await Future.delayed(Duration.zero);
+
+    // Attempt to load the asset.
+    ByteData? data = await rootBundle.load(imagePath);
+
+    // If data is not null, the file exists.
+    return data != null;
+  } catch (_) {
+    // If an exception is thrown, the file does not exist.
+    return false;
+  }
+}
 
 Future<bool> doesFileExist(String filePath) async {
   File file = File(filePath);

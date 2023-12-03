@@ -52,7 +52,7 @@ flutter:
   assets:
       - assets/
       - assets/image/
-      - assets/CEFR_Wordlist.db
+      - assets/english.db
       - assets/audio/
       - assets/background/
       - assets/icons/

@@ -11,5 +11,6 @@ class AppMemory {
   AppMemory._();
 
   late String pathFolderDocument;
+
   Map<String, int>? folderSize;
 }

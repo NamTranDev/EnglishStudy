@@ -49,7 +49,7 @@ class DBProvider {
 
   _initDB() async {
     var databasesPath = await getDatabasesPath();
-    var path = join(databasesPath, "CEFR_Wordlist.db");
+    var path = join(databasesPath, "english.db");
 
     // deleteDatabase(path);
 
@@ -59,7 +59,7 @@ class DBProvider {
         await Directory(dirname(path)).create(recursive: true);
       } catch (_) {}
 
-      ByteData data = await rootBundle.load('assets/CEFR_Wordlist.db');
+      ByteData data = await rootBundle.load('assets/english.db');
       List<int> bytes =
           data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
       await File(path).writeAsBytes(bytes, flush: true);
@@ -116,16 +116,16 @@ class DBProvider {
       subTopic.isLearning = 1;
       await updateSubTopic(subTopic);
     }
-    list.sort((a, b) {
-      int compareLearnComplete =
-          a.isLearnComplete!.compareTo(b.isLearnComplete!);
+    // list.sort((a, b) {
+    //   int compareLearnComplete =
+    //       a.isLearnComplete!.compareTo(b.isLearnComplete!);
 
-      if (compareLearnComplete == 1) {
-        return a.isLearning!.compareTo(b.isLearning!);
-      } else {
-        return compareLearnComplete;
-      }
-    });
+    //   if (compareLearnComplete != 0) {
+    //     return compareLearnComplete;
+    //   } else {
+    //     return a.isLearning!.compareTo(b.isLearning!);
+    //   }
+    // });
     return list;
   }
 
@@ -188,7 +188,7 @@ class DBProvider {
         ? values.map((c) async {
             Topic topic = Topic.fromMap(c);
             var path =
-                "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/${topic.name}";
+                "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().currentCategory()}/${topic.name}";
             var _downloadManager = getIt<DownloadManager>();
             var processItems = _downloadManager.processItems.value;
             if (processItems != null) {

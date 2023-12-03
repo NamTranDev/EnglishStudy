@@ -11,7 +11,10 @@ import 'package:provider/provider.dart';
 
 class ListTopicComponent extends StatefulWidget {
   final String? category;
-  ListTopicComponent({super.key, this.category});
+  final List<Topic>? topics;
+  final bool hasBack;
+  ListTopicComponent(
+      {super.key, this.category, this.topics, required this.hasBack});
 
   @override
   State<ListTopicComponent> createState() => _ListTopicComponentState();
@@ -36,7 +39,7 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
               iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
         };
         return FutureBuilder(
-          future: viewmodel.initData(widget.category),
+          future: viewmodel.initData(widget.category, widget.topics),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -60,7 +63,7 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
     return Column(
       children: [
         SizedBox(
-          height: 50,
+          height: widget.hasBack ? 50 : 0,
         ),
         ValueListenableBuilder(
           valueListenable: _viewModel.needDownload,
@@ -122,7 +125,7 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
           ),
           child: Stack(
             children: [
-              widgetImage(topic?.name, topic?.image, fit: BoxFit.fitHeight),
+              widgetImage(topic?.name, topic?.image, fit: BoxFit.cover),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,

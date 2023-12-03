@@ -1,37 +1,34 @@
+import 'package:english_study/model/topic.dart';
 import 'package:english_study/screen/topic/topic_screen.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
+import 'package:english_study/storage/preference.dart';
 import 'package:flutter/material.dart';
 
 class CategoryScreen extends StatelessWidget {
   static String routeName = '/category';
-  const CategoryScreen({super.key});
+  final Function onPickCategory;
+  const CategoryScreen({super.key, required this.onPickCategory});
 
   @override
   Widget build(BuildContext context) {
     var db = getIt<DBProvider>();
-    return Scaffold(
-      appBar: AppBar(
-        title: Center(child: Text('Category')),
-      ),
-      body: SafeArea(
-          child: FutureBuilder(
-        future: db.getCategorys(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                  "Something wrong with message: ${snapshot.error.toString()}"),
-            );
-          } else if (snapshot.connectionState == ConnectionState.done) {
-            return buildListCategory(context, snapshot.data);
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
-      )),
+    return FutureBuilder(
+      future: db.getCategorys(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+                "Something wrong with message: ${snapshot.error.toString()}"),
+          );
+        } else if (snapshot.connectionState == ConnectionState.done) {
+          return buildListCategory(context, snapshot.data);
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 
@@ -43,9 +40,9 @@ class CategoryScreen extends StatelessWidget {
           width: MediaQuery.of(context).size.width,
           child: Center(
             child: GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, TopicScreen.routeName,
-                    arguments: categories?[index]);
+              onTap: () async {
+                getIt<Preference>().setCurrentCategory(categories?[index]);
+                onPickCategory.call();
               },
               child: Text(
                 categories?[index] ?? '',

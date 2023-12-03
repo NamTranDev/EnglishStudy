@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:english_study/model/topic.dart';
 import 'package:english_study/storage/memory.dart';
 import 'package:english_study/reuse/component/back_screen_component.dart';
 import 'package:english_study/screen/topic/component/list_topic_component.dart';
@@ -20,17 +21,25 @@ class TopicScreen extends StatelessWidget {
         child: Stack(
           children: [
             BackScreenComponent(
-              child: Provider.value(
-                value: TopicViewModel(),
-                child: ListTopicComponent(
-                  category:
-                      ModalRoute.of(context)?.settings.arguments as String?,
-                ),
-              ),
+              child: topicComponent(
+                  ModalRoute.of(context)?.settings.arguments as String?,
+                  hasBack: true),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+Widget topicComponent(String? category,
+    {List<Topic>? topics, bool hasBack = false}) {
+  return Provider.value(
+    value: TopicViewModel(),
+    child: ListTopicComponent(
+      category: category,
+      topics: topics,
+      hasBack: hasBack,
+    ),
+  );
 }

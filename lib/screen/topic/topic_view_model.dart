@@ -23,37 +23,17 @@ class TopicViewModel {
   final DownloadManager _downloadManager = getIt<DownloadManager>();
   DownloadManager get downloadManager => _downloadManager;
 
-  Future<List<Topic>> initData(String? category) async {
+  Future<List<Topic>> initData(String? category, List<Topic>? topics) async {
     await Future.delayed(Duration(milliseconds: 2 * duration_animation_screen));
     var db = getIt<DBProvider>();
-    List<Topic> topics = await db.getTopics(category);
 
-    var isNeedDownload =
-        topics.where((element) => element.isDownload == 0).firstOrNull != null;
-    _needDownload.value = isNeedDownload;
-    if (isNeedDownload) {
-      String category = getIt<Preference>().catabularyVocabularyCurrent();
-      final path = (await getTemporaryDirectory()).path;
-      var directory =
-          Directory("${getIt<AppMemory>().pathFolderDocument}/${category}");
-      if (await directory.exists() == false) {
-        await directory.create();
-      }
-      _downloadManager.initFileInfos(
-          category,
-          topics
-              .map(
-                (e) => FileInfo(
-                    e.link_resource, "${path}/${e.name}.zip", directory.path,
-                    status: e.isDownload == 1
-                        ? DownloadStatus.COMPLETE
-                        : DownloadStatus.NONE),
-              )
-              .toList());
-      _downloadManager.onNeedDownloadListener = (needDownload) {
-        _needDownload.value = needDownload;
-      };
-    }
+    topics ??= await db.getTopics(category);
+
+    _downloadManager.checkNeedDownload(category, topics,
+        onSyncUI: (needDownload) {
+      _needDownload.value = needDownload;
+    });
+
     return topics;
   }
 

@@ -8,6 +8,7 @@ import 'package:english_study/utils/file_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 const Color color_primary = Color(0xFF2E4B5C);
 
@@ -64,7 +65,7 @@ Widget widgetImage(String? folderName, String? image, {BoxFit? fit}) {
 
 Widget loadImage(String? folderName, String image, {BoxFit? fit}) {
   var path =
-      "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/${folderName}/image/$image";
+      "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().currentCategory()}/${folderName}/image/$image";
   var file = File(path);
   var fileExist = file.existsSync();
 
@@ -74,14 +75,26 @@ Widget loadImage(String? folderName, String image, {BoxFit? fit}) {
       fit: fit,
     );
   }
-  try {
-    return Image.asset(
-      'assets/image/$image',
-      fit: fit,
-    );
-  } catch (e) {
-    return Image.asset('assets/no_image.jpg');
-  }
+
+  var pathAsset = 'assets/image/$image';
+  return FutureBuilder<bool>(
+    future: doesImageExistInAssets(pathAsset),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.done) {
+        if (snapshot.data == true) {
+          return Image.asset(
+            pathAsset,
+            fit: fit,
+          );
+        } else {
+          return Image.asset('assets/no_image.jpg', fit: fit);
+        }
+      } else {
+        // While waiting for the future, you can return a placeholder or loading indicator.
+        return CircularProgressIndicator();
+      }
+    },
+  );
 }
 
 Widget widgetIcon(String path, {double? size, Color? color, BoxFit? fit}) {

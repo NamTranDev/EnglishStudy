@@ -19,14 +19,21 @@ class _SubTopicScreenState extends State<SubTopicScreen> {
     return Scaffold(
       body: SafeArea(
         child: BackScreenComponent(
-          child: Provider.value(
-            value: SubTopicViewModel(),
-            child: ListSubTopicComponent(
-              topic: ModalRoute.of(context)?.settings.arguments as Topic?,
-            ),
-          ),
+          child: subTopicComponent(
+              ModalRoute.of(context)?.settings.arguments as Topic?,
+              hasBack: true),
         ),
       ),
     );
   }
+}
+
+Widget subTopicComponent(Topic? topic, {bool hasBack = false}) {
+  return Provider.value(
+    value: SubTopicViewModel(),
+    child: ListSubTopicComponent(
+      topic: topic,
+      hasBack: hasBack,
+    ),
+  );
 }

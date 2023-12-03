@@ -1,9 +1,11 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/screen/main/bottom_bar_provider.dart';
 import 'package:english_study/screen/main/tab/listener_tab.dart';
 import 'package:english_study/screen/main/tab/setting_tab.dart';
-import 'package:english_study/screen/main/tab/vocabulary_tab.dart';
+import 'package:english_study/screen/main/tab/vocabulary/vocabulary_tab.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   static String routeName = '/main';
@@ -14,17 +16,30 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-  static const List<Widget> _widgetList = <Widget>[
-    VocabularyTab(),
-    ListenerTab(),
-    SettingTab()
-  ];
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [VocabularyTab(), ListenerTab(), SettingTab()];
+  }
 
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider<BottomNavigationBarProvider>(
+        create: (context) => BottomNavigationBarProvider(),
+        builder: (context, child) => bodyMain(context));
+  }
+
+  Widget bodyMain(BuildContext context) {
+    var provider = Provider.of<BottomNavigationBarProvider>(context);
     return Scaffold(
-      body: _widgetList[_selectedIndex],
+      resizeToAvoidBottomInset: false,
+      body: PageView(
+        controller: provider.pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         elevation: 10.0,
@@ -45,19 +60,17 @@ class _MainScreenState extends State<MainScreen> {
             // backgroundColor: Colors.pink,
           ),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: provider.currentPage,
         selectedItemColor: color_primary,
         unselectedItemColor: maastricht_blue,
         showSelectedLabels: false,
         showUnselectedLabels: false,
-        onTap: _onItemTapped,
+        onTap: (index) {
+          if (index != provider.currentPage) {
+            provider.currentPage = index;
+          }
+        },
       ),
     );
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
   }
 }

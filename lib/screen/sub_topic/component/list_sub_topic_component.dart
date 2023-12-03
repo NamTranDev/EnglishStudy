@@ -13,7 +13,8 @@ import 'package:provider/provider.dart';
 
 class ListSubTopicComponent extends StatefulWidget {
   final Topic? topic;
-  ListSubTopicComponent({super.key, this.topic});
+  final bool hasBack;
+  ListSubTopicComponent({super.key, this.topic, required this.hasBack});
 
   @override
   State<ListSubTopicComponent> createState() => _ListSubTopicComponentState();
@@ -55,7 +56,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
               return Column(
                 children: [
                   SizedBox(
-                    height: 50,
+                    height: widget.hasBack ? 50 : 0,
                   ),
                   ValueListenableBuilder(
                     valueListenable: _viewModel.downloadManager.processItems,
@@ -182,7 +183,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                                   )
                                 : widgetImage(
                                     subTopic?.folderName, subTopic?.image,
-                                    fit: BoxFit.contain),
+                                    fit: BoxFit.cover),
                           ),
                         ),
                       ),

@@ -3,7 +3,9 @@ import os
 import shutil
 import sqlite3
 
-from crawled.db.db import create_database, database_exists,path_db
+import sys
+sys.path.append('/Users/namtrandev/Project/MyGithub/EnglishStudy/crawled/db')
+from db import create_database, database_exists,path_db
 
 
 def main():
@@ -44,14 +46,6 @@ def main():
                                            ), None)
     
     if first_or_default_topic is None:
-        first_or_default_topic = {
-                    'topic_name':'Toeic',
-                    'topic_image':'topic_toeic.webp',
-                    'number_lessons':'50 lessons',
-                    'total_words':'600 words',
-                    'description_topic':'The 600 Essential Words for the TOEIC is a study guide that enhances English vocabulary for workplace communication, essential for the TOEIC test, featuring definitions, example sentences',
-                    'link_topic':'',
-                    }
         cursor.execute('''
                 INSERT INTO topics (
                     topic_name, topic_image, number_lessons, total_words, description_topic, link_topic, category
@@ -60,6 +54,7 @@ def main():
                 'Toeic', 'topic_toeic.webp', '50 lessons', '600 words', 'The 600 Essential Words for the TOEIC is a study guide that enhances English vocabulary for workplace communication, essential for the TOEIC test, featuring definitions, example sentences', '', category_name
             ))
         id_topic = cursor.lastrowid
+        
     else:
         id_topic = first_or_default_topic[0]
 
@@ -80,24 +75,24 @@ def main():
 
         dir_sourc_img = '/Users/namtrandev/Project/MyGithub/LearnPython/practice4/topic_image'
         if os.path.exists(dir_folder_image + '/' + sub_topic_image) is False:
-            if os.path.exists(dir_sourc_img + '/' + image_vocabulary_name):
-                shutil.copy2(dir_folder_image + '/' + sub_topic_image, dir_sourc_img + '/' + image_vocabulary_name)
+            if os.path.exists(dir_sourc_img + '/' + sub_topic_image):
+                shutil.copy2(dir_sourc_img + '/' + sub_topic_image,dir_folder_image + '/' + sub_topic_image)
 
         filter_condition = lambda word: word['id_topic'] == sub_topic_id
         filtered_word = list(filter(filter_condition, words))
         filtered_word_size = len(filtered_word)
         first_or_default_sub_topic = next((sub_topic for sub_topic in sub_topics_db 
                                            if sub_topic[2] == sub_topic_name 
-                                           and sub_topic[3] == filtered_word_size + ' Words' 
+                                           and sub_topic[3] == str(filtered_word_size) + ' Words' 
                                            and sub_topic[5] == sub_topic_image 
                                            ), None)
         if first_or_default_sub_topic is None:
             cursor.execute('''
                         INSERT INTO sub_topics (
                             topic_id, sub_topic_name, number_sub_topic_words, link_sub_topic,sub_topic_image
-                        ) VALUES (?, ?, ?, ?)
+                        ) VALUES (?, ?, ?, ?, ?)
                     ''', (
-                        id_topic, sub_topic_name, filtered_word_size + ' Words','',sub_topic_image
+                        id_topic, sub_topic_name, str(filtered_word_size) + ' Words','',sub_topic_image
                     ))
             id_sub_topic = cursor.lastrowid
         else:
@@ -117,10 +112,10 @@ def main():
             spelling = word['spelling']
             audio = word['audio']
             
-            dir_sourc_img = '/Users/namtrandev/Project/MyGithub/LearnPython/practice4/topic_image'
+            dir_sourc_img = '/Users/namtrandev/Project/MyGithub/LearnPython/practice4/word_image'
             if os.path.exists(dir_folder_image + '/' + image_vocabulary_name) is False:
                 if os.path.exists(dir_sourc_img + '/' + image_vocabulary_name):
-                    shutil.copy2(dir_folder_image + '/' + image_vocabulary_name, dir_sourc_img + '/' + image_vocabulary_name)
+                    shutil.copy2(dir_sourc_img + '/' + image_vocabulary_name,dir_folder_image + '/' + image_vocabulary_name)
 
             first_or_default_word = next((word for word in words_db  
                                             if word[2] == vocabulary 
@@ -185,15 +180,16 @@ def main():
             dir_sourc_audio = '/Users/namtrandev/Project/MyGithub/LearnPython/practice4/audio'
             if os.path.exists(dir_folder_audio + '/' + audio) is False:
                 if os.path.exists(dir_sourc_audio + '/' + audio):
-                    shutil.copy2(dir_folder_audio + '/' + audio, dir_sourc_audio + '/' + audio)    
+                    shutil.copy2(dir_sourc_audio + '/' + audio,dir_folder_audio + '/' + audio)    
             
             if first_or_default_audio is None:
                 cursor.execute('''
-                                        INSERT INTO spelling (
+                                        INSERT INTO audio (
                                             vocabulary_id, audio_file
                                         ) VALUES (?, ?)
                                     ''', (
                                         id_vocabulary, audio
                                     ))
+        conn.commit()
 
 main()

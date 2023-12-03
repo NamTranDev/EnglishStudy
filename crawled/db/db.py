@@ -67,5 +67,28 @@ def create_database(db_file):
         FOREIGN KEY (vocabulary_id) REFERENCES vocabulary (id)
     )
 ''')
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS conversation (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        conversation_lession TEXT,
+        category Text
+    )
+''')
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS audio_conversation (
+        id BIGINT PRIMARY KEY,
+        conversation_id BIGINT,
+        audio_file TEXT,
+        FOREIGN KEY (conversation_id) REFERENCES conversation (id)
+    )
+''')
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS transcript (
+        id BIGINT PRIMARY KEY,
+        conversation_id BIGINT,
+        script TEXT,
+        FOREIGN KEY (conversation_id) REFERENCES conversation (id)
+    )
+''')
     conn.commit()
     conn.close()

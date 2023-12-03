@@ -55,8 +55,8 @@ class WidgetAfterGame extends StatelessWidget {
                             }),
                       ),
                       Positioned(
-                        top: 50,
-                        left: 20,
+                        top: 60,
+                        left: 10,
                         child: InkWell(
                           onTap: () {
                             Navigator.pop(context);

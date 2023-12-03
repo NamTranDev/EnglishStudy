@@ -186,7 +186,10 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                                     },
                                   ),
                                   onAnimationComplete: () async {
-                                    if (_viewModel.isShowGuideLearnWithGame()) {
+                                    var isShowTooltipGuideGame =
+                                        _viewModel.isShowGuideLearnWithGame();
+                                    print(isShowTooltipGuideGame);
+                                    if (isShowTooltipGuideGame) {
                                       tooltipController.showTooltip();
                                     }
                                   },

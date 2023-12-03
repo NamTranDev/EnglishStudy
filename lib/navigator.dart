@@ -10,7 +10,6 @@ import 'package:flutter/widgets.dart';
 var routes = {
   SplashScreen.routeName: (context) => SplashScreen(),
   MainScreen.routeName: (context) => MainScreen(),
-  CategoryScreen.routeName: (context) => CategoryScreen(),
   TopicScreen.routeName: (context) => TopicScreen(),
   SubTopicScreen.routeName: (context) => SubTopicScreen(),
   FlashCardScreen.routeName: (context) => FlashCardScreen(),

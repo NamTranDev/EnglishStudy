@@ -11,7 +11,7 @@ mixin AudioViewModel {
   void playAudio(Audio? audio) async {
     // audioPlayer.stop();
     var path =
-        "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().catabularyVocabularyCurrent()}/${audio?.folderName}/audio/${audio?.path}";
+        "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().currentCategory()}/${audio?.folderName}/audio/${audio?.path}";
     print(path);
     try {
       var fileExist = await doesFileExist(path);

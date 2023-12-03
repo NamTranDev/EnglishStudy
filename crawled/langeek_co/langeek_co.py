@@ -15,8 +15,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from crawled.db.db import create_database, database_exists
-from crawled.db.db import path_db
+import sys
+sys.path.append('/Users/namtrandev/Project/MyGithub/EnglishStudy/crawled/db')
+from db import create_database, database_exists,path_db
 
 index = 2
 log_link = None
@@ -70,7 +71,7 @@ def main():
     if not os.path.isdir(categorized_dir):
         os.mkdir(categorized_dir)
         
-    path = path_db;
+    path = path_db
     if not database_exists(path):
         create_database(path)
         print("Database created.")

@@ -9,13 +9,17 @@ import requests
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
+# from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+
+import sys
+sys.path.append('/Users/namtrandev/Project/MyGithub/EnglishStudy/crawled/download')
+from download import download_file
 
 sys.path.append('/Users/namtrandev/Project/MyGithub/EnglishStudy/crawled/db')
 from db import create_database, database_exists,path_db
@@ -35,26 +39,11 @@ def list_json():
 
 def main():
     url = 'https://helenadailyenglish.com/basic-english-conversation-100-daily-topics'
-    helenadailyenglish_dir = 'crawled/helenadailyenglish/'
-    name = 'helenadailyenglish'
-
-    categorized_dir = helenadailyenglish_dir
-    
-    if not os.path.isdir(categorized_dir):
-        os.mkdir(categorized_dir)
-
-    path = path_db
-    if database_exists(path):
-        create_database(path)  
-        print("Database created.")
-
-    conn = sqlite3.connect(path)
-    cursor = conn.cursor()
 
     chrome_options = Options()
     chrome_options.add_extension('/Users/namtrandev/Downloads/AdBlock-—-best-ad-blocker.crx')
     chrome_options.add_argument("--disable-notifications")
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),options=chrome_options)
+    driver = webdriver.Chrome(options=chrome_options)
     
     driver.maximize_window()
 
@@ -117,5 +106,83 @@ def main():
                     write_json(datas_json)
                 
     write_json(datas_json)
-                
-main()
+
+def main2():
+
+    helenadailyenglish_dir = 'crawled/'
+    name = 'helenadailyenglish'
+
+    categorized_dir = helenadailyenglish_dir
+    
+    if not os.path.isdir(categorized_dir):
+        os.mkdir(categorized_dir)
+
+    path = path_db
+    if database_exists(path):
+        create_database(path)  
+        print("Database created.")
+
+    conn = sqlite3.connect(path)
+    cursor = conn.cursor()
+
+    datas_json = list_json()
+    for (index,item) in datas_json:
+        title = item['conversation_lession']
+        title = title.lower().capitalize()
+        audio = item['audio']
+        transcripts = item['transcript']
+
+        dir_folder = helenadailyenglish_dir + name + '/' + 'audio'
+        audio_file_name = name + '_' + str(index + 1) + '.mp3'
+
+        full_audio_path = name + '/audio/' + audio_file_name
+        download_file(audio,dir_folder,audio_file_name)
+
+        cursor.execute('SELECT * FROM conversation')
+        conversations = cursor.fetchall()
+
+        first_or_default_conversation = next((conversation for conversation in conversations  
+                                           if conversation[1] == title 
+                                           ), None)
+        
+        if first_or_default_conversation is None:
+            cursor.execute('''INSERT INTO conversation (
+                                    conversation_lession,category
+                                ) VALUES (?, ?)
+                            ''', (
+                                title, name
+                            ))
+            
+            id_conversation = cursor.lastrowid
+        else:
+            id_conversation = first_or_default_conversation[0]
+
+        cursor.execute('SELECT * FROM audio_conversation WHERE conversation_id = ?', (id_conversation,))
+        audio_conversations = cursor.fetchall()
+        first_or_default_conversation_audio = next((audio_conversation for audio_conversation in audio_conversations  
+                                           if audio_conversation[2] == full_audio_path 
+                                           ), None)
+        
+        if first_or_default_conversation_audio is None:
+            cursor.execute('''INSERT INTO audio_conversation (
+                                    conversation_id,audio_file
+                                ) VALUES (?, ?)
+                            ''', (
+                                id_conversation, full_audio_path
+                            ))
+            
+        for transcript in transcripts:
+            cursor.execute('SELECT * FROM transcript WHERE transcript = ?', (id_conversation,))
+            transcript_conversations = cursor.fetchall()
+            first_or_default_conversation_audio = next((transcript_conversation for transcript_conversation in transcript_conversations  
+                                           if transcript_conversation[2] == transcript 
+                                           ), None)
+            
+            if first_or_default_conversation_audio is None:
+                cursor.execute('''INSERT INTO transcript (
+                                        conversation_id,script
+                                    ) VALUES (?, ?)
+                                ''', (
+                                    id_conversation, transcript
+                                ))
+main2()

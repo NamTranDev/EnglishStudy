@@ -119,23 +119,51 @@ def main2():
 
     path = path_db
     if database_exists(path):
-        create_database(path)  
+        create_database(path)
         print("Database created.")
 
     conn = sqlite3.connect(path)
     cursor = conn.cursor()
 
     datas_json = list_json()
-    for (index,item) in datas_json:
+
+    cursor.execute('SELECT * FROM topic_conversation')
+    list_topic = cursor.fetchall()
+
+    topic_name = 'Basic English Conversation: 100 Daily Topics'
+    description_topic = 'The topics level for English beginners. If you are a newbie in learning English, they are suitable for you.'
+
+    number_lessons = '100 lessions'
+
+    first_or_default_topic = next((topic for topic in list_topic 
+                                           if topic[1] == topic_name 
+                                           and topic[2] == description_topic
+                                           and topic[3] == number_lessons
+                                           and topic[5] == name
+                                           ), None)
+    
+    if first_or_default_topic is None:
+        cursor.execute('''
+                INSERT INTO topic_conversation (
+                    topic_name, description_topic, number_lessons, link_topic, category
+                ) VALUES (?, ?, ?, ?, ?)
+            ''', (
+                topic_name, description_topic, number_lessons, '', name
+            ))
+        id_topic = cursor.lastrowid
+    else:
+        id_topic = first_or_default_topic[0]
+
+    for index, item in enumerate(datas_json):
         title = item['conversation_lession']
         title = title.lower().capitalize()
         audio = item['audio']
         transcripts = item['transcript']
 
-        dir_folder = helenadailyenglish_dir + name + '/' + 'audio'
+        dir_folder = helenadailyenglish_dir + name + '/' + name + '_audio'
         audio_file_name = name + '_' + str(index + 1) + '.mp3'
 
-        full_audio_path = name + '/audio/' + audio_file_name
+        full_audio_path = name + '_audio/' + audio_file_name
         download_file(audio,dir_folder,audio_file_name)
 
         cursor.execute('SELECT * FROM conversation')
@@ -147,10 +175,10 @@ def main2():
         
         if first_or_default_conversation is None:
             cursor.execute('''INSERT INTO conversation (
-                                    conversation_lession,category
+                                    topic_id,conversation_lession
                                 ) VALUES (?, ?)
                             ''', (
-                                title, name
+                                id_topic, title
                             ))
             
             id_conversation = cursor.lastrowid
@@ -165,14 +193,14 @@ def main2():
         
         if first_or_default_conversation_audio is None:
             cursor.execute('''INSERT INTO audio_conversation (
-                                    conversation_id,audio_file
-                                ) VALUES (?, ?)
+                                    conversation_id,audio_file_name,audio_file_path
+                                ) VALUES (?, ?, ?)
                             ''', (
-                                id_conversation, full_audio_path
+                                id_conversation, audio_file_name, full_audio_path
                             ))
             
         for transcript in transcripts:
-            cursor.execute('SELECT * FROM transcript WHERE transcript = ?', (id_conversation,))
+            cursor.execute('SELECT * FROM transcript WHERE conversation_id = ?', (id_conversation,))
             transcript_conversations = cursor.fetchall()
             first_or_default_conversation_audio = next((transcript_conversation for transcript_conversation in transcript_conversations  
                                            if transcript_conversation[2] == transcript 
@@ -185,4 +213,41 @@ def main2():
                                 ''', (
                                     id_conversation, transcript
                                 ))
-main2()
+        conn.commit()
+    conn.close()
+
+def main3():
+
+    helenadailyenglish_dir = 'crawled/'
+    name = 'helenadailyenglish'
+
+    path = path_db
+    conn = sqlite3.connect(path)
+    cursor = conn.cursor()
+
+    dir_folder = helenadailyenglish_dir + name + '/' + name + '_audio'
+
+    move_file_to_assets(cursor,dir_folder,name)
+
+def move_file_to_assets(c,path, category):
+        topic_conversation = c.execute("SELECT * FROM topic_conversation where category ='" + category+"'").fetchall()
+        for topic in topic_conversation:
+            id = topic[0]
+            name = topic[1]
+
+            conversations = c.execute('SELECT * FROM conversation where topic_id = ' + str(id)).fetchall()
+            count = 0
+            for conversation in conversations:
+                count += 1
+                conversation_id = conversation[0]
+
+                if count < 6:
+                    audios = c.execute('SELECT * FROM audio_conversation where conversation_id =' + str(conversation_id)).fetchall()
+                    for audio in audios:
+                        audio_file = audio[2]
+                        if audio_file is not None and os.path.exists(path + "/" + audio_file):
+                            os.rename(path + "/" + audio_file, 'assets/audio/' + audio_file)
+                else :
+                    break
+
+main3()

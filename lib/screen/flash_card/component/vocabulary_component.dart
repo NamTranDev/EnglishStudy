@@ -34,7 +34,7 @@ class VocabularyComponent extends StatelessWidget {
                   child: Container(
                     margin: EdgeInsets.symmetric(horizontal: 50),
                     child: widgetImage(
-                        vocabulary?.folderName, vocabulary?.image,
+                        vocabulary?.image_file_name, vocabulary?.image_file_path,
                         fit: BoxFit.fill),
                   ),
                   flex: 3,

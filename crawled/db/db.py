@@ -68,17 +68,29 @@ def create_database(db_file):
     )
 ''')
     cursor.execute('''
+    CREATE TABLE IF NOT EXISTS topic_conversation (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        topic_name TEXT,
+        description_topic TEXT,
+        number_lessons TEXT,
+        category Text,
+        link_topic Text
+    )
+''')
+    cursor.execute('''
     CREATE TABLE IF NOT EXISTS conversation (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        topic_id INTEGER,
         conversation_lession TEXT,
-        category Text
+        FOREIGN KEY (topic_id) REFERENCES topic_conversation (id)
     )
 ''')
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS audio_conversation (
         id BIGINT PRIMARY KEY,
         conversation_id BIGINT,
-        audio_file TEXT,
+        audio_file_name TEXT,
+        audio_file_path TEXT,
         FOREIGN KEY (conversation_id) REFERENCES conversation (id)
     )
 ''')

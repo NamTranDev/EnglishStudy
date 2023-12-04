@@ -56,7 +56,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
               return Column(
                 children: [
                   SizedBox(
-                    height: widget.hasBack ? 50 : 0,
+                    height: widget.hasBack ? 50 : 10,
                   ),
                   ValueListenableBuilder(
                     valueListenable: _viewModel.downloadManager.processItems,
@@ -181,8 +181,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                                       fit: BoxFit.scaleDown,
                                     ),
                                   )
-                                : widgetImage(
-                                    subTopic?.folderName, subTopic?.image,
+                                : widgetImageAsset(subTopic?.image,
                                     fit: BoxFit.cover),
                           ),
                         ),

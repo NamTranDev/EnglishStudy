@@ -154,7 +154,7 @@ class DBProvider {
             SubTopic subtopic = SubTopic.fromMap(c);
 
             subtopic.processLearn = await progressSubTopic(subtopic);
-            subtopic.folderName = await getFolderName(subtopic.id.toString());
+        
             return subtopic;
           }).toList()
         : [];
@@ -170,16 +170,6 @@ class DBProvider {
             'SELECT COUNT(*) FROM $_VOCABULARY_TABLE WHERE sub_topic_id = ${subtopic.id}')) ??
         1;
     return numberLearn / total;
-  }
-
-  Future<String?> getFolderName(String id) async {
-    final db = await _db;
-    final Map<String, dynamic>? result = (await db.rawQuery(
-      'SELECT topic_name FROM topics where id = (SELECT topic_id FROM sub_topics where id = ?)',
-      [id],
-    ))
-        .first;
-    return result?['topic_name'] as String?;
   }
 
   Future<List<Topic>> mapperTopic(
@@ -219,20 +209,13 @@ class DBProvider {
     Iterable<Future<Vocabulary>> mappedList = values.isNotEmpty
         ? values.map((c) async {
             Vocabulary vocabulary = Vocabulary.fromMap(c);
-            var folderName =
-                await getFolderName(vocabulary.sub_topic_id.toString());
-            vocabulary.folderName = folderName;
             var audios = await db.query(_AUDIO_TABLE,
                 where: 'vocabulary_id = ?', whereArgs: [vocabulary.id]);
             var spellings = await db.query(_SPELLING_TABLE,
                 where: 'vocabulary_id = ?', whereArgs: [vocabulary.id]);
             var examples = await db.query(_EXAMPLE_TABLE,
                 where: 'vocabulary_id = ?', whereArgs: [vocabulary.id]);
-            vocabulary.audios = audios.map((e) {
-              Audio audio = Audio.fromMap(e);
-              audio.folderName = folderName;
-              return audio;
-            }).toList();
+            vocabulary.audios = audios.map((e) => Audio.fromMap(e)).toList();
             vocabulary.spellings =
                 spellings.map((e) => Spelling.fromMap(e)).toList();
             vocabulary.examples = examples.map((e) {

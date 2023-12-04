@@ -86,8 +86,7 @@ class Topic {
           : null,
       link_resource:
           map['link_topic'] != null ? map['link_topic'] as String : null,
-      isDownload:
-          map['isDownload'] != null ? map['isDownload'] as int : null,
+      isDownload: map['isDownload'] != null ? map['isDownload'] as int : null,
       isLearnComplete:
           map['isLearnComplete'] != null ? map['isLearnComplete'] as int : null,
       isLearning: map['isLearning'] != null ? map['isLearning'] as int : null,

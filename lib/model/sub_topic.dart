@@ -12,7 +12,6 @@ class SubTopic {
   int? isLearning;
 
   double? processLearn = 0;
-  String? folderName;
 
   SubTopic({
     this.id,

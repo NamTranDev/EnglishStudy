@@ -10,7 +10,8 @@ class Vocabulary {
   int? id;
   int? sub_topic_id;
   String? word;
-  String? image;
+  String? image_file_name;
+  String? image_file_path;
   String? word_type;
   String? description;
   int? isLearn;
@@ -24,7 +25,8 @@ class Vocabulary {
     this.id,
     this.sub_topic_id,
     this.word,
-    this.image,
+    this.image_file_name,
+    this.image_file_path,
     this.word_type,
     this.description,
     this.isLearn,
@@ -34,7 +36,8 @@ class Vocabulary {
     int? id,
     int? sub_topic_id,
     String? word,
-    String? image,
+    String? image_file_name,
+    String? image_file_path,
     String? word_type,
     String? description,
     int? isLearn,
@@ -43,7 +46,8 @@ class Vocabulary {
       id: id ?? this.id,
       sub_topic_id: sub_topic_id ?? this.sub_topic_id,
       word: word ?? this.word,
-      image: image ?? this.image,
+      image_file_name: image_file_name ?? this.image_file_name,
+      image_file_path: image_file_path ?? this.image_file_path,
       word_type: word_type ?? this.word_type,
       description: description ?? this.description,
       isLearn: isLearn ?? this.isLearn,
@@ -55,7 +59,8 @@ class Vocabulary {
       'id': id,
       'sub_topic_id': sub_topic_id,
       'vocabulary': word,
-      'image': image,
+      'image_file_name': image_file_name,
+      'image_file_path': image_file_path,
       'word_type': word_type,
       'description': description,
       'isLearn': isLearn,
@@ -68,7 +73,8 @@ class Vocabulary {
       sub_topic_id:
           map['sub_topic_id'] != null ? map['sub_topic_id'] as int : null,
       word: map['vocabulary'] != null ? map['vocabulary'] as String : null,
-      image: map['image'] != null ? map['image'] as String : null,
+      image_file_name: map['image_file_name'] != null ? map['image_file_name'] as String : null,
+      image_file_path: map['image_file_path'] != null ? map['image_file_path'] as String : null,
       word_type: map['word_type'] != null ? map['word_type'] as String : null,
       description:
           map['description'] != null ? map['description'] as String : null,
@@ -83,7 +89,7 @@ class Vocabulary {
 
   @override
   String toString() {
-    return 'Vocabulary(id: $id, sub_topic_id: $sub_topic_id, word: $word, image: $image, word_type: $word_type, description: $description, isLearn: $isLearn)';
+    return 'Vocabulary(id: $id, sub_topic_id: $sub_topic_id, word: $word, image_file_name: $image_file_name, image_file_path: $image_file_path, word_type: $word_type, description: $description, isLearn: $isLearn)';
   }
 
   @override
@@ -93,7 +99,8 @@ class Vocabulary {
     return other.id == id &&
         other.sub_topic_id == sub_topic_id &&
         other.word == word &&
-        other.image == image &&
+        other.image_file_name == image_file_name &&
+        other.image_file_path == image_file_path &&
         other.word_type == word_type &&
         other.description == description &&
         other.isLearn == isLearn;
@@ -104,7 +111,8 @@ class Vocabulary {
     return id.hashCode ^
         sub_topic_id.hashCode ^
         word.hashCode ^
-        image.hashCode ^
+        image_file_name.hashCode ^
+        image_file_path.hashCode ^
         word_type.hashCode ^
         description.hashCode ^
         isLearn.hashCode;

@@ -10,15 +10,14 @@ mixin AudioViewModel {
 
   void playAudio(Audio? audio) async {
     // audioPlayer.stop();
-    var path =
-        "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().currentCategory()}/${audio?.folderName}/audio/${audio?.path}";
+    var path = "${getIt<AppMemory>().pathFolderDocument}/${audio?.path}";
     print(path);
     try {
       var fileExist = await doesFileExist(path);
       if (fileExist) {
         audioPlayer.setFilePath(path);
       } else {
-        audioPlayer.setAsset('assets/audio/${audio?.path}');
+        audioPlayer.setAsset('assets/audio/${audio?.name}');
       }
       audioPlayer.play();
     } catch (e) {

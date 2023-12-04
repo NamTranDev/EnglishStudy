@@ -111,7 +111,7 @@ def main():
 
             first_or_default_topic = next((topic for topic in list_topic 
                                            if topic[1] == topic_name 
-                                           if topic[2] == image_topic_name 
+                                           and topic[2] == image_topic_name 
                                            and topic[3] == number_lessons 
                                            and topic[4] == total_words 
                                            and topic[5] == description_topic 

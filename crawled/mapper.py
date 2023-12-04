@@ -15,14 +15,50 @@ def create_connection(db_file):
 
         path_root = 'crawled/toeic'
 
-        move_file_to_assets(c,path_root,'toeic')
-        zip_topic(c,path_root,'toeic')
+        convert_file_path(c)
+        conn.commit()
+
+        # move_file_to_assets(c,path_root,'toeic')
+        # zip_topic(c,path_root,'toeic')
            
     except Error as e:
         print(e)
     finally:
         if conn:
             conn.close()
+
+def convert_file_path(c):
+    topics = c.execute("SELECT * FROM topics").fetchall()
+    for topic in topics:
+        id_topic = topic[0]
+        topic_name = topic[1]
+        category = topic[7]
+        sub_topics = c.execute('SELECT * FROM sub_topics where topic_id=' + str(id_topic)).fetchall()
+        for sub_topic in sub_topics:
+            sub_id = sub_topic[0]
+            vocabularys = c.execute('SELECT * FROM vocabulary where sub_topic_id =' + str(sub_id)).fetchall()
+            for vocabulary in vocabularys:
+                id = vocabulary[0]
+                image = vocabulary[3]
+                if image is not None:
+                    update_query = """
+    UPDATE vocabulary
+    SET image_file_path = ?
+    WHERE id = ?
+"""
+                    c.execute(update_query, (category + '/' + topic_name + '/image/' + image, id))
+                audios = c.execute('SELECT * FROM audio where vocabulary_id =' + str(id)).fetchall()
+                for audio in audios:
+                    audio_file = audio[2]
+                    if audio_file is not None:
+                        update_query = """
+    UPDATE audio
+    SET audio_file_path = ?
+    WHERE audio_file_name = ? and vocabulary_id = ?
+"""
+                        c.execute(update_query, (category + '/' + topic_name + '/audio/' + audio_file, audio_file,id))
+                
+                
 
 def zip_topic(c,path_root,category):
     topics = c.execute("SELECT * FROM topics where category = '" + category + "'").fetchall()

@@ -57,16 +57,36 @@ ThemeData themeInfo = ThemeData(
   ),
 );
 
-Widget widgetImage(String? folderName, String? image, {BoxFit? fit}) {
-  return image != null
-      ? loadImage(folderName, image, fit: fit)
+Widget widgetImage(String? image_name, String? image_path, {BoxFit? fit}) {
+  return image_name != null
+      ? loadImage(image_name, image_path, fit: fit)
       : Image.asset('assets/no_image.jpg');
 }
 
-Widget loadImage(String? folderName, String image, {BoxFit? fit}) {
-  var path =
-      "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().currentCategory()}/${folderName}/image/$image";
-  var file = File(path);
+Widget widgetImageAsset(String? image_name, {BoxFit? fit}) {
+  var pathAsset = 'assets/image/$image_name';
+  return FutureBuilder<bool>(
+    future: doesImageExistInAssets(pathAsset),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.done) {
+        if (snapshot.data == true) {
+          return Image.asset(
+            pathAsset,
+            fit: fit,
+          );
+        } else {
+          return Image.asset('assets/no_image.jpg', fit: fit);
+        }
+      } else {
+        // While waiting for the future, you can return a placeholder or loading indicator.
+        return CircularProgressIndicator();
+      }
+    },
+  );
+}
+
+Widget loadImage(String? image_name, String? image_path, {BoxFit? fit}) {
+  var file = File(image_path ?? '');
   var fileExist = file.existsSync();
 
   if (fileExist) {
@@ -76,7 +96,7 @@ Widget loadImage(String? folderName, String image, {BoxFit? fit}) {
     );
   }
 
-  var pathAsset = 'assets/image/$image';
+  var pathAsset = 'assets/image/$image_name';
   return FutureBuilder<bool>(
     future: doesImageExistInAssets(pathAsset),
     builder: (context, snapshot) {

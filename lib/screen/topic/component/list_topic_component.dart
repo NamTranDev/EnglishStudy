@@ -63,7 +63,7 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
     return Column(
       children: [
         SizedBox(
-          height: widget.hasBack ? 50 : 0,
+          height: widget.hasBack ? 50 : 10,
         ),
         ValueListenableBuilder(
           valueListenable: _viewModel.needDownload,
@@ -125,7 +125,7 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
           ),
           child: Stack(
             children: [
-              widgetImage(topic?.name, topic?.image, fit: BoxFit.cover),
+              widgetImageAsset(topic?.image, fit: BoxFit.cover),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,

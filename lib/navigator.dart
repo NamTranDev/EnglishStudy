@@ -1,11 +1,11 @@
-import 'package:english_study/screen/category/category_screen.dart';
-import 'package:english_study/screen/flash_card/flash_card_vocabulary_screen.dart';
-import 'package:english_study/screen/game/game_vocabulary_screen.dart';
+import 'package:english_study/screen/listening/conversation/conversation_screen.dart';
+import 'package:english_study/screen/listening/lessions/lession_topic_screen.dart';
 import 'package:english_study/screen/main/main_screen.dart';
 import 'package:english_study/screen/splash/splash_screen.dart';
-import 'package:english_study/screen/sub_topic/sub_topic_screen.dart';
+import 'package:english_study/screen/vocabulary/flash_card/flash_card_vocabulary_screen.dart';
+import 'package:english_study/screen/vocabulary/game/game_vocabulary_screen.dart';
+import 'package:english_study/screen/vocabulary/sub_topic/sub_topic_screen.dart';
 import 'package:english_study/screen/topic/topic_screen.dart';
-import 'package:flutter/widgets.dart';
 
 var routes = {
   SplashScreen.routeName: (context) => SplashScreen(),
@@ -14,4 +14,6 @@ var routes = {
   SubTopicScreen.routeName: (context) => SubTopicScreen(),
   FlashCardScreen.routeName: (context) => FlashCardScreen(),
   GameVocabularyScreen.routeName: (context) => GameVocabularyScreen(),
+  LessionTopicScreen.routeName: (context) => LessionTopicScreen(),
+  ConversationScreen.routeName: (context) => ConversationScreen(),
 };

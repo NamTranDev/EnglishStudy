@@ -9,10 +9,12 @@ class Topic {
   String? total_word;
   String? description;
   String? link_resource;
+  String? category;
   int? isLearnComplete;
   int? isLearning;
   int? isDefault;
   int? isDownload;
+  int? type;
   Topic({
     this.id,
     this.name,
@@ -21,10 +23,12 @@ class Topic {
     this.total_word,
     this.description,
     this.link_resource,
+    this.category,
     this.isDownload,
     this.isLearnComplete,
     this.isLearning,
     this.isDefault,
+    this.type,
   });
 
   Topic copyWith({
@@ -35,10 +39,12 @@ class Topic {
     String? total_word,
     String? description,
     String? link_resource,
+    String? category,
     int? isDownload,
     int? isLearnComplete,
     int? isLearning,
     int? isDefault,
+    int? type,
   }) {
     return Topic(
       id: id ?? this.id,
@@ -48,10 +54,12 @@ class Topic {
       total_word: total_word ?? this.total_word,
       description: description ?? this.description,
       link_resource: link_resource ?? this.link_resource,
+      category: category ?? this.category,
       isDownload: isDownload ?? this.isDownload,
       isLearnComplete: isLearnComplete ?? this.isLearnComplete,
       isLearning: isLearning ?? this.isLearning,
       isDefault: isDefault ?? this.isDefault,
+      type: type ?? this.type,
     );
   }
 
@@ -64,10 +72,12 @@ class Topic {
       'total_words': total_word,
       'description_topic': description,
       'link_topic': link_resource,
+      'category': category,
       'isDownload': isDownload,
       'isLearnComplete': isLearnComplete,
       'isLearning': isLearning,
       'isDefault': isDefault,
+      'type': type,
     };
   }
 
@@ -86,11 +96,13 @@ class Topic {
           : null,
       link_resource:
           map['link_topic'] != null ? map['link_topic'] as String : null,
+      category: map['category'] != null ? map['category'] as String : null,
       isDownload: map['isDownload'] != null ? map['isDownload'] as int : null,
       isLearnComplete:
           map['isLearnComplete'] != null ? map['isLearnComplete'] as int : null,
       isLearning: map['isLearning'] != null ? map['isLearning'] as int : null,
       isDefault: map['isDefault'] != null ? map['isDefault'] as int : null,
+      type: map['type'] != null ? map['type'] as int : null,
     );
   }
 
@@ -101,7 +113,7 @@ class Topic {
 
   @override
   String toString() {
-    return 'Topic(id: $id, name: $name, image: $image, number_sub_topic: $number_sub_topic, total_word: $total_word, description: $description,link_resource: $link_resource,isDownload: $isDownload, isLearnComplete: $isLearnComplete, isLearning: $isLearning, isDefault: $isDefault)';
+    return 'Topic(id: $id, name: $name, image: $image, number_sub_topic: $number_sub_topic, total_word: $total_word, description: $description,link_resource: $link_resource,category: $category,isDownload: $isDownload, isLearnComplete: $isLearnComplete, isLearning: $isLearning, isDefault: $isDefault, type: $type)';
   }
 
   @override
@@ -115,10 +127,12 @@ class Topic {
         other.total_word == total_word &&
         other.description == description &&
         other.link_resource == link_resource &&
+        other.category == category &&
         other.isDownload == isDownload &&
         other.isLearning == isLearning &&
         other.isLearnComplete == isLearnComplete &&
-        other.isDefault == isDefault;
+        other.isDefault == isDefault &&
+        other.type == type;
   }
 
   @override
@@ -130,9 +144,11 @@ class Topic {
         total_word.hashCode ^
         description.hashCode ^
         link_resource.hashCode ^
+        category.hashCode ^
         isDownload.hashCode ^
         isLearning.hashCode ^
         isDefault.hashCode ^
+        type.hashCode ^
         isLearnComplete.hashCode;
   }
 }

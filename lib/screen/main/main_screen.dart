@@ -1,6 +1,6 @@
 import 'package:english_study/constants.dart';
 import 'package:english_study/screen/main/bottom_bar_provider.dart';
-import 'package:english_study/screen/main/tab/listener_tab.dart';
+import 'package:english_study/screen/main/tab/listen/listening_tab.dart';
 import 'package:english_study/screen/main/tab/setting_tab.dart';
 import 'package:english_study/screen/main/tab/vocabulary/vocabulary_tab.dart';
 import 'package:flutter/cupertino.dart';

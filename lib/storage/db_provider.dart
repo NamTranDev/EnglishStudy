@@ -7,8 +7,11 @@ import 'dart:math';
 import 'package:english_study/download/download_manager.dart';
 import 'package:english_study/download/download_status.dart';
 import 'package:english_study/model/audio.dart';
+import 'package:english_study/model/conversation.dart';
+import 'package:english_study/model/example%20copy.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
+import 'package:english_study/model/tab_type.dart';
 import 'package:english_study/storage/memory.dart';
 import 'package:english_study/model/spelling.dart';
 import 'package:english_study/model/sub_topic.dart';
@@ -35,9 +38,12 @@ class DBProvider {
 
   final _TOPIC_TABLE = "topics";
   final _SUB_TOPIC_TABLE = "sub_topics";
+  final _CONVERSATION_TABLE = "conversation";
   final _VOCABULARY_TABLE = "vocabulary";
   final _AUDIO_TABLE = "audio";
+  final _AUDIO_CONVERSATION_TABLE = "audio_conversation";
   final _SPELLING_TABLE = "spelling";
+  final _TRANSCRIPT_TABLE = "transcript";
   final _EXAMPLE_TABLE = "examples";
 
   Future<Database> get _db async {
@@ -67,20 +73,23 @@ class DBProvider {
     return await openDatabase(path);
   }
 
-  Future<List<String>> getCategorys() async {
+  Future<List<String>> getCategorys(int? type) async {
     final db = await _db;
     var res = await db.query(_TOPIC_TABLE,
-        columns: ['category'], groupBy: 'category');
+        where: 'type = ?',
+        whereArgs: [type],
+        columns: ['category'],
+        groupBy: 'category');
     List<String> list =
         res.isNotEmpty ? res.map((c) => c['category'] as String).toList() : [];
     return list;
   }
 
-  Future<List<Topic>> getTopics(String? category) async {
+  Future<List<Topic>> getTopics(String? category, int? type) async {
     final db = await _db;
-    var res = await db
-        .query(_TOPIC_TABLE, where: 'category = ?', whereArgs: [category]);
-    List<Topic> list = await mapperTopic(db, res);
+    var res = await db.query(_TOPIC_TABLE,
+        where: 'category = ? and type = ?', whereArgs: [category, type]);
+    List<Topic> list = await mapperTopic(db, res, category);
     bool hasLearning = list.any(
         (element) => element.isLearnComplete == 0 && element.isLearning == 1);
     if (!hasLearning) {
@@ -102,6 +111,30 @@ class DBProvider {
     return list;
   }
 
+  Future<List<Conversation>> getConversations(String? topicId) async {
+    final db = await _db;
+    var res = await db.query(_CONVERSATION_TABLE,
+        where: 'topic_id = ?', whereArgs: [topicId]);
+    List<Conversation> convesations =
+        res.isNotEmpty ? res.map((c) => Conversation.fromMap(c)).toList() : [];
+    bool hasLearning = convesations.any(
+        (element) => element.isLearnComplete == 0 && element.isLearning == 1);
+    if (!hasLearning) {
+      var conversation = convesations.firstWhere(
+          (element) => element.isLearnComplete == 0 && element.isLearning == 0);
+      conversation.isLearning = 1;
+      await updateConversation(conversation);
+    }
+    return convesations;
+  }
+
+  Future<Conversation> getConversationDetail(String? id) async {
+    final db = await _db;
+    var res =
+        await db.query(_CONVERSATION_TABLE, where: 'id = ?', whereArgs: [id]);
+    return mapperConversation(db, res);
+  }
+
   Future<List<SubTopic>> getSubTopics(String? topicId) async {
     final db = await _db;
     var res = await db
@@ -116,16 +149,6 @@ class DBProvider {
       subTopic.isLearning = 1;
       await updateSubTopic(subTopic);
     }
-    // list.sort((a, b) {
-    //   int compareLearnComplete =
-    //       a.isLearnComplete!.compareTo(b.isLearnComplete!);
-
-    //   if (compareLearnComplete != 0) {
-    //     return compareLearnComplete;
-    //   } else {
-    //     return a.isLearning!.compareTo(b.isLearning!);
-    //   }
-    // });
     return list;
   }
 
@@ -154,7 +177,7 @@ class DBProvider {
             SubTopic subtopic = SubTopic.fromMap(c);
 
             subtopic.processLearn = await progressSubTopic(subtopic);
-        
+
             return subtopic;
           }).toList()
         : [];
@@ -173,14 +196,17 @@ class DBProvider {
   }
 
   Future<List<Topic>> mapperTopic(
-      Database db, List<Map<String, Object?>> values) async {
+    Database db,
+    List<Map<String, Object?>> values,
+    String? category,
+  ) async {
     Iterable<Future<Topic>> mappedList = values.isNotEmpty
         ? values.map((c) async {
             Topic topic = Topic.fromMap(c);
             var path =
-                "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().currentCategory()}/${topic.name}";
+                "${getIt<AppMemory>().pathFolderDocument}/${getIt<Preference>().currentCategory(topic.type)}/${topic.name}";
             var _downloadManager = getIt<DownloadManager>();
-            var processItems = _downloadManager.processItems.value;
+            var processItems = _downloadManager.hasProcessItems(category);
             if (processItems != null) {
               topic.isDownload = processItems[topic.link_resource]?.status ==
                       DownloadStatus.COMPLETE
@@ -231,6 +257,20 @@ class DBProvider {
     return Future.wait(mappedList);
   }
 
+  Future<Conversation> mapperConversation(
+      Database db, List<Map<String, Object?>> values) async {
+    Conversation conversation = Conversation.fromMap(values.first);
+    var audios = await db.query(_AUDIO_CONVERSATION_TABLE,
+        where: 'conversation_id = ?', whereArgs: [conversation.id]);
+    var transcipt = await db.query(_TRANSCRIPT_TABLE,
+        where: 'conversation_id = ?', whereArgs: [conversation.id]);
+
+    conversation.audios = audios.map((e) => Audio.fromMap(e)).toList();
+    conversation.transcript =
+        transcipt.map((e) => Transcript.fromMap(e)).toList();
+    return conversation;
+  }
+
   Future<void> updateTopic(Topic topic) async {
     final db = await _db;
     await db.update(_TOPIC_TABLE, topic.toMap(),
@@ -242,6 +282,13 @@ class DBProvider {
     final db = await _db;
     await db.update(_SUB_TOPIC_TABLE, subTopic.toMap(),
         where: 'id = ?', whereArgs: [subTopic.id]);
+  }
+
+  Future<void> updateConversation(Conversation? conversation) async {
+    if (conversation == null) return;
+    final db = await _db;
+    await db.update(_CONVERSATION_TABLE, conversation.toMap(),
+        where: 'id = ?', whereArgs: [conversation.id]);
   }
 
   Future<bool> updateVocabulary(Vocabulary? vocabulary) async {
@@ -270,15 +317,29 @@ class DBProvider {
     return false;
   }
 
-  Future<bool> syncTopic(String? topicId) async {
-    if (topicId == null) return false;
+  Future<bool> syncTopic(String? id) async {
+    if (id == null) return false;
     final db = await _db;
     var result = await db.query(_SUB_TOPIC_TABLE,
-        where: 'topic_id = ? and isLearnComplete = 0', whereArgs: [topicId]);
+        where: 'topic_id = ? and isLearnComplete = 0', whereArgs: [id]);
     if (result.isEmpty) {
       db.rawUpdate(
           'UPDATE ${_TOPIC_TABLE} SET isLearnComplete = 1 WHERE id = ?',
-          [topicId]);
+          [id]);
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> syncTopicConversation(String? id) async {
+    if (id == null) return false;
+    final db = await _db;
+    var result = await db.query(_CONVERSATION_TABLE,
+        where: 'topic_id = ? and isLearnComplete = 0', whereArgs: [id]);
+    if (result.isEmpty) {
+      db.rawUpdate(
+          'UPDATE ${_TOPIC_TABLE} SET isLearnComplete = 1 WHERE id = ?',
+          [id]);
       return true;
     }
     return false;

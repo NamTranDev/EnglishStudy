@@ -4,7 +4,7 @@ import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/reuse/component/download_banner_component.dart';
 import 'package:english_study/reuse/component/download_process_component.dart';
-import 'package:english_study/screen/sub_topic/sub_topic_screen.dart';
+import 'package:english_study/screen/vocabulary/sub_topic/sub_topic_screen.dart';
 import 'package:english_study/screen/topic/topic_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,8 +13,13 @@ class ListTopicComponent extends StatefulWidget {
   final String? category;
   final List<Topic>? topics;
   final bool hasBack;
-  ListTopicComponent(
-      {super.key, this.category, this.topics, required this.hasBack});
+  final int? type;
+  const ListTopicComponent(
+      {super.key,
+      this.category,
+      this.topics,
+      required this.hasBack,
+      required this.type});
 
   @override
   State<ListTopicComponent> createState() => _ListTopicComponentState();
@@ -22,12 +27,6 @@ class ListTopicComponent extends StatefulWidget {
 
 class _ListTopicComponentState extends State<ListTopicComponent> {
   late TopicViewModel _viewModel;
-
-  @override
-  void dispose() {
-    _viewModel.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +38,8 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
               iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
         };
         return FutureBuilder(
-          future: viewmodel.initData(widget.category, widget.topics),
+          future: viewmodel.initData(
+              widget.category, widget.topics, widget.type),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -186,7 +186,7 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
                       if (topic?.isLearnComplete == 1) {
                         return;
                       }
-                      await _viewModel.syncTopic(topic);
+                      await _viewModel.syncTopic(topic?.id.toString());
                     },
                   ),
                 ),

@@ -160,7 +160,7 @@ def main2():
         audio = item['audio']
         transcripts = item['transcript']
 
-        dir_folder = helenadailyenglish_dir + name + '/' + name + '_audio'
+        dir_folder = helenadailyenglish_dir + name + '/' + topic_name
         audio_file_name = name + '_' + str(index + 1) + '.mp3'
 
         full_audio_path = name + '_audio/' + audio_file_name

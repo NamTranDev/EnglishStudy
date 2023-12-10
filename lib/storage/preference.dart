@@ -11,7 +11,7 @@ class Preference {
   Preference._();
 
   final _KEY_GUIDE_LEARN_WITH_GAME = 'KEY_GUIDE_LEARN_WITH_GAME';
-  final _KEY_CATEGORY_VOCABULARY_CURRENT = 'KEY_CATEGORY_VOCABULARY_CURRENT';
+  final _KEY_CATEGORY_CURRENT = 'KEY_CATEGORY_CURRENT_';
 
   SharedPreferences? _prefs;
 
@@ -25,13 +25,14 @@ class Preference {
     return isGuideLearnWithGame;
   }
 
-  String? currentCategory() {
-    return _prefs?.getString(_KEY_CATEGORY_VOCABULARY_CURRENT);
+  String? currentCategory(int? type) {
+    return _prefs?.getString(_KEY_CATEGORY_CURRENT + (type?.toString() ?? ''));
   }
 
-  void setCurrentCategory(String? category) {
+  void setCurrentCategory(int? type, String? category) {
     if (category == null) return;
-    _prefs?.setString(_KEY_CATEGORY_VOCABULARY_CURRENT, category);
+    _prefs?.setString(
+        _KEY_CATEGORY_CURRENT + (type?.toString() ?? ''), category);
   }
 
   void harcodeText() {

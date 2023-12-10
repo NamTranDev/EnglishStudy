@@ -23,28 +23,26 @@ class TopicViewModel {
   final DownloadManager _downloadManager = getIt<DownloadManager>();
   DownloadManager get downloadManager => _downloadManager;
 
-  Future<List<Topic>> initData(String? category, List<Topic>? topics) async {
-    await Future.delayed(Duration(milliseconds: 2 * duration_animation_screen));
+  Future<List<Topic>> initData(
+      String? category, List<Topic>? topics, int? type) async {
+    await Future.delayed(
+        const Duration(milliseconds: 2 * duration_animation_screen));
+
     var db = getIt<DBProvider>();
 
-    topics ??= await db.getTopics(category);
+    topics ??= await db.getTopics(category, type);
 
-    _downloadManager.checkNeedDownload(category, topics,
-        onSyncUI: (needDownload) {
-      _needDownload.value = needDownload;
+    downloadManager.checkNeedDownload(category, topics,
+        onSyncUI: (value) {
+      _needDownload.value = value;
     });
 
     return topics;
   }
 
-  void dispose() {
-    _downloadManager.onNeedDownloadListener = null;
-    _downloadManager.onDownloadErrorListener = null;
-  }
-
-  Future<void> syncTopic(Topic? topic) async {
+  Future<void> syncTopic(String? topicId) async {
     var db = getIt<DBProvider>();
-    if (await db.syncTopic(topic?.id?.toString())) {
+    if (await db.syncTopic(topicId)) {
       _updateLessionStatus.value = _updateLessionStatus.value++;
     }
   }

@@ -68,21 +68,11 @@ def create_database(db_file):
     )
 ''')
     cursor.execute('''
-    CREATE TABLE IF NOT EXISTS topic_conversation (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        topic_name TEXT,
-        description_topic TEXT,
-        number_lessons TEXT,
-        category Text,
-        link_topic Text
-    )
-''')
-    cursor.execute('''
     CREATE TABLE IF NOT EXISTS conversation (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         topic_id INTEGER,
         conversation_lession TEXT,
-        FOREIGN KEY (topic_id) REFERENCES topic_conversation (id)
+        FOREIGN KEY (topic_id) REFERENCES topics (id)
     )
 ''')
     cursor.execute('''

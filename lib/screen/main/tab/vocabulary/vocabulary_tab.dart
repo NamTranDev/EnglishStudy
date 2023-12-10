@@ -1,8 +1,9 @@
 import 'package:english_study/download/download_manager.dart';
+import 'package:english_study/model/tab_type.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/model/vocabulary_init_data.dart';
 import 'package:english_study/screen/category/category_screen.dart';
-import 'package:english_study/screen/sub_topic/sub_topic_screen.dart';
+import 'package:english_study/screen/vocabulary/sub_topic/sub_topic_screen.dart';
 import 'package:english_study/screen/topic/topic_screen.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
@@ -40,6 +41,7 @@ class _VocabularyTabState extends State<VocabularyTab>
                 onPickCategory: () {
                   setState(() {});
                 },
+                type: TabType.VOCABULARY.value,
               );
             } else {
               if (data?.category == null) {
@@ -56,7 +58,12 @@ class _VocabularyTabState extends State<VocabularyTab>
                 return SafeArea(child: subTopicComponent(topics?[0]));
               }
               return SafeArea(
-                  child: topicComponent(data?.category, topics: topics));
+                child: topicComponent(
+                  data?.category,
+                  TabType.VOCABULARY.value,
+                  topics: topics,
+                ),
+              );
             }
           } else {
             return Center(
@@ -66,14 +73,23 @@ class _VocabularyTabState extends State<VocabularyTab>
         });
   }
 
-  Future<VocabularyInitScreen> initScreen() async {
-    var category = getIt<Preference>().currentCategory();
+  Future<InitScreenTab> initScreen() async {
+    var category =
+        getIt<Preference>().currentCategory(TabType.VOCABULARY.value);
     if (category == null) {
-      return VocabularyInitScreen(pickCategory: true);
+      return InitScreenTab(pickCategory: true);
     }
-    return VocabularyInitScreen(
-        pickCategory: false,
-        category: category,
-        topics: await getIt<DBProvider>().getTopics(category));
+    var topics = await getIt<DBProvider>().getTopics(
+      category,
+      TabType.VOCABULARY.value,
+    );
+    if (topics.length == 1) {
+      await getIt<DownloadManager>().checkNeedDownload(category, topics);
+    }
+    return InitScreenTab(
+      pickCategory: false,
+      category: category,
+      topics: topics,
+    );
   }
 }

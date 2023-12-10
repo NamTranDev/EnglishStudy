@@ -1,5 +1,4 @@
 import 'package:english_study/model/topic.dart';
-import 'package:english_study/screen/topic/topic_screen.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:english_study/storage/preference.dart';
@@ -8,13 +7,15 @@ import 'package:flutter/material.dart';
 class CategoryScreen extends StatelessWidget {
   static String routeName = '/category';
   final Function onPickCategory;
-  const CategoryScreen({super.key, required this.onPickCategory});
+  final int? type;
+  const CategoryScreen(
+      {super.key, required this.onPickCategory, required this.type});
 
   @override
   Widget build(BuildContext context) {
     var db = getIt<DBProvider>();
     return FutureBuilder(
-      future: db.getCategorys(),
+      future: db.getCategorys(type),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return Center(
@@ -41,7 +42,8 @@ class CategoryScreen extends StatelessWidget {
           child: Center(
             child: GestureDetector(
               onTap: () async {
-                getIt<Preference>().setCurrentCategory(categories?[index]);
+                getIt<Preference>()
+                    .setCurrentCategory(type, categories?[index]);
                 onPickCategory.call();
               },
               child: Text(

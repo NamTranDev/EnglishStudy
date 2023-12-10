@@ -86,7 +86,7 @@ Widget widgetImageAsset(String? image_name, {BoxFit? fit}) {
 }
 
 Widget loadImage(String? image_name, String? image_path, {BoxFit? fit}) {
-  var file = File(image_path ?? '');
+  var file = File('${getIt<AppMemory>().pathFolderDocument}/$image_path');
   var fileExist = file.existsSync();
 
   if (fileExist) {

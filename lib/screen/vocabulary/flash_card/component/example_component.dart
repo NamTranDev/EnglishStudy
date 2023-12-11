@@ -25,7 +25,7 @@ class ExampleComponent extends StatelessWidget {
         children: [
           Container(
             padding: EdgeInsets.only(
-                top: isGame ? 80 : 50, left: 10, right: 10, bottom: 55),
+                top: isGame ? 100 : 50, left: 10, right: 10, bottom: 100),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
@@ -60,11 +60,17 @@ class ExampleComponent extends StatelessWidget {
                 child: Container(
                   width: double.infinity,
                   height: 50,
+                  margin: EdgeInsets.only(
+                      left: isGame ? 5 : 0,
+                      right: isGame ? 5 : 0,
+                      bottom: isGame ? 40 : 0),
                   decoration: BoxDecoration(
                     color: turquoise,
                     borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(isGame ? 0 : 15),
-                      bottomRight: Radius.circular(isGame ? 0 : 15),
+                      topLeft: Radius.circular(isGame ? 5 : 0),
+                      topRight: Radius.circular(isGame ? 5 : 0),
+                      bottomLeft: Radius.circular(isGame ? 5 : 15),
+                      bottomRight: Radius.circular(isGame ? 5 : 15),
                     ),
                   ),
                   alignment: Alignment.center,

@@ -32,28 +32,26 @@ class DownloadManager {
     var isNeedDownload =
         topics.where((element) => element.isDownload == 0).firstOrNull != null;
     onSyncUI?.call(isNeedDownload);
-    if (isNeedDownload) {
-      final path = (await getTemporaryDirectory()).path;
-      var directory =
-          Directory("${getIt<AppMemory>().pathFolderDocument}/${category}");
-      if (await directory.exists() == false) {
-        await directory.create();
-      }
-      _initFileInfos(
-          category,
-          topics
-              .map(
-                (e) => FileInfo(e.link_resource, "${path}/${e.name}.zip",
-                    directory.path, e.category,
-                    status: e.isDownload == 1
-                        ? DownloadStatus.COMPLETE
-                        : DownloadStatus.NONE),
-              )
-              .toList());
-      onNeedDownloadListener = (needDownload) {
-        onSyncUI?.call(needDownload);
-      };
+    final path = (await getTemporaryDirectory()).path;
+    var directory =
+        Directory("${getIt<AppMemory>().pathFolderDocument}/${category}");
+    if (await directory.exists() == false) {
+      await directory.create();
     }
+    _initFileInfos(
+        category,
+        topics
+            .map(
+              (e) => FileInfo(e.link_resource, "${path}/${e.name}.zip",
+                  directory.path, e.category,
+                  status: e.isDownload == 1
+                      ? DownloadStatus.COMPLETE
+                      : DownloadStatus.NONE),
+            )
+            .toList());
+    onNeedDownloadListener = (needDownload) {
+      onSyncUI?.call(needDownload);
+    };
   }
 
   void refresh(String? category) {
@@ -162,8 +160,9 @@ class DownloadManager {
               if (_currentCategory == fileInfo.category) {
                 _processItems.value = Map.from(processCurrents);
               }
-              if (processAll.value != null &&
-                  downloadInfo.totalNeedDownload > 0) {
+              if (_processAll.value != null &&
+                  downloadInfo.totalNeedDownload > 0 &&
+                  _currentCategory == fileInfo.category) {
                 updateProgressAll(fileInfo.category);
               }
             }
@@ -191,7 +190,9 @@ class DownloadManager {
           _processItems.value = Map.from(processCurrents);
         }
 
-        if (processAll.value != null && downloadInfo.totalNeedDownload > 0) {
+        if (_processAll.value != null &&
+            downloadInfo.totalNeedDownload > 0 &&
+            _currentCategory == fileInfo?.category) {
           updateProgressAll(fileInfo?.category);
         }
       }
@@ -236,17 +237,13 @@ class DownloadManager {
               if (fileInfoCurrent != null) {
                 var progressValue = (100 + progress) / 2;
                 fileInfoCurrent.progress = progressValue;
-                if (progress == 100) {
-                  fileInfoCurrent.status = DownloadStatus.COMPLETE;
-                  updateTotalDownload(fileInfo.category);
-                  updateLengthDatabase(fileInfo.link);
-                }
                 if (_currentCategory == fileInfo.category) {
                   _processItems.value = Map.from(processCurrents);
                 }
 
-                if (processAll.value != null &&
-                    downloadInfo.totalNeedDownload > 0) {
+                if (_processAll.value != null &&
+                    downloadInfo.totalNeedDownload > 0 &&
+                    _currentCategory == fileInfo.category) {
                   updateProgressAll(fileInfo.category);
                 }
               }
@@ -255,6 +252,9 @@ class DownloadManager {
           return ZipFileOperation.includeItem;
         },
       );
+      fileInfo.status = DownloadStatus.COMPLETE;
+      updateTotalDownload(fileInfo.category);
+      updateLengthDatabase(fileInfo.link);
       var size = await sizeDirectory(directory);
       print('size : $size');
     } catch (e) {
@@ -274,10 +274,11 @@ class DownloadManager {
     if (downloadInfo == null) return;
     downloadInfo.totalNeedDownload = 0;
     downloadInfo.processItems?.values.forEach((fileInfo) {
+      print(fileInfo);
       downloadInfo.totalNeedDownload +=
           fileInfo.status == DownloadStatus.COMPLETE ? 0 : 1;
     });
-
+    print('Total Need Download : ' + downloadInfo.totalNeedDownload.toString());
     onNeedDownloadListener?.call(downloadInfo.totalNeedDownload > 0);
   }
 

@@ -27,7 +27,7 @@ class VocabularyComponent extends StatelessWidget {
         children: [
           Container(
             padding: EdgeInsets.only(
-                top: isGame ? 55 : 10, left: 10, right: 10, bottom: 55),
+                top: isGame ? 100 : 10, left: 10, right: 10, bottom: 100),
             child: Column(
               children: [
                 Expanded(
@@ -96,18 +96,24 @@ class VocabularyComponent extends StatelessWidget {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                child: InkWell(
+                child: GestureDetector(
                   onTap: () {
                     onOpenExample.call();
                   },
                   child: Container(
                     width: double.infinity,
                     height: 50,
+                    margin: EdgeInsets.only(
+                        left: isGame ? 5 : 0,
+                        right: isGame ? 5 : 0,
+                        bottom: isGame ? 40 : 0),
                     decoration: BoxDecoration(
                       color: maastricht_blue,
                       borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(isGame ? 0 : 15),
-                        bottomRight: Radius.circular(isGame ? 0 : 15),
+                        topLeft: Radius.circular(isGame ? 5 : 0),
+                        topRight: Radius.circular(isGame ? 5 : 0),
+                        bottomLeft: Radius.circular(isGame ? 5 : 15),
+                        bottomRight: Radius.circular(isGame ? 5 : 15),
                       ),
                     ),
                     alignment: Alignment.center,
@@ -115,7 +121,7 @@ class VocabularyComponent extends StatelessWidget {
                         style: Theme.of(context)
                             .textTheme
                             .bodyMedium
-                            ?.copyWith(color: Colors.white)),
+                            ?.copyWith(color: turquoise)),
                   ),
                 ))
         ],

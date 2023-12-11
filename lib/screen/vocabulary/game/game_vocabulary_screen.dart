@@ -11,9 +11,22 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 
-class GameVocabularyScreen extends StatelessWidget {
+class GameVocabularyScreen extends StatefulWidget {
   static String routeName = '/vocabulary_name';
   const GameVocabularyScreen({super.key});
+
+  @override
+  State<GameVocabularyScreen> createState() => _GameVocabularyScreenState();
+}
+
+class _GameVocabularyScreenState extends State<GameVocabularyScreen> {
+  late GameVocabularyViewModel _viewModel;
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +38,10 @@ class GameVocabularyScreen extends StatelessWidget {
               ModalRoute.of(context)?.settings.arguments as String?),
           child: BackScreenComponent(
             child: Consumer<GameVocabularyViewModel>(
-              builder: (context, value, child) {
+              builder: (context, viewModel, child) {
+                _viewModel = viewModel;
                 return StreamBuilder(
-                  stream: value.gameVocabularyList,
+                  stream: viewModel.gameVocabularyList,
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return Center(
@@ -37,7 +51,7 @@ class GameVocabularyScreen extends StatelessWidget {
                     } else if (snapshot.hasData &&
                         snapshot.data?.isNotEmpty == true) {
                       return ValueListenableBuilder(
-                        valueListenable: value.vocabulary,
+                        valueListenable: viewModel.vocabulary,
                         builder: (context, value, child) {
                           GameType? type = value?.type;
                           type ??= Provider.of<GameVocabularyViewModel>(context)

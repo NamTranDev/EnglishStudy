@@ -88,7 +88,10 @@ class GameVocabularyViewModel with AudioViewModel {
     }
   }
 
-  Future<void> dispose() => _gameVocabularyListController.close();
+  void dispose() {
+    disposeAudio();
+    _gameVocabularyListController.close();
+  }
 
   GameType randomGameType({int count = 2}) {
     final random = Random();

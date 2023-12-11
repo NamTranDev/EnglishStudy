@@ -99,20 +99,28 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
       valueListenable: _viewModel.updateLessionStatus,
       builder: (context, value, child) {
         return Card(
-          elevation: 1,
+          elevation: 3,
           margin: EdgeInsets.only(
-            top: 5,
-            left: 5,
-            right: 5,
+            top: 8,
+            left: 8,
+            right: 8,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(0),
+            borderRadius: BorderRadius.circular(5),
           ),
           child: Stack(
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                child: Text(conversation?.conversation_lession ?? ''),
+                height: 120,
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  conversation?.conversation_lession ?? '',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineMedium
+                      ?.copyWith(fontSize: 20),
+                ),
               ),
               if (conversation?.isLearnComplete == 0 &&
                   conversation?.isLearning == 0)
@@ -123,9 +131,9 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
                       color: Colors.black.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(1),
                     ),
-                    alignment: Alignment.centerRight,
+                    alignment: Alignment.center,
                     child: widgetIcon('assets/icons/ic_lock.svg',
-                        size: 30, color: Colors.white),
+                        size: 60, color: Colors.white),
                   ),
                 ),
               Positioned.fill(
@@ -143,14 +151,15 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
                       var isHasResource = _viewModel.downloadManager
                           .checkHasResource(widget.topic?.link_resource);
 
-                      var isDefault =
-                          index == 0 && widget.topic?.isDefault == 1;
+                      var isDefault = index < 5 && widget.topic?.isDefault == 1;
 
                       if (!isHasResource && !isDefault) {
                         showSnackBar(
                             context, 'You must download data lession first');
                         return;
                       }
+
+                      var id = conversation?.id?.toString();
 
                       await Navigator.pushNamed(
                           context, ConversationScreen.routeName,
@@ -160,8 +169,9 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
                         return;
                       }
 
-                      _viewModel.syncLession(widget.topic?.id?.toString());
-                      _viewModel.updateComplete(conversations, index);
+                      if (await _viewModel.syncLession(id)) {
+                        _viewModel.updateComplete(conversations, index);
+                      }
                     },
                   ),
                 ),

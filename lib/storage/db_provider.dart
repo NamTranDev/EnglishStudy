@@ -324,25 +324,37 @@ class DBProvider {
         where: 'topic_id = ? and isLearnComplete = 0', whereArgs: [id]);
     if (result.isEmpty) {
       db.rawUpdate(
-          'UPDATE ${_TOPIC_TABLE} SET isLearnComplete = 1 WHERE id = ?',
-          [id]);
+          'UPDATE ${_TOPIC_TABLE} SET isLearnComplete = 1 WHERE id = ?', [id]);
       return true;
     }
     return false;
   }
 
-  Future<bool> syncTopicConversation(String? id) async {
-    if (id == null) return false;
+  Future<void> syncTopicConversation(String? id) async {
+    if (id == null) return;
     final db = await _db;
     var result = await db.query(_CONVERSATION_TABLE,
         where: 'topic_id = ? and isLearnComplete = 0', whereArgs: [id]);
     if (result.isEmpty) {
       db.rawUpdate(
-          'UPDATE ${_TOPIC_TABLE} SET isLearnComplete = 1 WHERE id = ?',
-          [id]);
-      return true;
+          'UPDATE ${_TOPIC_TABLE} SET isLearnComplete = 1 WHERE id = ?', [id]);
     }
-    return false;
+  }
+
+  Future<bool> checkConversationLearn(String? id) async {
+    if (id == null) return false;
+    final db = await _db;
+    var result = await db.query(_CONVERSATION_TABLE,
+        where: 'id = ? and isLearnComplete = 1', whereArgs: [id]);
+    return result.isNotEmpty;
+  }
+
+  Future<void> syncConversation(String? id) async {
+    if (id == null) return;
+    final db = await _db;
+    db.rawUpdate(
+        'UPDATE ${_CONVERSATION_TABLE} SET isLearnComplete = 1 WHERE id = ?',
+        [id]);
   }
 
   Future<void> updateDownloadTopic(String? key, String value) async {

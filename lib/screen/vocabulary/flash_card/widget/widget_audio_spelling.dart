@@ -10,7 +10,10 @@ class WidgetAudioSpellig extends StatelessWidget {
   final Function(Audio?) onPlayAudio;
 
   const WidgetAudioSpellig(
-      {super.key, required this.audios, required this.spellings, required this.onPlayAudio});
+      {super.key,
+      required this.audios,
+      required this.spellings,
+      required this.onPlayAudio});
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +68,7 @@ class WidgetAudioSpellig extends StatelessWidget {
   }
 
   Widget widgetAudio(Audio? audio) {
-    return InkWell(
+    return GestureDetector(
       onTap: () {
         onPlayAudio.call(audio);
       },

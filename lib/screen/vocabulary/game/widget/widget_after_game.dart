@@ -31,41 +31,39 @@ class WidgetAfterGame extends StatelessWidget {
               isScrollControlled: true,
               builder: (context) {
                 FlipCardController _controller = FlipCardController();
-                return SafeArea(
-                  child: Stack(
-                    children: [
-                      FlipCard(
-                        controller: _controller,
-                        fill: Fill.none,
-                        side: CardSide.FRONT,
-                        flipOnTouch: false,
-                        front: VocabularyComponent(
+                return Stack(
+                  children: [
+                    FlipCard(
+                      controller: _controller,
+                      fill: Fill.none,
+                      side: CardSide.FRONT,
+                      flipOnTouch: false,
+                      front: VocabularyComponent(
+                        vocabulary: vocabulary,
+                        onOpenExample: () {
+                          _controller.toggleCard();
+                        },
+                        onPlayAudio: (audio) {
+                          viewModel.playAudio(audio);
+                        },
+                      ),
+                      back: ExampleComponent(
                           vocabulary: vocabulary,
-                          onOpenExample: () {
+                          onOpenVocabulary: () {
                             _controller.toggleCard();
-                          },
-                          onPlayAudio: (audio) {
-                            viewModel.playAudio(audio);
-                          },
-                        ),
-                        back: ExampleComponent(
-                            vocabulary: vocabulary,
-                            onOpenVocabulary: () {
-                              _controller.toggleCard();
-                            }),
+                          }),
+                    ),
+                    Positioned(
+                      top: 60,
+                      left: 10,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: widgetIcon('assets/icons/ic_arrow_down.svg'),
                       ),
-                      Positioned(
-                        top: 60,
-                        left: 10,
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: widgetIcon('assets/icons/ic_arrow_down.svg'),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 );
               },
             );

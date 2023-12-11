@@ -6,7 +6,6 @@ import 'package:english_study/screen/vocabulary/game/widget/widget_after_game.da
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 class InputAnswerComponent extends StatelessWidget {
   final GameVocabularyModel? gameVocabularyModel;
   final GameType? gameType;
@@ -155,7 +154,7 @@ class InputAnswerComponent extends StatelessWidget {
       BuildContext context, GameVocabularyViewModel viewModel) {
     switch (gameType) {
       case GameType.InputAudioToWord:
-        return InkWell(
+        return GestureDetector(
             onTap: () {
               viewModel.playAudio(gameVocabularyModel?.main.audios?[0]);
             },

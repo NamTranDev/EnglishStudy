@@ -9,20 +9,27 @@ mixin AudioViewModel {
   AudioPlayer audioPlayer = AudioPlayer();
 
   void playAudio(Audio? audio) async {
-    // audioPlayer.stop();
-    var path = "${getIt<AppMemory>().pathFolderDocument}/${audio?.path}";
-    print(path);
     try {
-      var fileExist = await doesFileExist(path);
-      if (fileExist) {
-        audioPlayer.setFilePath(path);
-      } else {
-        audioPlayer.setAsset('assets/audio/${audio?.name}');
-      }
+      initAudio(audio);
       audioPlayer.play();
     } catch (e) {
       print(e);
     }
+  }
+
+  Future<Duration?> initAudio(Audio? audio) async {
+    var path = "${getIt<AppMemory>().pathFolderDocument}/${audio?.path}";
+    try {
+      var fileExist = await doesFileExist(path);
+      if (fileExist) {
+        return await audioPlayer.setFilePath(path);
+      } else {
+        return await audioPlayer.setAsset('assets/audio/${audio?.name}');
+      }
+    } catch (e) {
+      print(e);
+    }
+    print(path);
   }
 
   void disposeAudio() {

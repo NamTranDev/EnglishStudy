@@ -45,17 +45,17 @@ class _MainScreenState extends State<MainScreen> {
         elevation: 10.0,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home, size: 24),
             label: 'Vocabulary',
             // backgroundColor: Colors.red,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
+            icon: Icon(Icons.business, size: 24),
             label: 'Listener',
             // backgroundColor: Colors.green,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: Icon(Icons.settings, size: 24),
             label: 'Settings',
             // backgroundColor: Colors.pink,
           ),

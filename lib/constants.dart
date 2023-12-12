@@ -10,7 +10,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-const Color color_primary = Color(0xFF2E4B5C);
+const Color color_primary = Color(0xFF80b994);
 
 const Color maastricht_blue = Color(0xFF011627);
 const Color ruddy = Color(0xFFF89292);

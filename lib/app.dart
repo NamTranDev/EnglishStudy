@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:english_study/constants.dart';
+import 'package:english_study/screen/main/main_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,6 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
 import 'package:english_study/navigator.dart' as nav;
-import 'package:english_study/screen/splash/splash_screen.dart';
 import 'package:english_study/services/service_locator.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -220,7 +220,7 @@ class _MyAppState extends State<MyApp> {
     // Importing 'package:flutter/widgets.dart' is required.
     return MaterialApp(
       theme: themeInfo,
-      initialRoute: SplashScreen.routeName,
+      initialRoute: MainScreen.routeName,
       routes: nav.routes,
     );
   }

@@ -5,6 +5,7 @@ import 'package:english_study/screen/main/tab/setting_tab.dart';
 import 'package:english_study/screen/main/tab/vocabulary/vocabulary_tab.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
@@ -33,6 +34,7 @@ class _MainScreenState extends State<MainScreen> {
 
   Widget bodyMain(BuildContext context) {
     var provider = Provider.of<BottomNavigationBarProvider>(context);
+    var sizeIcon = 30.0;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: PageView(
@@ -43,27 +45,48 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         elevation: 10.0,
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, size: 24),
+            icon: SvgPicture.asset(
+              'assets/icons/ic_vocabulary.svg',
+              width: sizeIcon,
+              height: sizeIcon,
+              color: provider.currentPage == 0
+                  ? maastricht_blue
+                  : maastricht_blue.withOpacity(0.5),
+            ),
             label: 'Vocabulary',
             // backgroundColor: Colors.red,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business, size: 24),
-            label: 'Listener',
+            icon: SvgPicture.asset(
+              'assets/icons/ic_listen.svg',
+              width: sizeIcon,
+              height: sizeIcon,
+              color: provider.currentPage == 1
+                  ? maastricht_blue
+                  : maastricht_blue.withOpacity(0.5),
+            ),
+            label: 'Listen',
             // backgroundColor: Colors.green,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings, size: 24),
-            label: 'Settings',
+            icon: SvgPicture.asset(
+              'assets/icons/ic_setting.svg',
+              width: sizeIcon,
+              height: sizeIcon,
+              color: provider.currentPage == 2
+                  ? maastricht_blue
+                  : maastricht_blue.withOpacity(0.5),
+            ),
+            label: 'Setting',
             // backgroundColor: Colors.pink,
           ),
         ],
         currentIndex: provider.currentPage,
-        selectedItemColor: color_primary,
-        unselectedItemColor: maastricht_blue,
-        showSelectedLabels: false,
+        selectedItemColor: maastricht_blue,
+        unselectedItemColor: maastricht_blue.withOpacity(0.5),
+        showSelectedLabels: true,
         showUnselectedLabels: false,
         onTap: (index) {
           if (index != provider.currentPage) {

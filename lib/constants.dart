@@ -10,11 +10,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
-const Color color_primary = Color(0xFF80b994);
-
 const Color maastricht_blue = Color(0xFF011627);
 const Color ruddy = Color(0xFFF89292);
-const Color turquoise = Color(0xFF6DD2A0);
+const Color turquoise = Color.fromRGBO(109, 210, 160, 1);
 const Color baby_powder = Color(0xFFFDFFFC);
 const Color red_violet = Color(0xFFB91372);
 const Color yellow = Color(0xFFE9D502);

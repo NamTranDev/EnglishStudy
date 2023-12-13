@@ -70,11 +70,12 @@ flutter:
         - asset: assets/fonts/medium.ttf
 # dart run flutter_native_splash:create
 flutter_native_splash:
-  image: assets/icons/ic_logo.png
-  color: "#FFFFFF"
+  image: assets/icons/ic_laucher.png
+  color: "#cee4ea"
   fullscreen: true
   web: false
+  # https://stackoverflow.com/questions/69894720/new-splash-screen-is-shown-cut-in-a-circle-shape
   android_12:
-    image: assets/icons/ic_logo_android_12.png
-    color: "#FFFFFF"
+    image: assets/icons/ic_laucher.png
+    color: "#cee4ea"
   

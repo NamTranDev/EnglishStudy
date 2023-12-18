@@ -2,7 +2,7 @@
 import 'dart:convert';
 
 import 'package:english_study/model/audio.dart';
-import 'package:english_study/model/example%20copy.dart';
+import 'package:english_study/model/transcript.dart';
 
 class Conversation {
   int? id;
@@ -12,6 +12,7 @@ class Conversation {
   int? isLearnComplete;
   List<Audio>? audios;
   List<Transcript>? transcript;
+  
   Conversation({
     this.id,
     this.topic_id,

@@ -1,6 +1,7 @@
 import 'package:english_study/constants.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/vocabulary.dart';
+import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 
 class ExampleComponent extends StatelessWidget {
@@ -38,7 +39,7 @@ class ExampleComponent extends StatelessWidget {
                           horizontal: 10,
                         ),
                         child: Text(
-                          examples?[index].sentence ?? '',
+                          examples?.getOrNull(index)?.sentence ?? '',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       );
@@ -65,7 +66,7 @@ class ExampleComponent extends StatelessWidget {
                       right: isGame ? 5 : 0,
                       bottom: isGame ? 40 : 0),
                   decoration: BoxDecoration(
-                    color: turquoise,
+                    color: sky_blue,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(isGame ? 5 : 0),
                       topRight: Radius.circular(isGame ? 5 : 0),

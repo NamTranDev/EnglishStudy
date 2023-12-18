@@ -7,6 +7,7 @@ import 'package:english_study/model/game_vocabulary_model.dart';
 import 'package:english_study/reuse/audio_view_model.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
+import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 
 class GameVocabularyViewModel with AudioViewModel {
@@ -116,11 +117,11 @@ class GameVocabularyViewModel with AudioViewModel {
   }
 
   void _initQuestionInfo() {
-    var question = _listGameVocabulary?[_index];
+    var question = _listGameVocabulary?.getOrNull(_index);
     _vocabulary.value = question;
     if (question?.type == GameType.ChooseAnswerAudioToDefination ||
         question?.type == GameType.InputAudioToWord)
-      playAudio(question?.main.audios?[0]);
+      playAudio(question?.main.audios?.getOrNull(0));
     var answer = _listGameAnswerStatus?.elementAtOrNull(_index);
     if (answer == null) {
       answer = GameAnswerStatus();
@@ -138,7 +139,7 @@ class GameVocabularyViewModel with AudioViewModel {
 extension ListExtension<E> on List<E>? {
   E? elementAtOrNull(int index) {
     if (index >= 0 && index < (this?.length ?? 0)) {
-      return this?[index];
+      return this?.getOrNull(index);
     }
     return null;
   }

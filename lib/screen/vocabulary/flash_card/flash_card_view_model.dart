@@ -5,6 +5,7 @@ import 'package:english_study/reuse/audio_view_model.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:english_study/storage/preference.dart';
+import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 
 class FlashCardViewModel with AudioViewModel {
@@ -31,7 +32,7 @@ class FlashCardViewModel with AudioViewModel {
     var vocabulary = vocabularies[index];
     vocabulary.isLearn = 1;
     updateVocabulary(vocabulary);
-    playAudio(vocabulary.audios?[0]);
+    playAudio(vocabulary.audios?.getOrNull(0));
     indexVocabulary.value = '${index + 1}/${vocabularies.length}';
     return vocabularies;
   }

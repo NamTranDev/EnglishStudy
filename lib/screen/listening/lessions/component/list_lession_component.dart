@@ -3,10 +3,15 @@ import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/conversation.dart';
 import 'package:english_study/model/topic.dart';
+import 'package:english_study/reuse/check_complete_category.dart';
 import 'package:english_study/reuse/component/download_banner_component.dart';
+import 'package:english_study/reuse/component/header_title_component.dart';
+import 'package:english_study/reuse/component/next_category_component.dart';
 import 'package:english_study/screen/listening/conversation/conversation_screen.dart';
 import 'package:english_study/screen/listening/lessions/lession_topic_view_model.dart';
+import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
 
 class ListLessionComponent extends StatefulWidget {
@@ -20,7 +25,7 @@ class ListLessionComponent extends StatefulWidget {
 
 class _ListLessionComponentState extends State<ListLessionComponent> {
   late LessionTopicViewModel _viewModel;
-
+  final tooltipController = JustTheController();
   @override
   Widget build(BuildContext context) {
     return Consumer<LessionTopicViewModel>(
@@ -30,8 +35,11 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
           showSnackBar(context, 'An error occurred during the download process',
               iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
         };
+        _viewModel.onShowGuideNextCategory = () {
+          tooltipController.showTooltip();
+        };
         return FutureBuilder(
-          future: viewmodel.initData(widget.topic?.id?.toString()),
+          future: viewmodel.initData(widget.topic),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -41,8 +49,44 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
             } else if (snapshot.hasData) {
               return Column(
                 children: [
-                  SizedBox(
-                    height: widget.hasBack ? 50 : 10,
+                  HeaderTitleComponent(
+                    title: widget.topic?.name,
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: _viewModel.showComplete,
+                    builder: (context, value, child) {
+                      return value
+                          ? JustTheTooltip(
+                              backgroundColor: maastricht_blue,
+                              controller: tooltipController,
+                              tailLength: 6,
+                              tailBaseWidth: 10.0,
+                              isModal: true,
+                              preferredDirection: AxisDirection.down,
+                              borderRadius: BorderRadius.circular(8.0),
+                              offset: 5,
+                              content: Container(
+                                width: 150,
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  'You can play games to learn vocabulary more effectively',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                      ),
+                                ),
+                              ),
+                              child: NextCategoryComponent(
+                                text: 'Learn Another Topic',
+                                onNextCategoryClick: () {
+                                  nextPickCategory(context, widget.topic);
+                                },
+                              ),
+                            )
+                          : SizedBox();
+                    },
                   ),
                   ValueListenableBuilder(
                     valueListenable: _viewModel.downloadManager.processItems,
@@ -94,7 +138,7 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
   }
 
   Widget widgetLessionItem(List<Conversation>? conversations, int index) {
-    Conversation? conversation = conversations?[index];
+    Conversation? conversation = conversations?.getOrNull(index);
     return ValueListenableBuilder(
       valueListenable: _viewModel.updateLessionStatus,
       builder: (context, value, child) {
@@ -170,7 +214,8 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
                       }
 
                       if (await _viewModel.syncLession(id)) {
-                        _viewModel.updateComplete(conversations, index);
+                        _viewModel.updateComplete(
+                            conversations, index, widget.topic);
                       }
                     },
                   ),

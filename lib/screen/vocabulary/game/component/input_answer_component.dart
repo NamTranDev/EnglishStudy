@@ -3,6 +3,7 @@ import 'package:english_study/model/game_type.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
 import 'package:english_study/screen/vocabulary/game/game_vocabulary_view_model.dart';
 import 'package:english_study/screen/vocabulary/game/widget/widget_after_game.dart';
+import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -156,12 +157,12 @@ class InputAnswerComponent extends StatelessWidget {
       case GameType.InputAudioToWord:
         return GestureDetector(
             onTap: () {
-              viewModel.playAudio(gameVocabularyModel?.main.audios?[0]);
+              viewModel.playAudio(gameVocabularyModel?.main.audios?.getOrNull(0));
             },
             child: widgetIcon('assets/icons/ic_audio.svg', size: 40));
       case GameType.InputSpellingToDefination:
       case GameType.InputSpellingToWord:
-        return Text((gameVocabularyModel?.main.spellings?[0].text ?? ''),
+        return Text((gameVocabularyModel?.main.spellings?.getOrNull(0)?.text ?? ''),
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium

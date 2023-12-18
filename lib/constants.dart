@@ -10,6 +10,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
+const Color sky_blue = Color(0xFFcee4ea);
 const Color maastricht_blue = Color(0xFF011627);
 const Color ruddy = Color(0xFFF89292);
 const Color turquoise = Color.fromRGBO(109, 210, 160, 1);
@@ -22,6 +23,7 @@ const Color disable = Color.fromARGB(255, 215, 215, 198);
 const int duration_animation_screen = 300;
 const int duration_animation_right_wrong = 200;
 const int duration_animation_next = 300;
+const int duration_animation_visible = 500;
 const double size_icon = 30;
 
 ThemeData themeInfo = ThemeData(

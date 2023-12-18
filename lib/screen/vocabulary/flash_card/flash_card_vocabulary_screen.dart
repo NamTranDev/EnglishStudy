@@ -7,6 +7,7 @@ import 'package:english_study/screen/vocabulary/flash_card/component/button_fall
 import 'package:english_study/screen/vocabulary/flash_card/component/example_component.dart';
 import 'package:english_study/screen/vocabulary/flash_card/flash_card_view_model.dart';
 import 'package:english_study/screen/vocabulary/game/game_vocabulary_screen.dart';
+import 'package:english_study/utils/extension.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
@@ -88,8 +89,9 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                 onPageChanged: (index, reason) {
                   _viewModel
                       .updateIndexVocabulary('${index + 1}/${data?.length}');
-                  _viewModel.playAudio(data?[index].audios?[0]);
-                  _viewModel.updateVocabulary(data?[index]);
+                  _viewModel.updateVocabulary(data?.getOrNull(index));
+                  _viewModel
+                      .playAudio(data?.getOrNull(index)?.audios?.getOrNull(0));
                 },
               ),
               items: data?.map((item) {

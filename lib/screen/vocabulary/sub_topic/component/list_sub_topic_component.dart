@@ -3,12 +3,17 @@ import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/topic.dart';
+import 'package:english_study/reuse/check_complete_category.dart';
 import 'package:english_study/reuse/component/download_banner_component.dart';
 import 'package:english_study/reuse/component/game_button_component.dart';
+import 'package:english_study/reuse/component/header_title_component.dart';
+import 'package:english_study/reuse/component/next_category_component.dart';
 import 'package:english_study/screen/vocabulary/flash_card/flash_card_vocabulary_screen.dart';
 import 'package:english_study/screen/vocabulary/game/game_vocabulary_screen.dart';
 import 'package:english_study/screen/vocabulary/sub_topic/sub_topic_view_model.dart';
+import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
 
 class ListSubTopicComponent extends StatefulWidget {
@@ -22,6 +27,7 @@ class ListSubTopicComponent extends StatefulWidget {
 
 class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
   late SubTopicViewModel _viewModel;
+  final tooltipController = JustTheController();
 
   double marginLeft = 30;
 
@@ -38,8 +44,11 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
           showSnackBar(context, 'An error occurred during the download process',
               iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
         };
+        _viewModel.onShowGuideNextCategory = () {
+          tooltipController.showTooltip();
+        };
         return FutureBuilder(
-          future: viewmodel.initData(widget.topic?.id?.toString()),
+          future: viewmodel.initData(widget.topic),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -49,8 +58,44 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
             } else if (snapshot.hasData) {
               return Column(
                 children: [
-                  SizedBox(
-                    height: widget.hasBack ? 50 : 10,
+                  HeaderTitleComponent(
+                    title: widget.topic?.name,
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: _viewModel.showComplete,
+                    builder: (context, value, child) {
+                      return value
+                          ? JustTheTooltip(
+                              backgroundColor: maastricht_blue,
+                              controller: tooltipController,
+                              tailLength: 6,
+                              tailBaseWidth: 10.0,
+                              isModal: true,
+                              preferredDirection: AxisDirection.down,
+                              borderRadius: BorderRadius.circular(8.0),
+                              offset: 5,
+                              content: Container(
+                                width: 150,
+                                padding: EdgeInsets.all(10),
+                                child: Text(
+                                  'You can play games to learn vocabulary more effectively',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: Colors.white,
+                                      ),
+                                ),
+                              ),
+                              child: NextCategoryComponent(
+                                text: 'Learn Another Topic',
+                                onNextCategoryClick: () {
+                                  nextPickCategory(context, widget.topic);
+                                },
+                              ),
+                            )
+                          : SizedBox();
+                    },
                   ),
                   ValueListenableBuilder(
                     valueListenable: _viewModel.downloadManager.processItems,
@@ -102,7 +147,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
   }
 
   Widget widgetSubTopicItem(List<SubTopic>? subTopics, int index) {
-    SubTopic? subTopic = subTopics?[index];
+    SubTopic? subTopic = subTopics?.getOrNull(index);
     var isLast = index == ((subTopics?.length ?? 0) - 1);
     return ValueListenableBuilder(
       valueListenable: _viewModel.updateLessionStatus,
@@ -143,7 +188,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                       return;
                     }
                     if (await _viewModel.syncLession(subTopicId) == true) {
-                      _viewModel.updateComplete(subTopics, index);
+                      _viewModel.updateComplete(subTopics, index, widget.topic);
                     } else {
                       await _viewModel.syncProgress(subTopic);
                     }

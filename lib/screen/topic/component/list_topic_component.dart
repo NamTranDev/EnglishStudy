@@ -2,11 +2,17 @@ import 'package:english_study/constants.dart';
 import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/topic.dart';
+import 'package:english_study/reuse/check_complete_category.dart';
 import 'package:english_study/reuse/component/download_banner_component.dart';
 import 'package:english_study/reuse/component/download_process_component.dart';
+import 'package:english_study/reuse/component/next_category_component.dart';
+import 'package:english_study/screen/main/bottom_bar_provider.dart';
+import 'package:english_study/screen/main/main_screen.dart';
 import 'package:english_study/screen/vocabulary/sub_topic/sub_topic_screen.dart';
 import 'package:english_study/screen/topic/topic_view_model.dart';
+import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
 
 class ListTopicComponent extends StatefulWidget {
@@ -27,19 +33,54 @@ class ListTopicComponent extends StatefulWidget {
 
 class _ListTopicComponentState extends State<ListTopicComponent> {
   late TopicViewModel _viewModel;
+  final tooltipController = JustTheController();
 
   @override
   Widget build(BuildContext context) {
     return Consumer<TopicViewModel>(
       builder: (context, viewmodel, child) {
         _viewModel = viewmodel;
+        _viewModel.onShowGuideNextCategory = () {
+          tooltipController.showTooltip();
+        };
+        // _viewModel.onLearnComplete = (topic) {
+        //   print('Learn Complete . Need show popup to select');
+        //   showDialog(
+        //     context: context,
+        //     builder: (BuildContext context) {
+        //       // return object of type Dialog
+        //       return AlertDialog(
+        //         title: new Text('Congratulations'),
+        //         content: new Text(
+        //             'You are excellent after completing this topic. Please continue to work hard to improve your English'),
+        //         actions: <Widget>[
+        //           // usually buttons at the bottom of the dialog
+        //           ElevatedButton(
+        //             child: Text('Close'),
+        //             onPressed: () {
+        //               Navigator.of(context).pop();
+        //               viewmodel.cancelNextCategory();
+        //             },
+        //           ),
+        //           ElevatedButton(
+        //             child: Text('Another Topic'),
+        //             onPressed: () {
+        //               Navigator.of(context).pop();
+        //               nextPickCategory(context, topic);
+        //             },
+        //           ),
+        //         ],
+        //       );
+        //     },
+        //   );
+        // };
         _viewModel.downloadManager.onDownloadErrorListener = () {
           showSnackBar(context, 'An error occurred during the download process',
               iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
         };
         return FutureBuilder(
-          future: viewmodel.initData(
-              widget.category, widget.topics, widget.type),
+          future:
+              viewmodel.initData(widget.category, widget.topics, widget.type),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -64,6 +105,40 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
       children: [
         SizedBox(
           height: widget.hasBack ? 50 : 10,
+        ),
+        ValueListenableBuilder(
+          valueListenable: _viewModel.showComplete,
+          builder: (context, value, child) {
+            return value
+                ? JustTheTooltip(
+                    backgroundColor: maastricht_blue,
+                    controller: tooltipController,
+                    tailLength: 6,
+                    tailBaseWidth: 10.0,
+                    isModal: true,
+                    preferredDirection: AxisDirection.down,
+                    borderRadius: BorderRadius.circular(8.0),
+                    offset: 5,
+                    content: Container(
+                      width: 150,
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        'You can play games to learn vocabulary more effectively',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Colors.white,
+                            ),
+                      ),
+                    ),
+                    child: NextCategoryComponent(
+                      text: 'Learn Another Topic',
+                      onNextCategoryClick: () {
+                        nextPickCategory(
+                            context, topics?.getOrNull(topics.length - 1));
+                      },
+                    ),
+                  )
+                : SizedBox();
+          },
         ),
         ValueListenableBuilder(
           valueListenable: _viewModel.needDownload,
@@ -104,7 +179,12 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
                   crossAxisCount: 2,
                   childAspectRatio: .8),
               itemBuilder: (context, index) {
-                return widgetItemTopic(topics?[index]);
+                return ValueListenableBuilder(
+                  valueListenable: _viewModel.needDownload,
+                  builder: (context, value, child) {
+                    return widgetItemTopic(topics, index);
+                  },
+                );
               },
               itemCount: topics?.length ?? 0,
             ),
@@ -114,7 +194,8 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
     );
   }
 
-  Widget widgetItemTopic(Topic? topic) {
+  Widget widgetItemTopic(List<Topic>? topics, int index) {
+    var topic = topics?.getOrNull(index);
     return ValueListenableBuilder(
       valueListenable: _viewModel.updateLessionStatus,
       builder: (context, value, child) {
@@ -186,7 +267,7 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
                       if (topic?.isLearnComplete == 1) {
                         return;
                       }
-                      await _viewModel.syncTopic(topic?.id.toString());
+                      await _viewModel.syncTopic(topics, index);
                     },
                   ),
                 ),

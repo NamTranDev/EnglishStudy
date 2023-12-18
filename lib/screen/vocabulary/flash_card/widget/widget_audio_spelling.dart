@@ -1,6 +1,7 @@
 import 'package:english_study/constants.dart';
 import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/spelling.dart';
+import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -24,21 +25,21 @@ class WidgetAudioSpellig extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  audioSpellingWithFlag(audios?[0], spellings?[0], true),
+                  audioSpellingWithFlag(audios?.getOrNull(0), spellings?.getOrNull(0), true),
                   SizedBox(
                     width: 30,
                   ),
-                  audioSpellingWithFlag(audios?[1], spellings?[1], false),
+                  audioSpellingWithFlag(audios?.getOrNull(1), spellings?.getOrNull(1), false),
                 ],
               ),
             )
           : Column(
               children: [
-                widgetAudio(audios?[0]),
+                widgetAudio(audios?.getOrNull(0)),
                 SizedBox(
                   height: 10,
                 ),
-                widgetSpelling(spellings?[0])
+                widgetSpelling(spellings?.getOrNull(0))
               ],
             ),
     );
@@ -78,7 +79,7 @@ class WidgetAudioSpellig extends StatelessWidget {
 
   Widget widgetSpelling(Spelling? spelling) {
     return Text(
-      spellings?[0].text ?? '',
+      spellings?.getOrNull(0)?.text ?? '',
       style: const TextStyle(
           fontFamily: 'Noto',
           fontSize: 15,

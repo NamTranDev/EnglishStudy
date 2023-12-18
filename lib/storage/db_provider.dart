@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
+import 'package:collection/collection.dart';
 
 import 'package:english_study/download/download_manager.dart';
 import 'package:english_study/download/download_status.dart';
 import 'package:english_study/model/audio.dart';
+import 'package:english_study/model/category.dart';
 import 'package:english_study/model/conversation.dart';
-import 'package:english_study/model/example%20copy.dart';
+import 'package:english_study/model/transcript.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
 import 'package:english_study/model/tab_type.dart';
@@ -36,6 +38,7 @@ class DBProvider {
 
   Database? _database;
 
+  final _CATEGORY_TABLE = "category";
   final _TOPIC_TABLE = "topics";
   final _SUB_TOPIC_TABLE = "sub_topics";
   final _CONVERSATION_TABLE = "conversation";
@@ -73,15 +76,31 @@ class DBProvider {
     return await openDatabase(path);
   }
 
-  Future<List<String>> getCategorys(int? type) async {
+  Future<List<Category>> getCategoriesLearning(int? type) async {
     final db = await _db;
-    var res = await db.query(_TOPIC_TABLE,
-        where: 'type = ?',
-        whereArgs: [type],
-        columns: ['category'],
-        groupBy: 'category');
-    List<String> list =
-        res.isNotEmpty ? res.map((c) => c['category'] as String).toList() : [];
+    var res = await db.rawQuery('''
+      SELECT c.*
+      FROM "category" c
+      JOIN "topics" t ON c."key" = t."category"
+      WHERE t."type" = $type AND t."isLearnComplete" == 0
+      GROUP BY t."category";
+    ''');
+    List<Category> list =
+        res.isNotEmpty ? res.map((c) => Category.fromMap(c)).toList() : [];
+    return list;
+  }
+
+  Future<List<Category>> getCategoriesComplete() async {
+    final db = await _db;
+    var res = await db.rawQuery('''
+      SELECT c.*
+      FROM "category" c
+      JOIN "topics" t ON c."key" = t."category"
+      WHERE t."isLearnComplete" == 1
+      GROUP BY t."category";
+    ''');
+    List<Category> list =
+        res.isNotEmpty ? res.map((c) => Category.fromMap(c)).toList() : [];
     return list;
   }
 
@@ -93,10 +112,12 @@ class DBProvider {
     bool hasLearning = list.any(
         (element) => element.isLearnComplete == 0 && element.isLearning == 1);
     if (!hasLearning) {
-      var topic = list.firstWhere(
+      var topic = list.firstWhereOrNull(
           (element) => element.isLearnComplete == 0 && element.isLearning == 0);
-      topic.isLearning = 1;
-      await updateTopic(topic);
+      if (topic != null) {
+        topic.isLearning = 1;
+        await updateTopic(topic);
+      }
     }
     list.sort((a, b) {
       int compareLearnComplete =
@@ -111,6 +132,21 @@ class DBProvider {
     return list;
   }
 
+  Future<List<Topic>> getTopicsSimple(String? category, int? type) async {
+    final db = await _db;
+    var res = await db.query(_TOPIC_TABLE,
+        where: 'category = ? and type = ?', whereArgs: [category, type]);
+
+    return res.map((e) => Topic.fromMap(e)).toList();
+  }
+
+  Future<List<Topic>> getAllTopics() async {
+    final db = await _db;
+    var res = await db.query(_TOPIC_TABLE);
+    List<Topic> list = await mapperTopic(db, res, null);
+    return list;
+  }
+
   Future<List<Conversation>> getConversations(String? topicId) async {
     final db = await _db;
     var res = await db.query(_CONVERSATION_TABLE,
@@ -120,8 +156,9 @@ class DBProvider {
     bool hasLearning = convesations.any(
         (element) => element.isLearnComplete == 0 && element.isLearning == 1);
     if (!hasLearning) {
-      var conversation = convesations.firstWhere(
+      var conversation = convesations.firstWhereOrNull(
           (element) => element.isLearnComplete == 0 && element.isLearning == 0);
+      if (conversation == null) return convesations;
       conversation.isLearning = 1;
       await updateConversation(conversation);
     }
@@ -144,8 +181,9 @@ class DBProvider {
     bool hasLearning = list.any(
         (element) => element.isLearnComplete == 0 && element.isLearning == 1);
     if (!hasLearning) {
-      var subTopic = list.firstWhere(
+      var subTopic = list.firstWhereOrNull(
           (element) => element.isLearnComplete == 0 && element.isLearning == 0);
+      if (subTopic == null) return list;
       subTopic.isLearning = 1;
       await updateSubTopic(subTopic);
     }
@@ -300,6 +338,8 @@ class DBProvider {
     var result = await db.query(_VOCABULARY_TABLE,
         where: 'sub_topic_id = ? and isLearn = 0',
         whereArgs: [vocabulary.sub_topic_id]);
+    var list = await mapperVocabulary(db, result);
+    print(list.length);
     return result.isEmpty;
   }
 
@@ -323,22 +363,72 @@ class DBProvider {
     var result = await db.query(_SUB_TOPIC_TABLE,
         where: 'topic_id = ? and isLearnComplete = 0', whereArgs: [id]);
     if (result.isEmpty) {
-      db.rawUpdate(
-          'UPDATE ${_TOPIC_TABLE} SET isLearnComplete = 1 WHERE id = ?', [id]);
+      final numberNotLearn =
+          Sqflite.firstIntValue(await db.rawQuery("""SELECT COUNT(*)
+            FROM "topics"
+            WHERE "category" = (
+                SELECT "category"
+                FROM ${_TOPIC_TABLE}
+                WHERE "id" = ${id}
+            )
+            AND "isLearnComplete" = 0;""")) ?? 0;
+      if (numberNotLearn != 1) {
+        syncTopicComplete(id);
+      }
       return true;
     }
     return false;
   }
 
-  Future<void> syncTopicConversation(String? id) async {
-    if (id == null) return;
+  Future<bool> checkCategory(Topic? topic) async {
+    if (topic == null) return false;
+    var isComplete = await checkTopicComplete(topic);
+    if (isComplete) {
+      topic.isLearnComplete = 1;
+      // await syncTopicComplete(topic.id.toString());
+      // return await checkCategoryComplete(topic.category);
+      var topics = await getTopicsSimple(topic.category, topic.type);
+      return topics
+          .where((element) =>
+              element.isLearnComplete == 0 && element.id != topic.id)
+          .isEmpty;
+    }
+    return false;
+  }
+
+  Future<bool> checkCategoryComplete(String? category) async {
+    if (category == null) return false;
+    final db = await _db;
+    final result = await db.rawQuery('''
+    SELECT t.*
+    FROM ${_TOPIC_TABLE} t
+    JOIN ${_CATEGORY_TABLE} c ON c."key" = t."category"
+    WHERE c."key" = ?
+    GROUP BY t."id"
+    HAVING COUNT(t."id") = COUNT(CASE WHEN t."isLearnComplete" = 0 THEN 1 ELSE NULL END);
+  ''', [category]);
+
+    return result.isEmpty;
+  }
+
+  Future<void> syncTopicComplete(String? id) async {
+    final db = await _db;
+    db.rawUpdate(
+        'UPDATE ${_TOPIC_TABLE} SET isLearnComplete = 1 WHERE id = ?', [id]);
+  }
+
+  Future<bool> syncTopicConversation(Topic? topic) async {
+    if (topic == null) return false;
     final db = await _db;
     var result = await db.query(_CONVERSATION_TABLE,
-        where: 'topic_id = ? and isLearnComplete = 0', whereArgs: [id]);
+        where: 'topic_id = ? and isLearnComplete = 0', whereArgs: [topic.id]);
     if (result.isEmpty) {
       db.rawUpdate(
-          'UPDATE ${_TOPIC_TABLE} SET isLearnComplete = 1 WHERE id = ?', [id]);
+          'UPDATE ${_TOPIC_TABLE} SET isLearnComplete = 1 WHERE id = ?',
+          [topic.id]);
+      return checkCategoryComplete(topic.category);
     }
+    return false;
   }
 
   Future<bool> checkConversationLearn(String? id) async {
@@ -422,5 +512,40 @@ class DBProvider {
     }
 
     return selectedItems;
+  }
+
+  Future<bool> hasCategoryToLearn(int type) async {
+    final db = await _db;
+    return (Sqflite.firstIntValue(await db
+                .rawQuery("""SELECT COUNT(DISTINCT c."key") AS countCategories
+FROM ${_CATEGORY_TABLE} c
+JOIN ${_TOPIC_TABLE} t ON c."key" = t."category"
+WHERE t."type" = ${type} AND t."isLearnComplete" = 0;""")) ??
+            0) >
+        0;
+  }
+
+  Future<bool> hasCategoryLearnComplete() async {
+    final db = await _db;
+    final result = await db.rawQuery('''
+    SELECT c.*
+    FROM ${_CATEGORY_TABLE} c
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM ${_TOPIC_TABLE} t
+        WHERE t."category" = c."key"
+          AND t."isLearnComplete" <> 1
+    );
+  ''');
+    return result.isNotEmpty;
+  }
+
+  Future<bool> checkTopicComplete(Topic? topic) async {
+    if (topic == null) return false;
+    final db = await _db;
+    return (Sqflite.firstIntValue(await db.rawQuery("""SELECT COUNT(*)
+FROM ${topic.type == TabType.VOCABULARY.value ? _SUB_TOPIC_TABLE : _CONVERSATION_TABLE}
+WHERE topic_id = ${topic.id} and isLearnComplete = 0
+;""")) ?? 0) == 0;
   }
 }

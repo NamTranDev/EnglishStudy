@@ -121,7 +121,7 @@ class VocabularyComponent extends StatelessWidget {
                         style: Theme.of(context)
                             .textTheme
                             .bodyMedium
-                            ?.copyWith(color: turquoise)),
+                            ?.copyWith(color: sky_blue)),
                   ),
                 ))
         ],

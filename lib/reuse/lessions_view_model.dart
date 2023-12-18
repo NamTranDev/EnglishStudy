@@ -1,5 +1,7 @@
 import 'package:english_study/download/download_manager.dart';
+import 'package:english_study/model/topic.dart';
 import 'package:english_study/services/service_locator.dart';
+import 'package:english_study/storage/db_provider.dart';
 import 'package:flutter/material.dart';
 
 abstract class LessionsViewModel {
@@ -11,7 +13,7 @@ abstract class LessionsViewModel {
 
   Future<bool> syncLession(String? id);
 
-  void updateStatus(){
+  void updateStatus() {
     _updateLessionStatus.value = _updateLessionStatus.value++;
   }
 }

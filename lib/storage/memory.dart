@@ -13,4 +13,12 @@ class AppMemory {
   late String pathFolderDocument;
 
   Map<String, int>? folderSize;
+
+  int? currentTab;
+
+  int getCurrentTab() {
+    var indexTab = currentTab ?? 0;
+    currentTab = null;
+    return indexTab;
+  }
 }

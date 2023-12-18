@@ -18,8 +18,8 @@ import 'package:provider/provider.dart';
 
 class ListSubTopicComponent extends StatefulWidget {
   final Topic? topic;
-  final bool hasBack;
-  const ListSubTopicComponent({super.key, this.topic, required this.hasBack});
+  final bool fromTab;
+  const ListSubTopicComponent({super.key, this.topic, required this.fromTab});
 
   @override
   State<ListSubTopicComponent> createState() => _ListSubTopicComponentState();
@@ -48,7 +48,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
           tooltipController.showTooltip();
         };
         return FutureBuilder(
-          future: viewmodel.initData(widget.topic),
+          future: viewmodel.initData(widget.topic, widget.fromTab),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(

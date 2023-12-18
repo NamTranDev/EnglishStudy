@@ -20,20 +20,19 @@ class _LessionTopicScreenState extends State<LessionTopicScreen> {
       body: SafeArea(
         child: BackScreenComponent(
           child: lessionsComponent(
-              ModalRoute.of(context)?.settings.arguments as Topic?,
-              hasBack: true),
+              ModalRoute.of(context)?.settings.arguments as Topic?),
         ),
       ),
     );
   }
 }
 
-Widget lessionsComponent(Topic? topic, {bool hasBack = false}) {
+Widget lessionsComponent(Topic? topic, {bool fromTab = false}) {
   return Provider.value(
     value: LessionTopicViewModel(),
     child: ListLessionComponent(
       topic: topic,
-      hasBack: hasBack,
+      fromTab: fromTab,
     ),
   );
 }

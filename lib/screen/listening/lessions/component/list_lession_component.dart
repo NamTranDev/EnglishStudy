@@ -16,8 +16,8 @@ import 'package:provider/provider.dart';
 
 class ListLessionComponent extends StatefulWidget {
   final Topic? topic;
-  final bool hasBack;
-  const ListLessionComponent({super.key, this.topic, required this.hasBack});
+  final bool fromTab;
+  const ListLessionComponent({super.key, this.topic, required this.fromTab});
 
   @override
   State<ListLessionComponent> createState() => _ListLessionComponentState();
@@ -39,7 +39,7 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
           tooltipController.showTooltip();
         };
         return FutureBuilder(
-          future: viewmodel.initData(widget.topic),
+          future: viewmodel.initData(widget.topic,widget.fromTab),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(

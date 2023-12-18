@@ -68,7 +68,7 @@ class _MainScreenState extends State<MainScreen> {
       _bottomBars.insert(
           0,
           BottomBarItem(
-              icon: 'assets/icons/ic_setting.svg', lable: 'Complete'));
+              icon: 'assets/icons/ic_learned.svg', lable: 'Complete'));
     }
     if (isHasListenTab) {
       _pages.insert(0, ListenerTab());

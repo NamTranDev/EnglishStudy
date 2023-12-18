@@ -68,7 +68,8 @@ class CategoryComponent extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            viewModel.selectCategory(index, categories?.getOrNull(index));
+                            viewModel.selectCategory(
+                                index, categories?.getOrNull(index));
                           },
                           child: Stack(
                             alignment: Alignment.centerLeft,
@@ -91,7 +92,10 @@ class CategoryComponent extends StatelessWidget {
                                               left: 70, right: 10),
                                           alignment: Alignment.center,
                                           child: Text(
-                                            categories?.getOrNull(index)?.title ?? '',
+                                            categories
+                                                    ?.getOrNull(index)
+                                                    ?.title ??
+                                                '',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
@@ -151,7 +155,7 @@ class CategoryComponent extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: maastricht_blue,
                                 padding: EdgeInsets.symmetric(
-                                    horizontal: 30, vertical: 20)),
+                                    horizontal: 30, vertical: 10)),
                             child: Text(
                               "Select",
                               style: Theme.of(context)

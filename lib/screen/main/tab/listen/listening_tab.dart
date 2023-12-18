@@ -54,7 +54,9 @@ class _ListenerTabState extends State<ListenerTab>
               var topics = data?.topics;
 
               if (topics?.length == 1) {
-                return SafeArea(child: lessionsComponent(topics?.getOrNull(0)));
+                return SafeArea(
+                    child:
+                        lessionsComponent(topics?.getOrNull(0), fromTab: true));
               }
               return SafeArea(
                   child: topicComponent(data?.category, TabType.LISTEN.value,

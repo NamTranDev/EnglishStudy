@@ -13,11 +13,11 @@ import 'package:flutter/material.dart';
 
 class SubTopicViewModel extends LessionsViewModel
     with CompleteCategoryViewModel {
-  Future<List<SubTopic>> initData(Topic? topic) async {
+  Future<List<SubTopic>> initData(Topic? topic,bool fromTab) async {
     await Future.delayed(Duration(milliseconds: duration_animation_screen));
     var db = getIt<DBProvider>();
     List<SubTopic> subTopics = await db.getSubTopics(topic?.id?.toString());
-    checkCompleteWithTopic(topic);
+    if (fromTab) checkCompleteWithTopic(topic);
     return subTopics;
   }
 

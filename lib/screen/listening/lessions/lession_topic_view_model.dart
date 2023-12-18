@@ -10,12 +10,12 @@ import 'package:english_study/utils/extension.dart';
 
 class LessionTopicViewModel extends LessionsViewModel
     with CompleteCategoryViewModel {
-  Future<List<Conversation>> initData(Topic? topic) async {
+  Future<List<Conversation>> initData(Topic? topic, bool fromTab) async {
     await Future.delayed(Duration(milliseconds: duration_animation_screen));
     var db = getIt<DBProvider>();
     List<Conversation> conversations =
         await db.getConversations(topic?.id?.toString());
-    checkCompleteWithTopic(topic);
+    if (fromTab) checkCompleteWithTopic(topic);
     return conversations;
   }
 

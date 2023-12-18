@@ -54,7 +54,7 @@ class _VocabularyTabState extends State<VocabularyTab>
               var topics = data?.topics;
 
               if (topics?.length == 1) {
-                return SafeArea(child: subTopicComponent(topics?.getOrNull(0)));
+                return SafeArea(child: subTopicComponent(topics?.getOrNull(0),fromTab: true));
               }
               return SafeArea(
                 child: topicComponent(

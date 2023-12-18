@@ -50,14 +50,14 @@ class TopicViewModel with CompleteCategoryViewModel {
       topic?.isLearnComplete = 1;
 
       if (topics?.length == 1) {
-        showCompleteUI();
+        showCompleteUI(true);
       } else {
         if ((index + 1) < (topics?.length ?? 0)) {
           Topic? nextSubTopic = topics?.getOrNull(index + 1);
           nextSubTopic?.isLearning = 1;
           _updateLessionStatus.value = _updateLessionStatus.value++;
         } else {
-          showCompleteUI();
+          showCompleteUI(true);
         }
       }
     }

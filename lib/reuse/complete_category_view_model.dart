@@ -18,26 +18,28 @@ mixin CompleteCategoryViewModel {
         topics?.where((element) => element.isLearnComplete == 0).length == 1;
 
     if (numberTopicLearn) {
-      _showComplete.value =
-          await db.checkTopicComplete(topics?.getOrNull(topics.length - 1));
+      showCompleteUI(
+          await db.checkTopicComplete(topics?.getOrNull(topics.length - 1)));
     }
   }
 
   void checkCompleteWithTopic(Topic? topic) async {
     var db = getIt<DBProvider>();
     var isComplete = await db.checkCategory(topic);
-    _showComplete.value = isComplete;
+    showCompleteUI(isComplete);
   }
 
-  void showCompleteUI() {
-    _showComplete.value = true;
+  void showCompleteUI(bool isComplete) {
+    _showComplete.value = isComplete;
+    if (isComplete) showGuideNextCategory();
   }
 
   void showGuideNextCategory() {
-    var isGuideLearnWithGame = getIt<Preference>().isGuideLearnWithGame();
-    if (isGuideLearnWithGame) {
-      Future.delayed(Duration(milliseconds: 10))
-          .then((value) => {onShowGuideNextCategory?.call()});
+    var isGuideNextCategory = getIt<Preference>().isGuideNextCategory();
+    if (isGuideNextCategory) {
+      Future.delayed(Duration(milliseconds: 10)).then((value) {
+        onShowGuideNextCategory?.call();
+      });
     }
   }
 }

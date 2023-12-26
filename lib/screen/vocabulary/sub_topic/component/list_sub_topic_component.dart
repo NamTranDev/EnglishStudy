@@ -45,7 +45,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
               iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
         };
         _viewModel.onShowGuideNextCategory = () {
-          tooltipController.showTooltip();
+          // tooltipController.showTooltip();
         };
         return FutureBuilder(
           future: viewmodel.initData(widget.topic, widget.fromTab),
@@ -65,34 +65,11 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                     valueListenable: _viewModel.showComplete,
                     builder: (context, value, child) {
                       return value
-                          ? JustTheTooltip(
-                              backgroundColor: maastricht_blue,
-                              controller: tooltipController,
-                              tailLength: 6,
-                              tailBaseWidth: 10.0,
-                              isModal: true,
-                              preferredDirection: AxisDirection.down,
-                              borderRadius: BorderRadius.circular(8.0),
-                              offset: 5,
-                              content: Container(
-                                width: 150,
-                                padding: EdgeInsets.all(10),
-                                child: Text(
-                                  'You can play games to learn vocabulary more effectively',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.copyWith(
-                                        color: Colors.white,
-                                      ),
-                                ),
-                              ),
-                              child: NextCategoryComponent(
-                                text: 'Learn Another Topic',
-                                onNextCategoryClick: () {
-                                  nextPickCategory(context, widget.topic);
-                                },
-                              ),
+                          ? NextCategoryComponent(
+                              text: 'Learn Another Topic',
+                              onNextCategoryClick: () {
+                                nextPickCategory(context, widget.topic);
+                              },
                             )
                           : SizedBox();
                     },

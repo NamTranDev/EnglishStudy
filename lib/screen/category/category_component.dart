@@ -13,8 +13,12 @@ import 'package:provider/provider.dart';
 class CategoryComponent extends StatelessWidget {
   final Function onPickCategory;
   final int? type;
+  final bool? isComplete;
   const CategoryComponent(
-      {super.key, required this.onPickCategory, required this.type});
+      {super.key,
+      required this.onPickCategory,
+      this.type,
+      this.isComplete = false});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +29,7 @@ class CategoryComponent extends StatelessWidget {
           return Consumer<CategoryViewModel>(
               builder: (context, viewmodel, widget) {
             return FutureBuilder(
-              future: viewmodel.initData(type),
+              future: viewmodel.initData(type, isComplete),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Center(
@@ -54,7 +58,9 @@ class CategoryComponent extends StatelessWidget {
       child: Column(
         children: [
           Text(
-            'Please choose a category to get started',
+            isComplete == true
+                ? 'Learned topics'
+                : 'Please choose a category to get started',
             style: Theme.of(context).textTheme.headlineLarge,
             textAlign: TextAlign.center,
           ),
@@ -68,8 +74,12 @@ class CategoryComponent extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            viewModel.selectCategory(
-                                index, categories?.getOrNull(index));
+                            if (isComplete == true || categories?.length == 1) {
+                              onPickCategory.call(categories?.getOrNull(index));
+                            } else {
+                              viewModel.selectCategory(
+                                  index, categories?.getOrNull(index));
+                            }
                           },
                           child: Stack(
                             alignment: Alignment.centerLeft,

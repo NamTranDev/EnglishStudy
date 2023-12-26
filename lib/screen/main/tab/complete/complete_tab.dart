@@ -1,3 +1,5 @@
+import 'package:english_study/model/category.dart';
+import 'package:english_study/screen/category/category_component.dart';
 import 'package:flutter/material.dart';
 
 class CompleteTab extends StatefulWidget {
@@ -10,10 +12,11 @@ class CompleteTab extends StatefulWidget {
 class _CompleteTabState extends State<CompleteTab> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Center(
-        child: Text('Complete Tab'),
-      ),
+    return CategoryComponent(
+      onPickCategory: (Category category) {
+        
+      },
+      isComplete: true,
     );
   }
 }

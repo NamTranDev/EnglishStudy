@@ -178,13 +178,22 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                                 ),
                                 child: ButtonFalling(
                                   child: GameButtonComponent(
-                                    onClick: () {
-                                      Navigator.pushNamed(context,
+                                    onClick: () async {
+                                      _viewModel.nextScreen = true;
+                                      await Navigator.pushNamed(context,
                                           GameVocabularyScreen.routeName,
                                           arguments: (ModalRoute.of(context)
                                                   ?.settings
                                                   .arguments as String?)
                                               ?.toString());
+                                      if (!_viewModel.nextScreen) {
+                                        var isShowTooltipGuideGame = _viewModel
+                                            .isShowGuideLearnWithGame();
+                                        print(isShowTooltipGuideGame);
+                                        if (isShowTooltipGuideGame) {
+                                          tooltipController.showTooltip();
+                                        }
+                                      }
                                     },
                                   ),
                                   onAnimationComplete: () async {

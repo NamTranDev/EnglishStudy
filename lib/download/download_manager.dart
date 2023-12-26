@@ -273,12 +273,17 @@ class DownloadManager {
     var downloadInfo = _downloadInfos[category];
     if (downloadInfo == null) return;
     downloadInfo.totalNeedDownload = 0;
-    downloadInfo.processItems?.values.forEach((fileInfo) {
+    var processCurrents = downloadInfo.processItems;
+    if (processCurrents == null) return;
+    processCurrents.values.forEach((fileInfo) {
       print(fileInfo);
       downloadInfo.totalNeedDownload +=
           fileInfo.status == DownloadStatus.COMPLETE ? 0 : 1;
     });
+    _processItems.value = Map.from(processCurrents);
     print('Total Need Download : ' + downloadInfo.totalNeedDownload.toString());
+    var isNeedDownload = downloadInfo.totalNeedDownload > 0;
+    print(isNeedDownload);
     onNeedDownloadListener?.call(downloadInfo.totalNeedDownload > 0);
   }
 

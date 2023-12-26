@@ -10,8 +10,8 @@ class CategoryViewModel {
       ValueNotifier<CategorySelect?>(null);
   ValueNotifier<CategorySelect?> get selectInfo => _selectInfo;
 
-  Future<List<Category>> initData(int? type) async {
-    return await getIt<DBProvider>().getCategoriesLearning(type);
+  Future<List<Category>> initData(int? type,bool? isComplete) async {
+    return isComplete == true ? await getIt<DBProvider>().getCategoriesComplete() : await getIt<DBProvider>().getCategoriesLearning(type);
   }
 
   void selectCategory(int index, Category? category) {

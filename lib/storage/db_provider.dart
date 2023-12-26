@@ -94,10 +94,10 @@ class DBProvider {
     final db = await _db;
     var res = await db.rawQuery('''
       SELECT c.*
-      FROM "category" c
-      JOIN "topics" t ON c."key" = t."category"
-      WHERE t."isLearnComplete" == 1
-      GROUP BY t."category";
+        FROM "category" c
+        JOIN "topics" t ON c."key" = t."category"
+        GROUP BY c."key"
+        HAVING COUNT(t."id") = COUNT(CASE WHEN t."isLearnComplete" = 1 THEN 1 ELSE NULL END);
     ''');
     List<Category> list =
         res.isNotEmpty ? res.map((c) => Category.fromMap(c)).toList() : [];

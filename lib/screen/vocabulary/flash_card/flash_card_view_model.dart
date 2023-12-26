@@ -16,6 +16,7 @@ class FlashCardViewModel with AudioViewModel {
   ValueNotifier<bool> get canPlayGame => _canPlayGame;
 
   var index = 0;
+  var nextScreen = false;
 
   Future<List<Vocabulary>> vocabularies(String? sub_topic_id) async {
     var db = getIt<DBProvider>();
@@ -49,6 +50,9 @@ class FlashCardViewModel with AudioViewModel {
   }
 
   bool isShowGuideLearnWithGame() {
+    if (nextScreen) {
+      return false;
+    }
     var pref = getIt<Preference>();
     return pref.isGuideLearnWithGame();
   }

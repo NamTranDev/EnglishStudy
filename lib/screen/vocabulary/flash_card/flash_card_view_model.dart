@@ -42,11 +42,14 @@ class FlashCardViewModel with AudioViewModel {
     _indexVocabulary.value = index;
   }
 
-  void updateVocabulary(Vocabulary? vocabulary) async {
+  void updateVocabulary(Vocabulary? vocabulary, {bool lastItem = true}) async {
     if (_canPlayGame.value == true) return;
     var db = getIt<DBProvider>();
     vocabulary?.isLearn = 1;
-    _canPlayGame.value = await db.updateVocabulary(vocabulary);
+    var canPlay = await db.updateVocabulary(vocabulary);
+    if (lastItem) {
+      _canPlayGame.value = canPlay;
+    }
   }
 
   bool isShowGuideLearnWithGame() {

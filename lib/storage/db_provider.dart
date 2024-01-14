@@ -132,6 +132,24 @@ class DBProvider {
     return list;
   }
 
+  Future<List<Topic>> getTopicsComplete(String? category) async {
+    final db = await _db;
+    var res = await db.query(_TOPIC_TABLE,
+        where: 'category = ?', whereArgs: [category]);
+    List<Topic> list = await mapperTopic(db, res, category);
+    list.sort((a, b) {
+      int compareLearnComplete =
+          a.isLearnComplete!.compareTo(b.isLearnComplete!);
+
+      if (compareLearnComplete == 1) {
+        return a.isLearning!.compareTo(b.isLearning!);
+      } else {
+        return compareLearnComplete;
+      }
+    });
+    return list;
+  }
+
   Future<List<Topic>> getTopicsSimple(String? category, int? type) async {
     final db = await _db;
     var res = await db.query(_TOPIC_TABLE,

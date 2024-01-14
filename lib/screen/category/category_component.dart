@@ -3,6 +3,7 @@ import 'package:english_study/model/category.dart';
 import 'package:english_study/model/tab_type.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/screen/category/category_view_model.dart';
+import 'package:english_study/screen/vocabulary/game/game_vocabulary_view_model.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:english_study/storage/preference.dart';
@@ -54,7 +55,7 @@ class CategoryComponent extends StatelessWidget {
   Widget buildWidget(BuildContext context, List<Category>? categories,
       CategoryViewModel viewModel) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+      margin: EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         children: [
           Text(
@@ -74,11 +75,17 @@ class CategoryComponent extends StatelessWidget {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            if (isComplete == true || categories?.length == 1) {
+                            if (isComplete == true) {
                               onPickCategory.call(categories?.getOrNull(index));
                             } else {
-                              viewModel.selectCategory(
-                                  index, categories?.getOrNull(index));
+                              if (categories?.length == 1) {
+                                viewModel.comfirmCategory(type,
+                                    category: categories?.getOrNull(0));
+                                onPickCategory.call();
+                              } else {
+                                viewModel.selectCategory(
+                                    index, categories?.getOrNull(index));
+                              }
                             }
                           },
                           child: Stack(

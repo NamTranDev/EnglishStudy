@@ -89,7 +89,8 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                 onPageChanged: (index, reason) {
                   _viewModel
                       .updateIndexVocabulary('${index + 1}/${data?.length}');
-                  _viewModel.updateVocabulary(data?.getOrNull(index));
+                  _viewModel.updateVocabulary(data?.getOrNull(index),
+                      lastItem: (data?.length ?? 0) - 1 == index);
                   _viewModel
                       .playAudio(data?.getOrNull(index)?.audios?.getOrNull(0));
                 },

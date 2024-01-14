@@ -1,6 +1,8 @@
-class ScreenArguments {
-  final String? category;
-  final int type;
+import 'package:english_study/model/topic.dart';
 
-  ScreenArguments(this.category, this.type);
+class ScreenTopicArguments {
+  final String? category;
+  final List<Topic>? topics;
+
+  ScreenTopicArguments(this.category, this.topics);
 }

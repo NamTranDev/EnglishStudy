@@ -18,15 +18,14 @@ class TopicScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var argument =
-        ModalRoute.of(context)?.settings.arguments as ScreenArguments?;
+        ModalRoute.of(context)?.settings.arguments as ScreenTopicArguments?;
     return Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
             BackScreenComponent(
-              child: topicComponent(
-                  argument?.category, argument?.type,
-                  hasBack: true),
+              child: topicComponent(argument?.category,
+                  topics: argument?.topics, hasBack: true),
             ),
           ],
         ),
@@ -35,8 +34,8 @@ class TopicScreen extends StatelessWidget {
   }
 }
 
-Widget topicComponent(String? category, int? type,
-    {List<Topic>? topics, bool hasBack = false}) {
+Widget topicComponent(String? category,
+    {int? type, List<Topic>? topics, bool hasBack = false}) {
   return Provider.value(
     value: TopicViewModel(),
     child: ListTopicComponent(

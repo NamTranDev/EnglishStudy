@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:english_study/constants.dart';
+import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/reuse/component/back_screen_component.dart';
 import 'package:english_study/reuse/component/game_button_component.dart';
@@ -49,7 +50,7 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                 _viewModel = value;
                 return FutureBuilder(
                   future: value.vocabularies(
-                      ModalRoute.of(context)?.settings.arguments as String?),
+                      ModalRoute.of(context)?.settings.arguments as SubTopic?),
                   builder: (context, snapshot) {
                     if (snapshot.hasError) {
                       return Center(

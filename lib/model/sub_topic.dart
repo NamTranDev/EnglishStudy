@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:english_study/model/topic.dart';
+import 'package:english_study/model/vocabulary.dart';
 
 class SubTopic {
   int? id;
@@ -12,6 +13,8 @@ class SubTopic {
   int? isLearning;
 
   double? processLearn = 0;
+
+  List<Vocabulary>? vocabularies;
 
   SubTopic({
     this.id,

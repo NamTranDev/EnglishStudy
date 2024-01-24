@@ -1,4 +1,5 @@
 import 'package:english_study/model/audio.dart';
+import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/storage/memory.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/reuse/audio_view_model.dart';
@@ -18,9 +19,9 @@ class FlashCardViewModel with AudioViewModel {
   var index = 0;
   var nextScreen = false;
 
-  Future<List<Vocabulary>> vocabularies(String? sub_topic_id) async {
+  Future<List<Vocabulary>> vocabularies(SubTopic? subTopic) async {
     var db = getIt<DBProvider>();
-    var vocabularies = await db.getVocabulary(sub_topic_id);
+    var vocabularies = subTopic?.vocabularies ?? await db.getVocabulary(subTopic?.id.toString());
     var isCanGame =
         vocabularies.where((element) => element.isLearn == 0).isEmpty == true;
     _canPlayGame.value = isCanGame;

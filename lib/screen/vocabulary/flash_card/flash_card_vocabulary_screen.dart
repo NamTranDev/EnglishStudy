@@ -90,7 +90,7 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                 onPageChanged: (index, reason) {
                   _viewModel
                       .updateIndexVocabulary('${index + 1}/${data?.length}');
-                  _viewModel.updateVocabulary(data?.getOrNull(index),
+                  _viewModel.syncVocabulary(data?.getOrNull(index),
                       lastItem: (data?.length ?? 0) - 1 == index);
                   _viewModel
                       .playAudio(data?.getOrNull(index)?.audios?.getOrNull(0));
@@ -111,6 +111,9 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                     isGame: false,
                     onPlayAudio: (audio) {
                       _viewModel.playAudio(audio);
+                    },
+                    onUpdateNote: (vocabulary) {
+                      _viewModel.updateVocabulary(vocabulary);
                     },
                   ),
                   back: ExampleComponent(

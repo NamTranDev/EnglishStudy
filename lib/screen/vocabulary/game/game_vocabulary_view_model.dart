@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:english_study/model/game_answer_status.dart';
 import 'package:english_study/model/game_type.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
+import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/reuse/audio_view_model.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
@@ -133,6 +134,12 @@ class GameVocabularyViewModel with AudioViewModel {
   bool isAnswerRight(GameVocabularyModel? gameVocabularyModel, String text) {
     return text.toLowerCase().trim() ==
         gameVocabularyModel?.main.word?.toLowerCase().trim();
+  }
+
+  void updateVocabulary(Vocabulary? vocabulary) {
+    if (vocabulary == null) return;
+    var db = getIt<DBProvider>();
+    db.updateVocabulary(vocabulary);
   }
 }
 

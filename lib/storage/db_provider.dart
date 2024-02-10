@@ -7,6 +7,7 @@ import 'package:collection/collection.dart';
 
 import 'package:english_study/download/download_manager.dart';
 import 'package:english_study/download/download_status.dart';
+import 'package:english_study/logger.dart';
 import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/category.dart';
 import 'package:english_study/model/conversation.dart';
@@ -134,8 +135,8 @@ class DBProvider {
 
   Future<List<Topic>> getTopicsComplete(String? category) async {
     final db = await _db;
-    var res = await db.query(_TOPIC_TABLE,
-        where: 'category = ?', whereArgs: [category]);
+    var res = await db
+        .query(_TOPIC_TABLE, where: 'category = ?', whereArgs: [category]);
     List<Topic> list = await mapperTopic(db, res, category);
     list.sort((a, b) {
       int compareLearnComplete =
@@ -347,18 +348,24 @@ class DBProvider {
         where: 'id = ?', whereArgs: [conversation.id]);
   }
 
-  Future<bool> updateVocabulary(Vocabulary? vocabulary) async {
+  Future<bool> updateAndCheckVocabulary(Vocabulary? vocabulary) async {
     if (vocabulary == null) return false;
-    final db = await _db;
-    await db.update(_VOCABULARY_TABLE, vocabulary.toMap(),
-        where: 'id = ?', whereArgs: [vocabulary.id]);
+    updateVocabulary(vocabulary);
 
+    final db = await _db;
     var result = await db.query(_VOCABULARY_TABLE,
         where: 'sub_topic_id = ? and isLearn = 0',
         whereArgs: [vocabulary.sub_topic_id]);
     var list = await mapperVocabulary(db, result);
     print(list.length);
     return result.isEmpty;
+  }
+
+  Future<void> updateVocabulary(Vocabulary vocabulary) async {
+    final db = await _db;
+    logger(vocabulary.toMap());
+    await db.update(_VOCABULARY_TABLE, vocabulary.toMap(),
+        where: 'id = ?', whereArgs: [vocabulary.id]);
   }
 
   Future<bool> syncSubTopic(String? subTopicId) async {

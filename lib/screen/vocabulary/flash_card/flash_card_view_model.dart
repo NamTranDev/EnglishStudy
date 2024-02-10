@@ -21,7 +21,8 @@ class FlashCardViewModel with AudioViewModel {
 
   Future<List<Vocabulary>> vocabularies(SubTopic? subTopic) async {
     var db = getIt<DBProvider>();
-    var vocabularies = subTopic?.vocabularies ?? await db.getVocabulary(subTopic?.id.toString());
+    var vocabularies = subTopic?.vocabularies ??
+        await db.getVocabulary(subTopic?.id.toString());
     var isCanGame =
         vocabularies.where((element) => element.isLearn == 0).isEmpty == true;
     _canPlayGame.value = isCanGame;
@@ -33,7 +34,7 @@ class FlashCardViewModel with AudioViewModel {
     index = firstNotLearn == -1 ? 0 : firstNotLearn;
     var vocabulary = vocabularies[index];
     vocabulary.isLearn = 1;
-    updateVocabulary(vocabulary);
+    syncVocabulary(vocabulary);
     playAudio(vocabulary.audios?.getOrNull(0));
     indexVocabulary.value = '${index + 1}/${vocabularies.length}';
     return vocabularies;
@@ -43,14 +44,20 @@ class FlashCardViewModel with AudioViewModel {
     _indexVocabulary.value = index;
   }
 
-  void updateVocabulary(Vocabulary? vocabulary, {bool lastItem = true}) async {
+  void syncVocabulary(Vocabulary? vocabulary, {bool lastItem = true}) async {
     if (_canPlayGame.value == true) return;
     var db = getIt<DBProvider>();
     vocabulary?.isLearn = 1;
-    var canPlay = await db.updateVocabulary(vocabulary);
+    var canPlay = await db.updateAndCheckVocabulary(vocabulary);
     if (lastItem) {
       _canPlayGame.value = canPlay;
     }
+  }
+
+  void updateVocabulary(Vocabulary? vocabulary) {
+    if (vocabulary == null) return;
+    var db = getIt<DBProvider>();
+    db.updateVocabulary(vocabulary);
   }
 
   bool isShowGuideLearnWithGame() {

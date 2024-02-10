@@ -5,6 +5,7 @@ import 'package:english_study/constants.dart';
 import 'package:english_study/download/download_manager.dart';
 import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
+import 'package:english_study/logger.dart';
 import 'package:english_study/reuse/complete_category_view_model.dart';
 import 'package:english_study/storage/memory.dart';
 import 'package:english_study/model/topic.dart';
@@ -36,9 +37,11 @@ class TopicViewModel with CompleteCategoryViewModel {
 
     checkCompleteWithTopics(topics);
 
-    downloadManager.checkNeedDownload(category, topics, onSyncUI: (value) {
+    downloadManager.onNeedDownloadListener = (value) {
+      logger(value);
       _needDownload.value = value;
-    });
+    };
+    downloadManager.checkNeedDownload(category, topics);
 
     return topics;
   }

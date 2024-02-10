@@ -1,6 +1,7 @@
 import 'package:english_study/constants.dart';
 import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/vocabulary.dart';
+import 'package:english_study/reuse/component/note_component.dart';
 import 'package:english_study/screen/vocabulary/flash_card/widget/widget_audio_spelling.dart';
 import 'package:flutter/material.dart';
 
@@ -9,12 +10,16 @@ class VocabularyComponent extends StatelessWidget {
   final Function onOpenExample;
   final bool isGame;
   final Function(Audio?) onPlayAudio;
-  const VocabularyComponent(
-      {super.key,
-      required this.vocabulary,
-      required this.onOpenExample,
-      this.isGame = true,
-      required this.onPlayAudio});
+  final Function(Vocabulary?) onUpdateNote;
+
+  const VocabularyComponent({
+    super.key,
+    required this.vocabulary,
+    required this.onOpenExample,
+    this.isGame = true,
+    required this.onPlayAudio,
+    required this.onUpdateNote,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +34,7 @@ class VocabularyComponent extends StatelessWidget {
             padding: EdgeInsets.only(
                 top: isGame ? 100 : 10, left: 10, right: 10, bottom: 100),
             child: Column(
+              mainAxisSize: MainAxisSize.max,
               children: [
                 Expanded(
                   child: Container(
@@ -45,12 +51,43 @@ class VocabularyComponent extends StatelessWidget {
                     alignment: Alignment.center,
                     child: SingleChildScrollView(
                       child: Column(
-                        mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(vocabulary?.word ?? '',
-                              style: Theme.of(context).textTheme.headlineMedium,
-                              textAlign: TextAlign.center),
+                          Stack(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                //You can use FittedBox to manage text based on height or width.
+                                child: FittedBox(
+                                  fit: BoxFit.fitWidth,
+                                  child: Text(vocabulary?.word ?? '',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineMedium,
+                                      textAlign: TextAlign.center),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 2,
+                                right: 0,
+                                child: vocabulary != null
+                                    ? ListenableBuilder(
+                                        listenable: vocabulary!,
+                                        builder: (context, widget) {
+                                          return NoteComponent(
+                                            text: vocabulary?.word,
+                                            onNote: (note) {
+                                              vocabulary?.word_note = note;
+                                              vocabulary?.update();
+                                              onUpdateNote.call(vocabulary);
+                                            },
+                                            note: vocabulary?.word_note,
+                                          );
+                                        })
+                                    : SizedBox(),
+                              )
+                            ],
+                          ),
                           SizedBox(
                             height: 5,
                           ),
@@ -80,10 +117,32 @@ class VocabularyComponent extends StatelessWidget {
                   child: Container(
                     alignment: Alignment.center,
                     child: SingleChildScrollView(
-                      child: Text(
-                        vocabulary?.description ?? '',
-                        style: Theme.of(context).textTheme.bodySmall,
+                      child: RichText(
                         textAlign: TextAlign.center,
+                        text: TextSpan(children: [
+                          TextSpan(
+                            text: vocabulary?.description ?? '',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          TextSpan(text: '  '),
+                          if (vocabulary != null)
+                            WidgetSpan(
+                              child: ListenableBuilder(
+                                listenable: vocabulary!,
+                                builder: (context, widget) {
+                                  return NoteComponent(
+                                    text: vocabulary?.description,
+                                    onNote: (note) {
+                                      vocabulary?.description_note = note;
+                                      vocabulary?.update();
+                                      onUpdateNote.call(vocabulary);
+                                    },
+                                    note: vocabulary?.description_note,
+                                  );
+                                },
+                              ),
+                            )
+                        ]),
                       ),
                     ),
                   ),

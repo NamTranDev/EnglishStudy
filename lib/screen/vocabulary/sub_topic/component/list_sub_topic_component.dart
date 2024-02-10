@@ -36,12 +36,6 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
   int animationDuration = 2000;
 
   @override
-  void dispose() {
-    _viewModel.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Consumer<SubTopicViewModel>(
       builder: (context, viewmodel, child) {

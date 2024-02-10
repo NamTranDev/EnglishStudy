@@ -1,4 +1,5 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/logger.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/utils/extension.dart';
@@ -26,7 +27,7 @@ class ExampleComponent extends StatelessWidget {
         children: [
           Container(
             padding: EdgeInsets.only(
-                top: isGame ? 100 : 50, left: 10, right: 10, bottom: 100),
+                top: isGame ? 100 : 50, left: 10, right: 10, bottom: 50),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               children: [
@@ -38,9 +39,27 @@ class ExampleComponent extends StatelessWidget {
                           vertical: 5,
                           horizontal: 10,
                         ),
-                        child: Text(
-                          examples?.getOrNull(index)?.sentence ?? '',
-                          style: Theme.of(context).textTheme.bodySmall,
+                        child: RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text:
+                                    examples?.getOrNull(index)?.sentence ?? '',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                              TextSpan(text: '  '),
+                              WidgetSpan(
+                                child: GestureDetector(
+                                  onTap: () {
+                                    logger(
+                                        examples?.getOrNull(index)?.sentence);
+                                  },
+                                  child: widgetIcon('assets/icons/ic_note.svg',
+                                      size: 20),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       );
                     },

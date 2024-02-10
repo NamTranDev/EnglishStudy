@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
+import 'package:english_study/logger.dart';
 import 'package:english_study/model/download_info.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/services/service_locator.dart';
@@ -26,12 +27,11 @@ class DownloadManager {
   Function? onNeedDownloadListener;
   Function? onDownloadErrorListener;
 
-  Future<void> checkNeedDownload(String? category, List<Topic>? topics,
-      {Function? onSyncUI}) async {
+  Future<void> checkNeedDownload(String? category, List<Topic>? topics) async {
     if (topics == null) return;
     var isNeedDownload =
         topics.where((element) => element.isDownload == 0).firstOrNull != null;
-    onSyncUI?.call(isNeedDownload);
+    onNeedDownloadListener?.call(isNeedDownload);
     final path = (await getTemporaryDirectory()).path;
     var directory =
         Directory("${getIt<AppMemory>().pathFolderDocument}/${category}");
@@ -49,9 +49,6 @@ class DownloadManager {
                       : DownloadStatus.NONE),
             )
             .toList());
-    onNeedDownloadListener = (needDownload) {
-      onSyncUI?.call(needDownload);
-    };
   }
 
   void refresh(String? category) {
@@ -253,10 +250,12 @@ class DownloadManager {
         },
       );
       fileInfo.status = DownloadStatus.COMPLETE;
-      updateTotalDownload(fileInfo.category);
-      updateLengthDatabase(fileInfo.link);
-      var size = await sizeDirectory(directory);
-      print('size : $size');
+      Future.delayed(Duration(milliseconds: 1000), () async {
+        updateTotalDownload(fileInfo.category);
+        updateLengthDatabase(fileInfo.link);
+        var size = await sizeDirectory(directory);
+        print('size : $size');
+      });
     } catch (e) {
       print(e);
       directory.deleteSync();

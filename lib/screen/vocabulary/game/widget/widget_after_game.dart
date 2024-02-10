@@ -46,6 +46,9 @@ class WidgetAfterGame extends StatelessWidget {
                         onPlayAudio: (audio) {
                           viewModel.playAudio(audio);
                         },
+                        onUpdateNote: (vocabulary) {
+                          viewModel.updateVocabulary(vocabulary);
+                        },
                       ),
                       back: ExampleComponent(
                           vocabulary: vocabulary,

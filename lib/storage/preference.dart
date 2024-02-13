@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:english_study/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<Preference> initPreference() async {
@@ -13,6 +14,7 @@ class Preference {
   final _KEY_GUIDE_LEARN_WITH_GAME = 'KEY_GUIDE_LEARN_WITH_GAME';
   final _KEY_GUIDE_NEXT_CATEGORY = 'KEY_GUIDE_NEXT_CATEGORY';
   final _KEY_CATEGORY_CURRENT = 'KEY_CATEGORY_CURRENT_';
+  final _KEY_CONVERSATION_BACKGROUND = 'KEY_CONVERSATION_BACKGROUND';
 
   SharedPreferences? _prefs;
 
@@ -27,11 +29,21 @@ class Preference {
   }
 
   bool isGuideNextCategory() {
-    var isGuideNextCategory =
-        _prefs?.getBool(_KEY_GUIDE_NEXT_CATEGORY) ?? true;
+    var isGuideNextCategory = _prefs?.getBool(_KEY_GUIDE_NEXT_CATEGORY) ?? true;
     print(isGuideNextCategory);
     _prefs?.setBool(_KEY_GUIDE_NEXT_CATEGORY, false);
     return isGuideNextCategory;
+  }
+
+  bool isConversationBackground() {
+    var isConversationBackground =
+        _prefs?.getBool(_KEY_CONVERSATION_BACKGROUND) ?? false;
+    logger(isConversationBackground);
+    return isConversationBackground;
+  }
+
+  void setConversationBackground(bool isConversationBackground) {
+    _prefs?.setBool(_KEY_CONVERSATION_BACKGROUND, isConversationBackground);
   }
 
   String? currentCategory(int? type) {

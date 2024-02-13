@@ -63,7 +63,7 @@ class Vocabulary with ChangeNotifier {
     );
   }
 
-  void update() {
+  void notify() {
     notifyListeners();
   }
 

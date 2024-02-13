@@ -1,3 +1,4 @@
+import 'package:english_study/screen/listening/conversation/conversation_background_screen.dart';
 import 'package:english_study/screen/listening/conversation/conversation_screen.dart';
 import 'package:english_study/screen/listening/lessions/lession_topic_screen.dart';
 import 'package:english_study/screen/main/main_screen.dart';
@@ -14,4 +15,5 @@ var routes = {
   GameVocabularyScreen.routeName: (context) => GameVocabularyScreen(),
   LessionTopicScreen.routeName: (context) => LessionTopicScreen(),
   ConversationScreen.routeName: (context) => ConversationScreen(),
+  ConversationBackgroundScreen.routeName: (context) => ConversationBackgroundScreen(),
 };

@@ -1,4 +1,5 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/model/conversation.dart';
 import 'package:english_study/reuse/component/back_screen_component.dart';
 import 'package:english_study/screen/listening/conversation/conversation_view_model.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
           _viewModel = viewModel;
           return FutureBuilder(
             future: viewModel.conversationDetail(
-                ModalRoute.of(context)?.settings.arguments as String?),
+                ModalRoute.of(context)?.settings.arguments as Conversation?),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return Center(

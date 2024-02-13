@@ -166,12 +166,24 @@ class DBProvider {
     return list;
   }
 
-  Future<List<Conversation>> getConversations(String? topicId) async {
+  Future<List<Conversation>> getConversations(
+      String? topicId, bool isGetDetail) async {
     final db = await _db;
     var res = await db.query(_CONVERSATION_TABLE,
         where: 'topic_id = ?', whereArgs: [topicId]);
-    List<Conversation> convesations =
-        res.isNotEmpty ? res.map((c) => Conversation.fromMap(c)).toList() : [];
+    List<Conversation> convesations;
+    if (isGetDetail) {
+      Iterable<Future<Conversation>> iterable = res.isNotEmpty
+          ? res.map((c) async {
+              return mapperConversation(db, c);
+            }).toList()
+          : [];
+      convesations = await Future.wait(iterable);
+    } else {
+      convesations = res.isNotEmpty
+          ? res.map((c) => Conversation.fromMap(c)).toList()
+          : [];
+    }
     bool hasLearning = convesations.any(
         (element) => element.isLearnComplete == 0 && element.isLearning == 1);
     if (!hasLearning) {
@@ -188,7 +200,7 @@ class DBProvider {
     final db = await _db;
     var res =
         await db.query(_CONVERSATION_TABLE, where: 'id = ?', whereArgs: [id]);
-    return mapperConversation(db, res);
+    return mapperConversation(db, res.first);
   }
 
   Future<List<SubTopic>> getSubTopics(String? topicId) async {
@@ -315,8 +327,8 @@ class DBProvider {
   }
 
   Future<Conversation> mapperConversation(
-      Database db, List<Map<String, Object?>> values) async {
-    Conversation conversation = Conversation.fromMap(values.first);
+      Database db, Map<String, Object?> values) async {
+    Conversation conversation = Conversation.fromMap(values);
     var audios = await db.query(_AUDIO_CONVERSATION_TABLE,
         where: 'conversation_id = ?', whereArgs: [conversation.id]);
     var transcipt = await db.query(_TRANSCRIPT_TABLE,

@@ -51,6 +51,11 @@ class DownloadManager {
             .toList());
   }
 
+  Future<bool> isNeedDownload(String? category, List<Topic>? topics) async {
+     if (topics == null) return true;
+    return topics.where((element) => element.isDownload == 0).firstOrNull != null;
+  }
+
   void refresh(String? category) {
     var downloadInfo = _downloadInfos[category];
     if (downloadInfo == null) return;

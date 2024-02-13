@@ -6,16 +6,25 @@ import 'package:english_study/reuse/complete_category_view_model.dart';
 import 'package:english_study/reuse/lessions_view_model.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
+import 'package:english_study/storage/preference.dart';
 import 'package:english_study/utils/extension.dart';
 
 class LessionTopicViewModel extends LessionsViewModel
     with CompleteCategoryViewModel {
   Future<List<Conversation>> initData(Topic? topic, bool fromTab) async {
     await Future.delayed(Duration(milliseconds: duration_animation_screen));
-    var db = getIt<DBProvider>();
-    List<Conversation> conversations =
-        await db.getConversations(topic?.id?.toString());
+    List<Conversation> conversations = await getData(topic, fromTab);
     if (fromTab) checkCompleteWithTopic(topic);
+    return conversations;
+  }
+
+  Future<List<Conversation>> getData(Topic? topic, bool fromTab) async {
+    var db = getIt<DBProvider>();
+    var iPref = getIt<Preference>();
+    var isHasResource = downloadManager.checkHasResource(topic?.link_resource);
+    List<Conversation> conversations = await db.getConversations(
+        topic?.id?.toString(),
+        iPref.isConversationBackground() && isHasResource);
     return conversations;
   }
 

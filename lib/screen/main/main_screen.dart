@@ -4,7 +4,7 @@ import 'package:english_study/model/tab_type.dart';
 import 'package:english_study/screen/main/bottom_bar_provider.dart';
 import 'package:english_study/screen/main/tab/complete/complete_tab.dart';
 import 'package:english_study/screen/main/tab/listen/listening_tab.dart';
-import 'package:english_study/screen/main/tab/setting_tab.dart';
+import 'package:english_study/screen/main/tab/setting/setting_tab.dart';
 import 'package:english_study/screen/main/tab/vocabulary/vocabulary_tab.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';

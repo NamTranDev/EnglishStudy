@@ -1,14 +1,20 @@
+import 'package:english_study/audio/player_manager.dart';
 import 'package:english_study/constants.dart';
 import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
+import 'package:english_study/logger.dart';
 import 'package:english_study/model/conversation.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/reuse/check_complete_category.dart';
 import 'package:english_study/reuse/component/download_banner_component.dart';
 import 'package:english_study/reuse/component/header_title_component.dart';
 import 'package:english_study/reuse/component/next_category_component.dart';
+import 'package:english_study/screen/listening/conversation/argument.dart';
+import 'package:english_study/screen/listening/conversation/conversation_background_screen.dart';
 import 'package:english_study/screen/listening/conversation/conversation_screen.dart';
 import 'package:english_study/screen/listening/lessions/lession_topic_view_model.dart';
+import 'package:english_study/services/service_locator.dart';
+import 'package:english_study/storage/preference.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
@@ -39,7 +45,7 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
           // tooltipController.showTooltip();
         };
         return FutureBuilder(
-          future: viewmodel.initData(widget.topic,widget.fromTab),
+          future: viewmodel.initData(widget.topic, widget.fromTab),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -57,12 +63,12 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
                     builder: (context, value, child) {
                       return value
                           ? NextCategoryComponent(
-                            text: 'Learn Another Topic',
-                            onNextCategoryClick: () {
-                              nextPickCategory(context, widget.topic);
-                            },
-                          )
-                          : SizedBox();
+                              text: 'Learn Another Topic',
+                              onNextCategoryClick: () {
+                                nextPickCategory(context, widget.topic);
+                              },
+                            )
+                          : const SizedBox();
                     },
                   ),
                   ValueListenableBuilder(
@@ -88,7 +94,7 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
                                 ),
                               ),
                             )
-                          : SizedBox();
+                          : const SizedBox();
                     },
                   ),
                   Expanded(
@@ -182,9 +188,29 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
 
                       var id = conversation?.id?.toString();
 
-                      await Navigator.pushNamed(
-                          context, ConversationScreen.routeName,
-                          arguments: conversation?.id.toString());
+                      var iPref = getIt<Preference>();
+                      logger(conversations);
+                      logger(isHasResource);
+                      logger(iPref.isConversationBackground());
+                      if (conversations != null &&
+                          isHasResource &&
+                          iPref.isConversationBackground()) {
+                        logger(conversation);
+                        if (conversation?.audios == null ||
+                            conversation?.transcript == null) {
+                          conversations = await _viewModel.getData(
+                              widget.topic, widget.fromTab);
+                        }
+
+                        await Navigator.pushNamed(
+                            context, ConversationBackgroundScreen.routeName,
+                            arguments: ScreenConversationArguments(
+                                conversations, conversation));
+                      } else {
+                        await Navigator.pushNamed(
+                            context, ConversationScreen.routeName,
+                            arguments: conversation);
+                      }
 
                       if (conversation?.isLearnComplete == 1) {
                         return;

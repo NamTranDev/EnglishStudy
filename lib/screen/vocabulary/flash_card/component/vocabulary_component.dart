@@ -78,7 +78,7 @@ class VocabularyComponent extends StatelessWidget {
                                             text: vocabulary?.word,
                                             onNote: (note) {
                                               vocabulary?.word_note = note;
-                                              vocabulary?.update();
+                                              vocabulary?.notify();
                                               onUpdateNote.call(vocabulary);
                                             },
                                             note: vocabulary?.word_note,
@@ -134,7 +134,7 @@ class VocabularyComponent extends StatelessWidget {
                                     text: vocabulary?.description,
                                     onNote: (note) {
                                       vocabulary?.description_note = note;
-                                      vocabulary?.update();
+                                      vocabulary?.notify();
                                       onUpdateNote.call(vocabulary);
                                     },
                                     note: vocabulary?.description_note,

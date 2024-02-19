@@ -55,7 +55,7 @@ class CategoryComponent extends StatelessWidget {
   Widget buildWidget(BuildContext context, List<Category>? categories,
       CategoryViewModel viewModel) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10),
+      margin: EdgeInsets.only(top: 10, left: 10, right: 10),
       child: Column(
         children: [
           Text(
@@ -92,7 +92,7 @@ class CategoryComponent extends StatelessWidget {
                             alignment: Alignment.centerLeft,
                             children: [
                               Container(
-                                width: MediaQuery.of(context).size.width,
+                                width: double.infinity,
                                 height: 80,
                                 child: ValueListenableBuilder(
                                     valueListenable: viewModel.selectInfo,

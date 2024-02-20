@@ -1,5 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 import 'package:english_study/logger.dart';
+import 'package:english_study/notification/notification_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<Preference> initPreference() async {
@@ -15,6 +18,7 @@ class Preference {
   final _KEY_GUIDE_NEXT_CATEGORY = 'KEY_GUIDE_NEXT_CATEGORY';
   final _KEY_CATEGORY_CURRENT = 'KEY_CATEGORY_CURRENT_';
   final _KEY_CONVERSATION_BACKGROUND = 'KEY_CONVERSATION_BACKGROUND';
+  final _KEY_DAILY_NOTIFICATION = 'KEY_DAILY_NOTIFICATION';
 
   SharedPreferences? _prefs;
 
@@ -48,6 +52,18 @@ class Preference {
 
   String? currentCategory(int? type) {
     return _prefs?.getString(_KEY_CATEGORY_CURRENT + (type?.toString() ?? ''));
+  }
+
+  void saveDailyNotification(NotificationModel model) {
+    _prefs?.setString(_KEY_DAILY_NOTIFICATION, model.toJson());
+  }
+
+  NotificationModel dailyNotification() {
+    String? value = _prefs?.getString(_KEY_DAILY_NOTIFICATION);
+    if (value == null || value.isEmpty) {
+      return NotificationModel(idNotification: 1,hour: 20, minute: 30, isEnable: true,isSchedule: false);
+    }
+    return NotificationModel.fromJson(value);
   }
 
   void setCurrentCategory(int? type, String? category) {

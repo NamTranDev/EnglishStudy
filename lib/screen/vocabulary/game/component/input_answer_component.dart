@@ -162,7 +162,7 @@ class InputAnswerComponent extends StatelessWidget {
             child: widgetIcon('assets/icons/ic_audio.svg', size: 40));
       case GameType.InputSpellingToDefination:
       case GameType.InputSpellingToWord:
-        return Text((gameVocabularyModel?.main.spellings?.getOrNull(0)?.text ?? ''),
+        return Text((gameVocabularyModel?.main.spellings?.getOrNull(0)?.spelling ?? ''),
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium

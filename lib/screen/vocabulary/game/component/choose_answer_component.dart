@@ -87,7 +87,7 @@ class ChooseAnswerComponent extends StatelessWidget {
       case GameType.ChooseAnswerSpellingToDefination:
       case GameType.ChooseAnswerSpellingToWord:
         return Text(
-          (gameVocabularyModel?.main.spellings?.getOrNull(0)?.text ?? ''),
+          (gameVocabularyModel?.main.spellings?.getOrNull(0)?.spelling ?? ''),
           style: Theme.of(context)
               .textTheme
               .bodyMedium

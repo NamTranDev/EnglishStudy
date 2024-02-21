@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-class Category {
+import 'package:drift/drift.dart';
+
+class Category extends Table{
   String? key;
   String? title;
   String? description;

@@ -9,9 +9,8 @@ import 'package:english_study/screen/main/tab/vocabulary/vocabulary_tab.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:english_study/storage/memory.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:english_study/sync_data/background_task.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
@@ -30,41 +29,34 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    initialization();
-  }
-
-  void initialization() async {
-    print('ready in 3...');
-    await Future.delayed(const Duration(seconds: 1));
-    print('ready in 2...');
-    await Future.delayed(const Duration(seconds: 1));
-    print('ready in 1...');
-    await Future.delayed(const Duration(seconds: 1));
-    print('go!');
-    FlutterNativeSplash.remove();
+    syncDataBackgroundTask();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: checkTab(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                  "Something wrong with message: ${snapshot.error.toString()}"),
-            );
-          } else if (snapshot.connectionState == ConnectionState.done) {
-            return ChangeNotifierProvider<BottomNavigationBarProvider>(
-              create: (context) => BottomNavigationBarProvider(),
-              builder: (context, child) => bodyMain(context),
-            );
-          } else {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        });
+    return Scaffold(
+      body: SafeArea(
+        child: FutureBuilder(
+            future: checkTab(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                      "Something wrong with message: ${snapshot.error.toString()}"),
+                );
+              } else if (snapshot.connectionState == ConnectionState.done) {
+                return ChangeNotifierProvider<BottomNavigationBarProvider>(
+                  create: (context) => BottomNavigationBarProvider(),
+                  builder: (context, child) => bodyMain(context),
+                );
+              } else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }),
+      ),
+    );
   }
 
   Future<void> checkTab() async {

@@ -1,10 +1,10 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:english_study/model/topic.dart';
+import 'package:drift/drift.dart';
 import 'package:english_study/model/vocabulary.dart';
 
-class SubTopic {
+class SubTopic extends Table{
   int? id;
   String? name;
   String? image;

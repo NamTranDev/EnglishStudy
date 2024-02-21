@@ -25,11 +25,13 @@ class WidgetAudioSpellig extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  audioSpellingWithFlag(audios?.getOrNull(0), spellings?.getOrNull(0), true),
+                  audioSpellingWithFlag(
+                      audios?.getOrNull(0), spellings?.getOrNull(0), true),
                   SizedBox(
                     width: 30,
                   ),
-                  audioSpellingWithFlag(audios?.getOrNull(1), spellings?.getOrNull(1), false),
+                  audioSpellingWithFlag(
+                      audios?.getOrNull(1), spellings?.getOrNull(1), false),
                 ],
               ),
             )
@@ -79,7 +81,7 @@ class WidgetAudioSpellig extends StatelessWidget {
 
   Widget widgetSpelling(Spelling? spelling) {
     return Text(
-      spellings?.getOrNull(0)?.text ?? '',
+      spellings?.getOrNull(0)?.spelling ?? '',
       style: const TextStyle(
           fontFamily: 'Noto',
           fontSize: 15,

@@ -1,13 +1,12 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
-import 'dart:ffi';
 
+import 'package:drift/drift.dart';
 import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/spelling.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
-class Vocabulary with ChangeNotifier {
+class Vocabulary extends Table with ChangeNotifier {
   int? id;
   int? sub_topic_id;
   String? word;

@@ -198,6 +198,21 @@ class NotificationManager {
     if (model.isEnable == false) return;
     if (model.isSchedule == true) return;
     model.isSchedule = true;
+
+    //test
+    // await flutterLocalNotificationsPlugin.periodicallyShow(
+    //     model.idNotification,
+    //     'English Study Daily Notification',
+    //     'Open app to learn',
+    //     RepeatInterval.everyMinute,
+    //     const NotificationDetails(
+    //       android: AndroidNotificationDetails('daily notification channel id',
+    //           'daily notification channel name',
+    //           channelDescription: 'daily notification description'),
+    //     ));
+
+    // return;
+
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
     tz.TZDateTime scheduledDate = tz.TZDateTime(
         tz.local, now.year, now.month, now.day, model.hour, model.minute);

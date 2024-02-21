@@ -20,8 +20,10 @@ dependencies:
   shared_preferences:
 
   sqflite_common_ffi:
-  sqflite_common_ffi_web:
-  sqflite:
+  # sqflite_common_ffi_web:
+  # sqflite:
+  sqlite3_flutter_libs:
+  drift:
 
   carousel_slider: ^4.2.1
   flutter_local_notifications: 
@@ -46,6 +48,8 @@ dependencies:
   audio_video_progress_bar: ^1.0.0
 
 dev_dependencies:
+  drift_dev:
+  build_runner:
   flutter_test:
     sdk: flutter
 

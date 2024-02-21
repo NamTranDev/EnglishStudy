@@ -26,16 +26,19 @@ import 'package:english_study/utils/file_util.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
-Future<DBProvider> initDBProvider() async {
-  DBProvider dbProvider = DBProvider._();
-  dbProvider._initDB();
+Future<DBProvider> initDBProvider(String folderPath, ByteData assetByte) async {
+  DBProvider dbProvider = DBProvider._(folderPath, assetByte);
+  await dbProvider.initDB();
   return dbProvider;
 }
 
 class DBProvider {
-  DBProvider._();
+  final String folderPath;
+  final ByteData assetByte;
+  DBProvider._(this.folderPath, this.assetByte);
 
   Database? _database;
 
@@ -53,28 +56,32 @@ class DBProvider {
   Future<Database> get _db async {
     if (_database != null) return _database!;
     // if _database is null we instantiate it
-    _database = await _initDB();
+    initDB();
     return _database!;
   }
 
-  _initDB() async {
-    var databasesPath = await getDatabasesPath();
-    var path = join(databasesPath, "english.db");
+  Future<void> initDB() async {
+    var path = join(folderPath, "english.db");
 
     // deleteDatabase(path);
 
     var exists = await databaseExists(path);
+    logger(exists);
     if (!exists) {
       try {
         await Directory(dirname(path)).create(recursive: true);
       } catch (_) {}
 
-      ByteData data = await rootBundle.load('assets/english.db');
-      List<int> bytes =
-          data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      List<int> bytes = assetByte.buffer
+          .asUint8List(assetByte.offsetInBytes, assetByte.lengthInBytes);
       await File(path).writeAsBytes(bytes, flush: true);
     }
-    return await openDatabase(path);
+    _database = await openDatabase(path);
+    logger(_database);
+  }
+
+  Database? getDatabase() {
+    return _database;
   }
 
   Future<List<Category>> getCategoriesLearning(int? type) async {

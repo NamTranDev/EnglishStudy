@@ -8,27 +8,27 @@ import 'package:english_study/storage/preference.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 import 'package:english_study/navigator.dart' as nav;
 import 'package:english_study/services/service_locator.dart';
 
 Future main() async {
-  if (kIsWeb) {
-    databaseFactory = databaseFactoryFfiWeb;
-  } else if (Platform.isWindows || Platform.isLinux) {
+  databaseFactoryOrNull = null;
+  if (Platform.isWindows || Platform.isLinux) {
     // Initialize FFI
     sqfliteFfiInit();
-    // Change the default factory
-    databaseFactory = databaseFactoryFfi;
   }
+  // Change the default factory. On iOS/Android, if not using `sqlite_flutter_lib` you can forget
+  // this step, it will use the sqlite version available on the system.
+  databaseFactory = databaseFactoryFfi;
 
   WidgetsFlutterBinding.ensureInitialized();
 
   await setupServiceLocator();
 
   var notification = getIt<NotificationManager>();
-  notification.scheduleDailyNotification(getIt<Preference>().dailyNotification());
+  notification
+      .scheduleDailyNotification(getIt<Preference>().dailyNotification());
 
   runApp(const MyApp());
 }

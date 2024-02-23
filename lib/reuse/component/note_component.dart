@@ -1,16 +1,21 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/services/service_locator.dart';
+import 'package:english_study/storage/preference.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 
 class NoteComponent extends StatefulWidget {
   final String? text;
   final Function onNote;
   final String? note;
+  final bool? isFirst;
   const NoteComponent({
     super.key,
     required this.text,
     required this.onNote,
     this.note,
+    this.isFirst,
   });
 
   @override
@@ -23,34 +28,51 @@ class _NoteComponentState extends State<NoteComponent> {
 
   @override
   Widget build(BuildContext context) {
+    var iPref = getIt<Preference>();
+    bool isGuideNote = false;
+    if (widget.isFirst == true) {
+      isGuideNote = iPref.isGuideNote();
+    }
+    if (isGuideNote) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        tooltipController.showTooltip();
+      });
+    }
     return JustTheTooltip(
       backgroundColor: maastricht_blue,
       controller: tooltipController,
+      triggerMode: TooltipTriggerMode.manual,
       tailBaseWidth: 10.0,
       isModal: true,
       borderRadius: BorderRadius.circular(8.0),
       offset: 5,
+      onDismiss: () {
+        if (isGuideNote) {
+          widget.onNote.call(null);
+        }
+      },
       content: Container(
         padding: EdgeInsets.all(10),
         child: RichText(
             text: TextSpan(children: [
           TextSpan(
-            text: widget.note ?? '',
+            text: isGuideNote ? 'Noted' : (widget.note ?? ''),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Colors.white,
                 ),
           ),
-          TextSpan(text: '  '),
-          WidgetSpan(
-            child: GestureDetector(
-              onTap: () {
-                tooltipController.hideTooltip();
-                showAlert(widget.text, widget.note);
-              },
-              child: widgetIcon('assets/icons/ic_note.svg',
-                  size: 20, color: Colors.white.withOpacity(0.8)),
-            ),
-          )
+          if (!isGuideNote) TextSpan(text: '  '),
+          if (!isGuideNote)
+            WidgetSpan(
+              child: GestureDetector(
+                onTap: () {
+                  tooltipController.hideTooltip();
+                  showAlert(widget.text, widget.note);
+                },
+                child: widgetIcon('assets/icons/ic_note.svg',
+                    size: 20, color: Colors.white.withOpacity(0.8)),
+              ),
+            )
         ])),
       ),
       child: GestureDetector(
@@ -97,7 +119,9 @@ class _NoteComponentState extends State<NoteComponent> {
             ElevatedButton(
               child: Text('Save'),
               onPressed: () {
-                widget.onNote.call(inputController.text);
+                if (note != null || inputController.text.isNotEmpty) {
+                  widget.onNote.call(inputController.text);
+                }
                 Navigator.of(context).pop();
               },
             ),

@@ -7,13 +7,13 @@ class SettingInfo with ChangeNotifier {
   String? name;
   bool isEnable = true;
   bool isToggle = false;
-  NotificationModel? notificationDaily;
+  Object? any;
   SettingInfo({
     required this.id,
     this.name,
     required this.isEnable,
     required this.isToggle,
-    this.notificationDaily
+    this.any
   });
 
   void notify() {

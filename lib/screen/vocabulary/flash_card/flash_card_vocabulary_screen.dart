@@ -115,11 +115,15 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                     onUpdateNote: (vocabulary) {
                       _viewModel.updateVocabulary(vocabulary);
                     },
+                    isFirst: data.indexOf(item) == 0,
                   ),
                   back: ExampleComponent(
                       vocabulary: item,
                       onOpenVocabulary: () {
                         _controller.toggleCard();
+                      },
+                      onUpdateNote: (example) {
+                        _viewModel.updateExample(example);
                       },
                       isGame: false),
                 );

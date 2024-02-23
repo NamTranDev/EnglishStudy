@@ -44,49 +44,19 @@ class _SettingTabState extends State<SettingTab> {
                           builder: (context, widget) {
                             return IgnorePointer(
                               ignoring: setting.isEnable == false,
-                              child: Switch(
-                                value: setting.isToggle,
-                                onChanged: (value) {
-                                  setting.isToggle = value;
-                                  switch (setting.id) {
-                                    case 1:
-                                      getIt<Preference>()
-                                          .setConversationBackground(value);
-                                      break;
-                                    case 2:
-                                      var notification =
-                                          setting.notificationDaily;
-                                      if (notification != null) {
-                                        notification.isEnable = value;
-                                        getIt<Preference>()
-                                            .saveDailyNotification(
-                                                notification);
-                                        if (value == false) {
-                                          getIt<NotificationManager>()
-                                              .cancelNotification(
-                                                  notification.idNotification);
-                                        } else {
-                                          getIt<NotificationManager>()
-                                              .scheduleDailyNotification(
-                                                  notification);
-                                        }
-                                      }
-                                      break;
-                                  }
-                                  setting.notify();
-                                },
-                              ),
+                              child: buildSettingAction(setting),
                             );
                           },
                         )
                       ],
                     ),
-                    ListenableBuilder(
-                      listenable: setting,
-                      builder: (context, widget) {
-                        return buildExpandWidget(setting);
-                      },
-                    )
+                    if (setting.any != null)
+                      ListenableBuilder(
+                        listenable: setting,
+                        builder: (context, widget) {
+                          return buildExpandWidget(setting);
+                        },
+                      )
                   ],
                 );
               },
@@ -100,15 +70,48 @@ class _SettingTabState extends State<SettingTab> {
         });
   }
 
+  buildSettingAction(SettingInfo setting) {
+    switch (setting.id) {
+      case 1:
+      case 2:
+        return Switch(
+          value: setting.isToggle,
+          onChanged: (value) {
+            setting.isToggle = value;
+            switch (setting.id) {
+              case 1:
+                getIt<Preference>().setConversationBackground(value);
+                break;
+              case 2:
+                var notification = setting.any as NotificationModel?;
+                if (notification != null) {
+                  notification.isEnable = value;
+                  getIt<Preference>().saveDailyNotification(notification);
+                  if (value == false) {
+                    getIt<NotificationManager>()
+                        .cancelNotification(notification.idNotification);
+                  } else {
+                    getIt<NotificationManager>()
+                        .scheduleDailyNotification(notification);
+                  }
+                }
+                break;
+            }
+            setting.notify();
+          },
+        );
+      default:
+        return SizedBox();
+    }
+  }
+
   buildExpandWidget(SettingInfo setting) {
     if (setting.isToggle) {
-      switch (setting.id) {
-        case 2:
+      switch (setting.any) {
+        case NotificationModel:
+          var notification = setting.any as NotificationModel;
           return GestureDetector(
               onTap: () async {
-                var notification = setting.notificationDaily;
-                if (notification == null) return;
-
                 final TimeOfDay? picked = await showTimePicker(
                   context: context,
                   initialTime: TimeOfDay.now().replacing(
@@ -125,7 +128,7 @@ class _SettingTabState extends State<SettingTab> {
                 setting.notify();
               },
               child: Text(
-                '${setting.notificationDaily?.hour}:${setting.notificationDaily?.minute}',
+                '${notification.hour}:${notification.minute}',
               ));
         default:
           return SizedBox();
@@ -162,7 +165,13 @@ class _SettingTabState extends State<SettingTab> {
         name: 'Enable Notification Daily',
         isEnable: true,
         isToggle: notification.isEnable,
-        notificationDaily: notification));
+        any: notification));
+    settings.add(SettingInfo(
+      id: 3,
+      name: 'Check new data',
+      isEnable: true,
+      isToggle: true,
+    ));
     return Future.value(settings);
   }
 }

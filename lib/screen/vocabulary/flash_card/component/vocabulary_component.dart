@@ -9,6 +9,7 @@ class VocabularyComponent extends StatelessWidget {
   final Vocabulary? vocabulary;
   final Function onOpenExample;
   final bool isGame;
+  final bool? isFirst;
   final Function(Audio?) onPlayAudio;
   final Function(Vocabulary?) onUpdateNote;
 
@@ -19,6 +20,7 @@ class VocabularyComponent extends StatelessWidget {
     this.isGame = true,
     required this.onPlayAudio,
     required this.onUpdateNote,
+    this.isFirst,
   });
 
   @override
@@ -56,7 +58,7 @@ class VocabularyComponent extends StatelessWidget {
                           Stack(
                             children: [
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20),
+                                padding: EdgeInsets.symmetric(horizontal: 25),
                                 //You can use FittedBox to manage text based on height or width.
                                 child: FittedBox(
                                   fit: BoxFit.fitWidth,
@@ -77,11 +79,17 @@ class VocabularyComponent extends StatelessWidget {
                                           return NoteComponent(
                                             text: vocabulary?.word,
                                             onNote: (note) {
-                                              vocabulary?.word_note = note;
-                                              vocabulary?.notify();
-                                              onUpdateNote.call(vocabulary);
+                                              if (note == null) {
+                                                vocabulary?.notify();
+                                              } else {
+                                                vocabulary?.word_note =
+                                                    note.isEmpty ? null : note;
+                                                vocabulary?.notify();
+                                                onUpdateNote.call(vocabulary);
+                                              }
                                             },
                                             note: vocabulary?.word_note,
+                                            isFirst: isFirst,
                                           );
                                         })
                                     : SizedBox(),
@@ -133,7 +141,8 @@ class VocabularyComponent extends StatelessWidget {
                                   return NoteComponent(
                                     text: vocabulary?.description,
                                     onNote: (note) {
-                                      vocabulary?.description_note = note;
+                                      vocabulary?.description_note =
+                                          note.isEmpty ? null : note;
                                       vocabulary?.notify();
                                       onUpdateNote.call(vocabulary);
                                     },

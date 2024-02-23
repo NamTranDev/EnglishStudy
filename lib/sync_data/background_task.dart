@@ -1,19 +1,22 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:dio/dio.dart';
+import 'package:english_study/constants.dart';
 import 'package:english_study/logger.dart';
+import 'package:english_study/model/update_data_model.dart';
+import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
+import 'package:english_study/storage/memory.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
-Future<void> syncDataBackgroundTask() async {
+Future<void> checkDataBackgroundTask() async {
   final ReceivePort receivePort = ReceivePort();
-  final isolate = await Isolate.spawn(backgroundTask, [
-    receivePort.sendPort,
-    (await getApplicationDocumentsDirectory()).path,
-    await rootBundle.load('assets/english.db')
-  ]);
+  final isolate = await Isolate.spawn(
+      backgroundTask, [receivePort.sendPort, getIt<AppMemory>()]);
 
   receivePort.listen((dynamic data) {
     logger(data);
@@ -24,22 +27,27 @@ Future<void> syncDataBackgroundTask() async {
 
 void backgroundTask(List<dynamic> arguments) async {
   SendPort sendPort = arguments[0];
-  String folderPath = arguments[1];
-  ByteData assetByte = arguments[2];
+  AppMemory appMemory = arguments[1];
 
-  if (Platform.isWindows || Platform.isLinux) {
-    // Initialize FFI
-    sqfliteFfiInit();
-  }
-  // Change the default factory. On iOS/Android, if not using `sqlite_flutter_lib` you can forget
-  // this step, it will use the sqlite version available on the system.
-  databaseFactory = databaseFactoryFfi;
+  Dio dio = Dio();
 
-  DBProvider db = await initDBProvider(folderPath, assetByte);
-  logger(db);
-  logger(db.getDatabase());
-  for (int i = 0; i < 1000; i++) {
-    print(await db.getVocabulary(i.toString()));
+  try {
+    Response response = await dio.get(
+      URL_UPDATE,
+      options: Options(
+        contentType: 'application/json;charset=UTF-8',
+        responseType: ResponseType.plain,
+      ),
+    );
+    logger(response.statusCode);
+    if (response.statusCode == 200) {
+      logger(response.data);
+      var data = UpdateDataModel.fromJson(jsonDecode(response.data));
+      logger(data);
+    }
+  } on DioError catch (e) {
+    logger(e);
   }
+
   sendPort.send('Background task completed.');
 }

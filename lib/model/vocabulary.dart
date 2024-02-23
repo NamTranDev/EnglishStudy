@@ -1,12 +1,11 @@
 import 'dart:convert';
 
-import 'package:drift/drift.dart';
 import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/spelling.dart';
 import 'package:flutter/foundation.dart';
 
-class Vocabulary extends Table with ChangeNotifier {
+class Vocabulary with ChangeNotifier {
   int? id;
   int? sub_topic_id;
   String? word;

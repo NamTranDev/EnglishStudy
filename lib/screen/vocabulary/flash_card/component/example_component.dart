@@ -2,17 +2,20 @@ import 'package:english_study/constants.dart';
 import 'package:english_study/logger.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/vocabulary.dart';
+import 'package:english_study/reuse/component/note_component.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 
 class ExampleComponent extends StatelessWidget {
   final Vocabulary? vocabulary;
   final Function onOpenVocabulary;
+  final Function onUpdateNote;
   final bool isGame;
   const ExampleComponent(
       {super.key,
       required this.vocabulary,
       required this.onOpenVocabulary,
+      required this.onUpdateNote,
       this.isGame = true});
 
   @override
@@ -34,6 +37,7 @@ class ExampleComponent extends StatelessWidget {
                 Flexible(
                   child: ListView.builder(
                     itemBuilder: (context, index) {
+                      var example = examples?.getOrNull(index);
                       return Container(
                         padding: EdgeInsets.symmetric(
                           vertical: 5,
@@ -43,21 +47,28 @@ class ExampleComponent extends StatelessWidget {
                           text: TextSpan(
                             children: [
                               TextSpan(
-                                text:
-                                    examples?.getOrNull(index)?.sentence ?? '',
+                                text: example?.sentence ?? '',
                                 style: Theme.of(context).textTheme.bodySmall,
                               ),
                               TextSpan(text: '  '),
-                              WidgetSpan(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    logger(
-                                        examples?.getOrNull(index)?.sentence);
-                                  },
-                                  child: widgetIcon('assets/icons/ic_note.svg',
-                                      size: 20),
-                                ),
-                              )
+                              if (example != null)
+                                WidgetSpan(
+                                  child: ListenableBuilder(
+                                    listenable: example,
+                                    builder: (context, widget) {
+                                      return NoteComponent(
+                                        text: vocabulary?.description,
+                                        onNote: (note) {
+                                          example.sentence_note =
+                                              note.isEmpty ? null : note;
+                                          example.notify();
+                                          onUpdateNote.call(example);
+                                        },
+                                        note: example.sentence_note,
+                                      );
+                                    },
+                                  ),
+                                )
                             ],
                           ),
                         ),

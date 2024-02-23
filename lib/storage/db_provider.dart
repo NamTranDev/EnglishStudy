@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 import 'package:collection/collection.dart';
@@ -22,11 +20,8 @@ import 'package:english_study/model/topic.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/preference.dart';
-import 'package:english_study/utils/file_util.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 Future<DBProvider> initDBProvider(String folderPath, ByteData assetByte) async {
@@ -385,6 +380,14 @@ class DBProvider {
     logger(vocabulary.toMap());
     await db.update(_VOCABULARY_TABLE, vocabulary.toMap(),
         where: 'id = ?', whereArgs: [vocabulary.id]);
+  }
+
+  Future<void> updateExample(Example example) async {
+    final db = await _db;
+    logger(example.toMap());
+    await db.update(_EXAMPLE_TABLE, example.toMap(),
+        where: 'vocabulary_id = ? and example = ?',
+        whereArgs: [example.vocabulary_id, example.sentence]);
   }
 
   Future<bool> syncSubTopic(String? subTopicId) async {

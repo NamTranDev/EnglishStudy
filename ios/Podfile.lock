@@ -27,6 +27,21 @@ PODS:
   - sqflite (0.0.3):
     - Flutter
     - FMDB (>= 2.7.5)
+  - sqlite3 (3.45.1):
+    - sqlite3/common (= 3.45.1)
+  - sqlite3/common (3.45.1)
+  - sqlite3/fts5 (3.45.1):
+    - sqlite3/common
+  - sqlite3/perf-threadsafe (3.45.1):
+    - sqlite3/common
+  - sqlite3/rtree (3.45.1):
+    - sqlite3/common
+  - sqlite3_flutter_libs (0.0.1):
+    - Flutter
+    - sqlite3 (~> 3.45.1)
+    - sqlite3/fts5
+    - sqlite3/perf-threadsafe
+    - sqlite3/rtree
   - ZIPFoundation (0.9.13)
 
 DEPENDENCIES:
@@ -41,10 +56,12 @@ DEPENDENCIES:
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/ios`)
 
 SPEC REPOS:
   trunk:
     - FMDB
+    - sqlite3
     - ZIPFoundation
 
 EXTERNAL SOURCES:
@@ -70,6 +87,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   sqflite:
     :path: ".symlinks/plugins/sqflite/ios"
+  sqlite3_flutter_libs:
+    :path: ".symlinks/plugins/sqlite3_flutter_libs/ios"
 
 SPEC CHECKSUMS:
   audio_service: f509d65da41b9521a61f1c404dd58651f265a567
@@ -84,6 +103,8 @@ SPEC CHECKSUMS:
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
   sqflite: 50a33e1d72bd59ee092a519a35d107502757ebed
+  sqlite3: 73b7fc691fdc43277614250e04d183740cb15078
+  sqlite3_flutter_libs: af0e8fe9bce48abddd1ffdbbf839db0302d72d80
   ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
 PODFILE CHECKSUM: a57f30d18f102dd3ce366b1d62a55ecbef2158e5

@@ -51,10 +51,14 @@ class WidgetAfterGame extends StatelessWidget {
                         },
                       ),
                       back: ExampleComponent(
-                          vocabulary: vocabulary,
-                          onOpenVocabulary: () {
-                            _controller.toggleCard();
-                          }),
+                        vocabulary: vocabulary,
+                        onOpenVocabulary: () {
+                          _controller.toggleCard();
+                        },
+                        onUpdateNote: (example) {
+                          viewModel.updateExample(example);
+                        },
+                      ),
                     ),
                     Positioned(
                       top: 60,

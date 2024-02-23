@@ -16,6 +16,7 @@ class Preference {
 
   final _KEY_GUIDE_LEARN_WITH_GAME = 'KEY_GUIDE_LEARN_WITH_GAME';
   final _KEY_GUIDE_NEXT_CATEGORY = 'KEY_GUIDE_NEXT_CATEGORY';
+  final _KEY_GUIDE_NOTE = 'KEY_GUIDE_NOTE';
   final _KEY_CATEGORY_CURRENT = 'KEY_CATEGORY_CURRENT_';
   final _KEY_CONVERSATION_BACKGROUND = 'KEY_CONVERSATION_BACKGROUND';
   final _KEY_DAILY_NOTIFICATION = 'KEY_DAILY_NOTIFICATION';
@@ -30,6 +31,14 @@ class Preference {
     print(isGuideLearnWithGame);
     _prefs?.setBool(_KEY_GUIDE_LEARN_WITH_GAME, false);
     return isGuideLearnWithGame;
+  }
+
+  bool isGuideNote(){
+    var isGuideNote =
+        _prefs?.getBool(_KEY_GUIDE_NOTE) ?? true;
+    print(isGuideNote);
+    _prefs?.setBool(_KEY_GUIDE_NOTE, false);
+    return isGuideNote;
   }
 
   bool isGuideNextCategory() {

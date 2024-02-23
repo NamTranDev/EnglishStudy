@@ -1,11 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:drift/drift.dart';
 import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/transcript.dart';
 
-class Conversation extends Table{
+class Conversation {
   int? id;
   int? topic_id;
   String? conversation_lession;

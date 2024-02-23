@@ -1,6 +1,5 @@
-import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/sub_topic.dart';
-import 'package:english_study/storage/memory.dart';
+import 'package:english_study/reuse/note_viewmodel.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/reuse/audio_view_model.dart';
 import 'package:english_study/services/service_locator.dart';
@@ -9,7 +8,7 @@ import 'package:english_study/storage/preference.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 
-class FlashCardViewModel with AudioViewModel {
+class FlashCardViewModel with AudioViewModel, NoteViewModel {
   final ValueNotifier<String?> _indexVocabulary = ValueNotifier<String?>(null);
   ValueNotifier<String?> get indexVocabulary => _indexVocabulary;
 
@@ -52,12 +51,6 @@ class FlashCardViewModel with AudioViewModel {
     if (lastItem) {
       _canPlayGame.value = canPlay;
     }
-  }
-
-  void updateVocabulary(Vocabulary? vocabulary) {
-    if (vocabulary == null) return;
-    var db = getIt<DBProvider>();
-    db.updateVocabulary(vocabulary);
   }
 
   bool isShowGuideLearnWithGame() {

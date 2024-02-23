@@ -23,7 +23,6 @@ dependencies:
   # sqflite_common_ffi_web:
   # sqflite:
   sqlite3_flutter_libs:
-  drift:
 
   carousel_slider: ^4.2.1
   flutter_local_notifications: 

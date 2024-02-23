@@ -26,6 +26,9 @@ const int duration_animation_next = 300;
 const int duration_animation_visible = 500;
 const double size_icon = 30;
 
+const String URL_UPDATE =
+    'https://dl.dropboxusercontent.com/scl/fi/29cx8416xfxaqusjljwow/update.json?rlkey=dq67zt08e69d6csbjnnuc2yzv&dl=0';
+
 ThemeData themeInfo = ThemeData(
   useMaterial3: true,
   fontFamily: 'Roboto',

@@ -14,7 +14,7 @@ import 'package:english_study/screen/main/tab/vocabulary/vocabulary_tab_viewmode
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:english_study/storage/memory.dart';
-import 'package:english_study/sync_data/background_task.dart';
+import 'package:english_study/sync_data/check_update_background_task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';

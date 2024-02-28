@@ -16,6 +16,8 @@ class AppMemory {
 
   int? currentTab;
 
+  bool? isHasUpdate;
+
   int getCurrentTab() {
     var indexTab = currentTab ?? 0;
     currentTab = null;

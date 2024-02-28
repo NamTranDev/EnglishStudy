@@ -20,6 +20,7 @@ class Preference {
   final _KEY_CATEGORY_CURRENT = 'KEY_CATEGORY_CURRENT_';
   final _KEY_CONVERSATION_BACKGROUND = 'KEY_CONVERSATION_BACKGROUND';
   final _KEY_DAILY_NOTIFICATION = 'KEY_DAILY_NOTIFICATION';
+  final _KEY_VERSION_UPDATE = 'KEY_VERSION_UPDATE';
 
   SharedPreferences? _prefs;
 
@@ -65,6 +66,14 @@ class Preference {
 
   void saveDailyNotification(NotificationModel model) {
     _prefs?.setString(_KEY_DAILY_NOTIFICATION, model.toJson());
+  }
+
+  int versionUpdate() {
+    return _prefs?.getInt(_KEY_VERSION_UPDATE) ?? 0;
+  }
+  
+  void saveVersionUpdate(int? version) {
+    _prefs?.setInt(_KEY_VERSION_UPDATE, version ?? 0);
   }
 
   NotificationModel dailyNotification() {

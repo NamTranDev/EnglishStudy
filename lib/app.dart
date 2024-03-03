@@ -5,8 +5,8 @@ import 'package:english_study/constants.dart';
 import 'package:english_study/notification/notification_manager.dart';
 import 'package:english_study/screen/main/main_screen.dart';
 import 'package:english_study/storage/preference.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'package:english_study/navigator.dart' as nav;
@@ -50,6 +50,7 @@ class _MyAppState extends State<MyApp> {
       theme: themeInfo,
       initialRoute: MainScreen.routeName,
       routes: nav.routes,
+      builder: EasyLoading.init(),
     );
   }
 

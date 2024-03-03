@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<AppMemory> initMemory() async {
@@ -16,7 +17,7 @@ class AppMemory {
 
   int? currentTab;
 
-  bool? isHasUpdate;
+  final ValueNotifier<bool> isHasUpdate = ValueNotifier<bool>(false);
 
   int getCurrentTab() {
     var indexTab = currentTab ?? 0;

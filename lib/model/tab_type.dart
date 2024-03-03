@@ -1,14 +1,14 @@
-enum TabType {
+enum TopicType {
   VOCABULARY,
   LISTEN,
 }
 
-extension TypeTabExtension on TabType {
+extension TypeTopicExtension on TopicType {
   int get value {
     switch (this) {
-      case TabType.VOCABULARY:
+      case TopicType.VOCABULARY:
         return 0;
-      case TabType.LISTEN:
+      case TopicType.LISTEN:
         return 1;
     }
   }

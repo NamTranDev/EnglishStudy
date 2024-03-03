@@ -263,7 +263,7 @@ class DownloadManager {
       });
     } catch (e) {
       print(e);
-      directory.deleteSync();
+      directory.deleteSync(recursive: true);
       updateItemDownloadError(fileInfo);
     }
     file.delete();

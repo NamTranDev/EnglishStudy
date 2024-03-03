@@ -1,6 +1,9 @@
 {
-	"version":0,
+	"version":1,
     "urls" : [
-        "Hello World"
+        {
+            "name" : "update_CEFR_Wordlist",
+            "url" : "https://dl.dropboxusercontent.com/scl/fi/1p2xzfw9n8rar3voldphr/update_CEFR_Wordlist.zip?rlkey=op8e31jpdejggcsshl7w7fwup&dl=0"
+        }
     ]
 }

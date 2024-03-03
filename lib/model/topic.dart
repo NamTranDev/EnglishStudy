@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:english_study/model/conversation.dart';
+import 'package:english_study/model/sub_topic.dart';
+
 class Topic {
   int? id;
   String? name;
@@ -14,6 +17,10 @@ class Topic {
   int? isDefault;
   int? isDownload;
   int? type;
+
+  List<SubTopic>? subTopics;
+  List<Conversation>? conversations;
+
   Topic({
     this.id,
     this.name,

@@ -46,7 +46,7 @@ class _ListenerTabState extends State<ListenerTab>
                     onPickCategory: () {
                       setState(() {});
                     },
-                    type: TabType.LISTEN.value,
+                    type: TopicType.LISTEN.value,
                   );
                 } else {
                   if (data?.category == null) {
@@ -64,7 +64,7 @@ class _ListenerTabState extends State<ListenerTab>
                   }
                   return SafeArea(
                       child: topicComponent(data?.category,
-                          type: TabType.LISTEN.value, topics: topics));
+                          type: TopicType.LISTEN.value, topics: topics));
                 }
               } else {
                 return Center(

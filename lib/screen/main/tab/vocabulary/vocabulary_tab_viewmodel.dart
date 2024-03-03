@@ -9,13 +9,13 @@ import 'package:flutter/cupertino.dart';
 class VocabularyTabViewModel with ChangeNotifier {
   Future<InitScreenTab> initScreen() async {
     var category =
-        getIt<Preference>().currentCategory(TabType.VOCABULARY.value);
+        getIt<Preference>().currentCategory(TopicType.VOCABULARY.value);
     if (category == null) {
       return InitScreenTab(pickCategory: true);
     }
     var topics = await getIt<DBProvider>().getTopics(
       category,
-      TabType.VOCABULARY.value,
+      TopicType.VOCABULARY.value,
     );
     if (topics.length == 1) {
       await getIt<DownloadManager>().checkNeedDownload(category, topics);

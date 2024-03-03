@@ -46,7 +46,7 @@ class _VocabularyTabState extends State<VocabularyTab>
                     onPickCategory: () {
                       setState(() {});
                     },
-                    type: TabType.VOCABULARY.value,
+                    type: TopicType.VOCABULARY.value,
                   );
                 } else {
                   if (data?.category == null) {
@@ -65,7 +65,7 @@ class _VocabularyTabState extends State<VocabularyTab>
                   return SafeArea(
                     child: topicComponent(
                       data?.category,
-                      type: TabType.VOCABULARY.value,
+                      type: TopicType.VOCABULARY.value,
                       topics: topics,
                     ),
                   );

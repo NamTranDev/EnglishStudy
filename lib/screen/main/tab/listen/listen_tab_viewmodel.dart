@@ -8,13 +8,13 @@ import 'package:flutter/cupertino.dart';
 
 class ListenTabViewModel with ChangeNotifier {
   Future<InitScreenTab> initScreen() async {
-    var category = getIt<Preference>().currentCategory(TabType.LISTEN.value);
+    var category = getIt<Preference>().currentCategory(TopicType.LISTEN.value);
     if (category == null) {
       return InitScreenTab(pickCategory: true);
     }
     var topics = await getIt<DBProvider>().getTopics(
       category,
-      TabType.LISTEN.value,
+      TopicType.LISTEN.value,
     );
     if (topics.length == 1) {
       await getIt<DownloadManager>().checkNeedDownload(category, topics);

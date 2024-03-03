@@ -4,6 +4,7 @@ import 'package:english_study/model/vocabulary.dart';
 
 class SubTopic {
   int? id;
+  int? topic_id;
   String? name;
   String? image;
   String? number_word;
@@ -16,6 +17,7 @@ class SubTopic {
 
   SubTopic({
     this.id,
+    this.topic_id,
     this.name,
     this.image,
     this.number_word,
@@ -25,6 +27,7 @@ class SubTopic {
 
   SubTopic copyWith({
     int? id,
+    int? topic_id,
     String? name,
     String? image,
     String? number_word,
@@ -33,6 +36,7 @@ class SubTopic {
   }) {
     return SubTopic(
       id: id ?? this.id,
+      topic_id: topic_id ?? this.topic_id,
       name: name ?? this.name,
       image: image ?? this.image,
       number_word: number_word ?? this.number_word,
@@ -44,6 +48,7 @@ class SubTopic {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
+      'topic_id': topic_id,
       'sub_topic_name': name,
       'sub_topic_image': image,
       'number_sub_topic_words': number_word,
@@ -55,6 +60,7 @@ class SubTopic {
   factory SubTopic.fromMap(Map<String, dynamic> map) {
     return SubTopic(
       id: map['id'] != null ? map['id'] as int : null,
+      topic_id: map['topic_id'] != null ? map['topic_id'] as int : null,
       name: map['sub_topic_name'] != null
           ? map['sub_topic_name'] as String
           : null,
@@ -77,13 +83,15 @@ class SubTopic {
 
   @override
   String toString() =>
-      'SubTopic(id: $id, name: $name, image: $image, number_word: $number_word, isLearnComplete: $isLearnComplete, isLearning: $isLearning)';
+      'SubTopic(id: $id,topic_id: $topic_id, name: $name, image: $image, number_word: $number_word, isLearnComplete: $isLearnComplete, isLearning: $isLearning)';
 
   @override
   bool operator ==(covariant SubTopic other) {
     if (identical(this, other)) return true;
 
-    return other.id == id &&
+    return 
+    other.id == id &&
+    other.topic_id == topic_id &&
         other.name == name &&
         other.image == image &&
         other.number_word == number_word &&
@@ -94,6 +102,7 @@ class SubTopic {
   @override
   int get hashCode =>
       id.hashCode ^
+      topic_id.hashCode ^
       name.hashCode ^
       image.hashCode ^
       number_word.hashCode ^

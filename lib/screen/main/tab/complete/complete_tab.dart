@@ -27,10 +27,10 @@ class _CompleteTabState extends State<CompleteTab> {
         var topics = await db.getTopicsComplete(category.key);
         if (topics.length == 1) {
           var topic = topics[0];
-          if (topic.type == TabType.VOCABULARY.value) {
+          if (topic.type == TopicType.VOCABULARY.value) {
             Navigator.pushNamed(context, SubTopicScreen.routeName,
                 arguments: topic);
-          } else if (topic.type == TabType.LISTEN.value) {
+          } else if (topic.type == TopicType.LISTEN.value) {
             Navigator.pushNamed(context, LessionTopicScreen.routeName,
                 arguments: topic);
           }

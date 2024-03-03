@@ -107,6 +107,15 @@ class DBProvider {
     return list;
   }
 
+  Future<List<Topic>> getTopicsTest(String category) async {
+    final db = await _db;
+    var res = await db.query(_TOPIC_TABLE, where: 'category = ?', whereArgs: [
+      category,
+    ]);
+    List<Topic> list = await mapperTopic(db, res, category);
+    return list;
+  }
+
   Future<List<Topic>> getTopics(String? category, int? type) async {
     final db = await _db;
     var res = await db.query(_TOPIC_TABLE,
@@ -312,7 +321,8 @@ class DBProvider {
                 where: 'vocabulary_id = ?', whereArgs: [vocabulary.id]);
             var examples = await db.query(_EXAMPLE_TABLE,
                 where: 'vocabulary_id = ?', whereArgs: [vocabulary.id]);
-            vocabulary.audios = audios.map((e) => Audio.fromMap(e)).toList();
+            vocabulary.audios =
+                audios.map((e) => Audio.fromMap(e, false)).toList();
             vocabulary.spellings =
                 spellings.map((e) => Spelling.fromMap(e)).toList();
             vocabulary.examples = examples.map((e) {
@@ -336,7 +346,7 @@ class DBProvider {
     var transcipt = await db.query(_TRANSCRIPT_TABLE,
         where: 'conversation_id = ?', whereArgs: [conversation.id]);
 
-    conversation.audios = audios.map((e) => Audio.fromMap(e)).toList();
+    conversation.audios = audios.map((e) => Audio.fromMap(e, true)).toList();
     conversation.transcript =
         transcipt.map((e) => Transcript.fromMap(e)).toList();
     return conversation;
@@ -441,6 +451,16 @@ class DBProvider {
           .isEmpty;
     }
     return false;
+  }
+
+  Future<bool> checkCategoryExist(Category category) async {
+    final db = await _db;
+    List<Map<String, dynamic>> result = await db.query(
+      _CATEGORY_TABLE,
+      where: 'key = ?',
+      whereArgs: [category.key],
+    );
+    return result.isNotEmpty;
   }
 
   Future<bool> checkCategoryComplete(String? category) async {
@@ -591,8 +611,82 @@ WHERE t."type" = ${type} AND t."isLearnComplete" = 0;""")) ??
     if (topic == null) return false;
     final db = await _db;
     return (Sqflite.firstIntValue(await db.rawQuery("""SELECT COUNT(*)
-FROM ${topic.type == TabType.VOCABULARY.value ? _SUB_TOPIC_TABLE : _CONVERSATION_TABLE}
+FROM ${topic.type == TopicType.VOCABULARY.value ? _SUB_TOPIC_TABLE : _CONVERSATION_TABLE}
 WHERE topic_id = ${topic.id} and isLearnComplete = 0
 ;""")) ?? 0) == 0;
+  }
+
+  Future<int> insertCategory(Category category) async {
+    final db = await _db;
+    return await db.insert(_CATEGORY_TABLE, category.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<int> insertTopic(Topic topic) async {
+    final db = await _db;
+    return await db.rawInsert('''
+      INSERT INTO ${_TOPIC_TABLE} (
+        "topic_name", "topic_image", "number_lessons", "total_words",
+        "description_topic", "link_topic", "category", "isDefault", "type"
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', [
+      topic.name,
+      topic.image,
+      topic.number_sub_topic,
+      topic.total_word,
+      topic.description,
+      topic.link_resource,
+      topic.category,
+      topic.isDefault,
+      topic.type,
+    ]);
+  }
+
+  Future<int> insertSubTopic(SubTopic subTopic) async {
+    final db = await _db;
+    return await db.insert(_SUB_TOPIC_TABLE, subTopic.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  Future<int> insertVocabulary(Vocabulary vocabulary) async {
+    final db = await _db;
+    return await db.insert(_VOCABULARY_TABLE, vocabulary.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  Future<int> insertAudioVocabulary(Audio audio) async {
+    final db = await _db;
+    return await db.insert(_AUDIO_TABLE, audio.toMap(false),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  Future<int> insertExample(Example example) async {
+    final db = await _db;
+    return await db.insert(_EXAMPLE_TABLE, example.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  Future<int> insertSpelling(Spelling spelling) async {
+    final db = await _db;
+    return await db.insert(_SPELLING_TABLE, spelling.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  Future<int> insertConversation(Conversation conversation) async {
+    final db = await _db;
+    return await db.insert(_CONVERSATION_TABLE, conversation.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  Future<int> insertAudioConversation(Audio audio) async {
+    final db = await _db;
+    return await db.insert(_AUDIO_CONVERSATION_TABLE, audio.toMap(true),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+  }
+
+  Future<int> insertTranscript(Transcript transcript) async {
+    final db = await _db;
+    return await db.insert(_TRANSCRIPT_TABLE, transcript.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 }

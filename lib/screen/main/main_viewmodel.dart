@@ -16,8 +16,8 @@ class MainViewModel with ChangeNotifier {
   Future<void> checkTab() async {
     var db = getIt<DBProvider>();
     var isHasVocabularyTab =
-        await db.hasCategoryToLearn(TabType.VOCABULARY.value);
-    var isHasListenTab = await db.hasCategoryToLearn(TabType.LISTEN.value);
+        await db.hasCategoryToLearn(TopicType.VOCABULARY.value);
+    var isHasListenTab = await db.hasCategoryToLearn(TopicType.LISTEN.value);
     var isCompleteTab = await db.hasCategoryLearnComplete();
     print('isHasVocabularyTab : ' + isHasVocabularyTab.toString());
     print('isHasListenTab : ' + isHasListenTab.toString());
@@ -49,7 +49,7 @@ class MainViewModel with ChangeNotifier {
 
     var tabPrevious = getIt<AppMemory>().currentTab;
 
-    if (tabPrevious == TabType.LISTEN.value && !isHasListenTab) {
+    if (tabPrevious == TopicType.LISTEN.value && !isHasListenTab) {
       getIt<AppMemory>().currentTab = null;
     }
   }

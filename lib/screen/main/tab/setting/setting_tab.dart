@@ -7,10 +7,12 @@ import 'package:english_study/notification/notification_model.dart';
 import 'package:english_study/screen/main/tab/setting/setting_tab_viewmodel.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
+import 'package:english_study/storage/memory.dart';
 import 'package:english_study/storage/preference.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 class SettingTab extends StatefulWidget {
@@ -21,7 +23,6 @@ class SettingTab extends StatefulWidget {
 }
 
 class _SettingTabState extends State<SettingTab> {
-
   late SettingTabViewModel _viewModel;
 
   @override
@@ -29,6 +30,16 @@ class _SettingTabState extends State<SettingTab> {
     return Consumer<SettingTabViewModel>(
       builder: (context, viewmodel, _) {
         _viewModel = viewmodel;
+        _viewModel.loading = (isLoading) {
+          if (isLoading) {
+            EasyLoading.show(
+              // status: 'loading...',
+              maskType: EasyLoadingMaskType.black,
+            );
+          } else {
+            EasyLoading.dismiss();
+          }
+        };
         return FutureBuilder(
             future: _viewModel.getSettingInfo(),
             builder: (context, snapshot) {
@@ -98,23 +109,37 @@ class _SettingTabState extends State<SettingTab> {
           },
         );
       case 3:
-        var isHasUpdate = setting.any as bool?;
-        return Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: isHasUpdate == true ? turquoise : maastricht_blue,
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        var isHasUpdate = setting.any as ValueNotifier<bool>;
+        var radius = 10.0;
+        return Card(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radius),
           ),
-          alignment: Alignment.center,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5),
-            child: GestureDetector(
-              onTap: () {},
-              child: Text(
-                isHasUpdate == true ? 'Update' : 'Check Update',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color:
-                        isHasUpdate == true ? maastricht_blue : Colors.white),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(radius),
+              onTap: () {
+                _viewModel.checkNewData();
+              },
+              child: ValueListenableBuilder(
+                valueListenable: isHasUpdate,
+                builder: (context, value, _) {
+                  return Container(
+                    height: 50,
+                    constraints: BoxConstraints(minWidth: 80),
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: Text(
+                        value ? 'Update' : 'Check Update',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: value ? turquoise : maastricht_blue),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),

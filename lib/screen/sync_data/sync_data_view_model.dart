@@ -1,3 +1,4 @@
+import 'package:english_study/constants.dart';
 import 'package:english_study/logger.dart';
 import 'package:english_study/model/update_data_model.dart';
 import 'package:english_study/model/update_response.dart';
@@ -9,9 +10,12 @@ class SyncDataViewModel {
       ValueNotifier<UpdateReponse?>(null);
   ValueNotifier<UpdateReponse?> get updateValue => _updateValue;
 
-  runSync(UpdateDataModel? argument) {
+  Future<void> runSync(UpdateDataModel? argument) async {
+    await Future.delayed(
+        const Duration(milliseconds: 2 * duration_animation_screen));
+
     getDataBackgroundTask(argument, (status) {
-      logger(status);
+      // logger(status);
       _updateValue.value = status;
     });
   }

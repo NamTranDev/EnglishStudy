@@ -2,16 +2,16 @@
 import 'dart:convert';
 
 class UpdateLinkInfo {
-  String? name;
+  String? key;
   String? url;
   UpdateLinkInfo({
-    this.name,
+    this.key,
     this.url,
   });
 
   factory UpdateLinkInfo.fromMap(Map<String, dynamic> map) {
     return UpdateLinkInfo(
-      name: map['name'] != null ? map['name'] as String : null,
+      key: map['key'] != null ? map['key'] as String : null,
       url: map['url'] != null ? map['url'] as String : null,
     );
   }
@@ -19,5 +19,5 @@ class UpdateLinkInfo {
   factory UpdateLinkInfo.fromJson(String source) => UpdateLinkInfo.fromMap(json.decode(source) as Map<String, dynamic>);
 
   @override
-  String toString() => 'UpdateLinkInfo(name: $name, url: $url)';
+  String toString() => 'UpdateLinkInfo(name: $key, url: $url)';
 }

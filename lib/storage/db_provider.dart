@@ -454,12 +454,13 @@ class DBProvider {
     return false;
   }
 
-  Future<bool> checkCategoryExist(Category category) async {
+  Future<bool?> checkCategoryExist(String? key) async {
+    if (key == null) return null;
     final db = await _db;
     List<Map<String, dynamic>> result = await db.query(
       _CATEGORY_TABLE,
       where: 'key = ?',
-      whereArgs: [category.key],
+      whereArgs: [key],
     );
     return result.isNotEmpty;
   }
@@ -775,6 +776,44 @@ WHERE topic_id = ${topic.id} and isLearnComplete = 0
         });
         await batch.commit();
       }
+    });
+  }
+
+  Future<void> deleteAllDataRelate(String? key) async {
+    var db = await _db;
+    await db.transaction((txn) async {
+      var batch = txn.batch();
+      logger('DELETE FROM "audio"');
+      batch.execute(
+          '''DELETE FROM "audio" WHERE "vocabulary_id" IN (SELECT "id" FROM "vocabulary" WHERE "sub_topic_id" IN (SELECT "id" FROM "sub_topics" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
+      logger('DELETE FROM "examples"');
+      batch.execute(
+          '''DELETE FROM "examples" WHERE "vocabulary_id" IN (SELECT "id" FROM "vocabulary" WHERE "sub_topic_id" IN (SELECT "id" FROM "sub_topics" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
+      logger('DELETE FROM "spelling"');
+      batch.execute(
+          '''DELETE FROM "spelling" WHERE "vocabulary_id" IN (SELECT "id" FROM "vocabulary" WHERE "sub_topic_id" IN (SELECT "id" FROM "sub_topics" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
+      logger('DELETE FROM "vocabulary"');
+      batch.execute(
+          '''DELETE FROM "vocabulary" WHERE "sub_topic_id" IN (SELECT "id" FROM "sub_topics" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
+      logger('DELETE FROM "audio_conversation"');
+      batch.execute(
+          '''DELETE FROM "audio_conversation" WHERE "conversation_id" IN (SELECT "id" FROM "conversation" WHERE "topic_id" IN (SELECT "id" FROM "topics" 
+          WHERE "category" = ${key})))''');
+      logger('DELETE FROM "transcript"');
+      batch.execute(
+          '''DELETE FROM "transcript" WHERE "conversation_id" IN (SELECT "id" FROM "conversation" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
+      logger('DELETE FROM "conversation"');
+      batch.execute(
+          '''DELETE FROM "conversation" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
+      logger('DELETE FROM "sub_topics"');
+      batch.execute(
+          '''DELETE FROM "sub_topics" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
+      logger('DELETE FROM "topics"');
+      batch.execute('''DELETE FROM "topics" WHERE "category" = ${key})))''');
+      logger('DELETE FROM "category"');
+      batch.execute('''DELETE FROM "category" WHERE "key" = ${key})))''');
+      var result = await batch.commit();
+      logger(result);
     });
   }
 }

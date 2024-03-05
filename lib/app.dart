@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:english_study/constants.dart';
 import 'package:english_study/notification/notification_manager.dart';
 import 'package:english_study/screen/main/main_screen.dart';
+import 'package:english_study/screen/splash/splash_screen.dart';
 import 'package:english_study/storage/preference.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -48,7 +49,7 @@ class _MyAppState extends State<MyApp> {
     // Importing 'package:flutter/widgets.dart' is required.
     return MaterialApp(
       theme: themeInfo,
-      initialRoute: MainScreen.routeName,
+      initialRoute: SplashScreen.routeName,
       routes: nav.routes,
       builder: EasyLoading.init(),
     );

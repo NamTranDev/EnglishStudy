@@ -1,38 +1,18 @@
 import 'package:english_study/constants.dart';
 import 'package:english_study/model/bottom_bar_item.dart';
-import 'package:english_study/model/topic_type.dart';
 import 'package:english_study/screen/main/bottom_bar_provider.dart';
 import 'package:english_study/screen/main/main_viewmodel.dart';
-import 'package:english_study/screen/main/tab/complete/complete_tab.dart';
 import 'package:english_study/screen/main/tab/complete/complete_tab_viewmodel.dart';
 import 'package:english_study/screen/main/tab/listen/listen_tab_viewmodel.dart';
-import 'package:english_study/screen/main/tab/listen/listening_tab.dart';
-import 'package:english_study/screen/main/tab/setting/setting_tab.dart';
 import 'package:english_study/screen/main/tab/setting/setting_tab_viewmodel.dart';
-import 'package:english_study/screen/main/tab/vocabulary/vocabulary_tab.dart';
 import 'package:english_study/screen/main/tab/vocabulary/vocabulary_tab_viewmodel.dart';
-import 'package:english_study/services/service_locator.dart';
-import 'package:english_study/storage/db_provider.dart';
-import 'package:english_study/storage/memory.dart';
-import 'package:english_study/sync_data/check_update_background_task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
-class MainScreen extends StatefulWidget {
+class MainScreen extends StatelessWidget {
   static String routeName = '/main';
   const MainScreen({super.key});
-
-  @override
-  State<MainScreen> createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  @override
-  void initState() {
-    super.initState();
-    checkDataBackgroundTask();
-  }
 
   @override
   Widget build(BuildContext context) {

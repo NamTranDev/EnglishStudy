@@ -4,6 +4,7 @@ import 'package:english_study/model/update_status.dart';
 import 'package:english_study/screen/sync_data/sync_data_view_model.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
 
 class SyncDataScreen extends StatelessWidget {
@@ -29,6 +30,13 @@ class SyncDataScreen extends StatelessWidget {
                   child: ValueListenableBuilder(
                       valueListenable: viewmodel.updateValue,
                       builder: (context, value, widget) {
+                        if (value == null ||
+                            value.status == UpdateStatus.COMPLETE) {
+                          SchedulerBinding.instance
+                              .addPostFrameCallback((timeStamp) {
+                            Navigator.pop(context);
+                          });
+                        }
                         return value != null &&
                                 value.status == UpdateStatus.UPDATE
                             ? buildSyncData(context, value)
@@ -38,7 +46,6 @@ class SyncDataScreen extends StatelessWidget {
                       }),
                 ),
               );
-              ;
             }),
           ),
         ),
@@ -54,7 +61,9 @@ class SyncDataScreen extends StatelessWidget {
           value.category?.title ?? '',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
-        SizedBox(height: 30,),
+        SizedBox(
+          height: 30,
+        ),
         // Text(
         //   value.category?.description ?? '',
         //   style: Theme.of(context).textTheme.bodySmall,
@@ -63,7 +72,9 @@ class SyncDataScreen extends StatelessWidget {
           value.topic?.name ?? '',
           style: Theme.of(context).textTheme.bodySmall,
         ),
-        SizedBox(height: 10,),
+        SizedBox(
+          height: 10,
+        ),
         LinearProgressIndicator(
           value: value.process,
         ),

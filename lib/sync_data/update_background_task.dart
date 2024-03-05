@@ -86,12 +86,12 @@ void backgroundTask(UpdateRequest request) async {
         if (updateLink == null || updateLink.url == null) {
           continue;
         }
-        var pathStore = "${path}/${updateLink.name}.zip";
+        var pathStore = "${path}/update_${updateLink.key}.zip";
         final fileDownload = File(pathStore);
         Dio dio = Dio();
         await dio.download(updateLink.url!, pathStore);
 
-        var directory = Directory("${path}/${updateLink.name}");
+        var directory = Directory("${path}");
         if (await directory.exists() == false) {
           await directory.create();
         }
@@ -101,9 +101,11 @@ void backgroundTask(UpdateRequest request) async {
             zipFile: fileDownload,
             destinationDir: directory,
           );
-          var folder =
-              Directory("${path}/${updateLink.name}/${updateLink.name}");
-          if (folder.existsSync()) {
+          var folder = Directory(
+              "${path}/update_${updateLink.key}");
+          var folderExist = folder.existsSync();
+          logger(folderExist);
+          if (folderExist) {
             List<FileSystemEntity>? files = folder.listSync();
 
             FileSystemEntity? categoryFile =
@@ -113,7 +115,7 @@ void backgroundTask(UpdateRequest request) async {
                   categoryFile.path, (json) => Category.fromMap(json));
               Category? category = categories.getOrNull(0);
               if (category != null &&
-                  await db.checkCategoryExist(category) == false) {
+                  await db.checkCategoryExist(category.key) == false) {
                 List<Topic>? topics;
                 List<SubTopic>? subTopics;
                 List<Conversation>? conversations;
@@ -182,8 +184,12 @@ void backgroundTask(UpdateRequest request) async {
                             process: process));
                       });
                     } else {
-                      await db.updateDataConversation(idTopicUpdate, idTopic,
-                          conversations, audio_conversations, transcripts, (process) {
+                      await db.updateDataConversation(
+                          idTopicUpdate,
+                          idTopic,
+                          conversations,
+                          audio_conversations,
+                          transcripts, (process) {
                         sendPort.send(UpdateReponse(UpdateStatus.UPDATE,
                             category: category,
                             topic: topic,

@@ -1,11 +1,8 @@
-import 'dart:io';
-
-import 'package:dio/dio.dart';
+import 'package:english_study/constants.dart';
 import 'package:english_study/screen/main/main_screen.dart';
-import 'package:english_study/screen/splash/initialize_view_model.dart';
+import 'package:english_study/screen/splash/splash_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -16,32 +13,28 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Provider.value(
-      value: InitializeViewModel(),
+      value: SplashViewModel(),
       builder: (context, child) {
         return Scaffold(
-          body: SafeArea(child: Consumer<InitializeViewModel>(
-            builder: (context, value, child) {
+          backgroundColor: sky_blue,
+          body: SafeArea(child: Consumer<SplashViewModel>(
+            builder: (context, viewmodel, child) {
               return FutureBuilder(
-                future: Future.delayed(Duration(seconds: 2)),
+                future: viewmodel.initialize(),
                 builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                          "Something wrong with message: ${snapshot.error.toString()}"),
-                    );
-                  } else if (snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.connectionState == ConnectionState.done) {
                     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
                       Navigator.pushNamedAndRemoveUntil(
                           context, MainScreen.routeName, (route) => false);
                     });
                   }
-                  return ValueListenableBuilder(
-                    valueListenable: value.processText,
-                    builder: (context, value, child) {
-                      return Center(
-                        child: Text(value),
-                      );
-                    },
+                  return Container(
+                    padding: EdgeInsets.all(100),
+                    child: Center(
+                        child: Image.asset(
+                      'assets/icons/ic_laucher.png',
+                      fit: BoxFit.contain,
+                    )),
                   );
                 },
               );

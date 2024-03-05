@@ -1,10 +1,12 @@
 import 'package:english_study/constants.dart';
 import 'package:english_study/download/download_manager.dart';
 import 'package:english_study/model/setting_info.dart';
-import 'package:english_study/model/tab_type.dart';
+import 'package:english_study/model/topic_type.dart';
+import 'package:english_study/model/update_data_model.dart';
 import 'package:english_study/notification/notification_manager.dart';
 import 'package:english_study/notification/notification_model.dart';
 import 'package:english_study/screen/main/tab/setting/setting_tab_viewmodel.dart';
+import 'package:english_study/screen/sync_data/sync_data_screen.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:english_study/storage/memory.dart';
@@ -30,14 +32,17 @@ class _SettingTabState extends State<SettingTab> {
     return Consumer<SettingTabViewModel>(
       builder: (context, viewmodel, _) {
         _viewModel = viewmodel;
-        _viewModel.loading = (isLoading) {
-          if (isLoading) {
+        _viewModel.loading = (value) async {
+          if (value is UpdateDataModel) {
+            EasyLoading.dismiss();
+            await Navigator.pushNamed(
+                            context, SyncDataScreen.routeName,
+                            arguments: value);
+          } else {
             EasyLoading.show(
               // status: 'loading...',
               maskType: EasyLoadingMaskType.black,
             );
-          } else {
-            EasyLoading.dismiss();
           }
         };
         return FutureBuilder(

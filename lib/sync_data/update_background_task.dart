@@ -11,12 +11,14 @@ import 'package:english_study/model/conversation.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/spelling.dart';
 import 'package:english_study/model/sub_topic.dart';
-import 'package:english_study/model/tab_type.dart';
+import 'package:english_study/model/topic_type.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/model/transcript.dart';
 import 'package:english_study/model/update_data_model.dart';
 import 'package:english_study/model/update_link_info.dart';
 import 'package:english_study/model/update_request.dart';
+import 'package:english_study/model/update_response.dart';
+import 'package:english_study/model/update_status.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
@@ -28,7 +30,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<void> getDataBackgroundTask(
-    UpdateDataModel? updateVersion, Function complete) async {
+    UpdateDataModel? updateVersion, Function? onStatus) async {
   final ReceivePort receivePort = ReceivePort();
   RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
 
@@ -46,8 +48,9 @@ Future<void> getDataBackgroundTask(
 
   receivePort.listen((dynamic data) {
     logger(data);
-    if (data is bool) {
-      complete.call();
+    var status = data as UpdateReponse;
+    onStatus?.call(status);
+    if (status.status == UpdateStatus.COMPLETE) {
       receivePort.close();
       isolate.kill();
     }
@@ -77,6 +80,7 @@ void backgroundTask(UpdateRequest request) async {
   var currentVersion = (updateVersion?.version ?? 0);
   if (currentVersionApp < currentVersion) {
     for (int i = currentVersionApp; i < currentVersion; i++) {
+      sendPort.send(UpdateReponse(UpdateStatus.LOADING));
       try {
         UpdateLinkInfo? updateLink = updateVersion?.urls?.getOrNull(i);
         if (updateLink == null || updateLink.url == null) {
@@ -154,94 +158,36 @@ void backgroundTask(UpdateRequest request) async {
                 }
                 if (topics?.isNotEmpty == true) {
                   var idCategory = await db.insertCategory(category);
-                  logger(idCategory);
+                  // logger(idCategory);
+
                   for (var topic in topics!) {
                     var idTopicUpdate = topic.id;
                     topic.id = null;
                     var idTopic = await db.insertTopic(topic);
 
-                    logger(idTopic);
+                    // logger(idTopic);
 
                     if (topic.type == TopicType.VOCABULARY.value) {
-                      subTopics
-                          ?.where(
-                              (element) => element.topic_id == idTopicUpdate)
-                          .forEach((subTopic) async {
-                        var idSubTopicUpdate = subTopic.id;
-                        subTopic.id = null;
-                        subTopic.topic_id = idTopic;
-
-                        var subTopicId = await db.insertSubTopic(subTopic);
-                        logger(subTopicId);
-
-                        vocabularies
-                            ?.where((element) =>
-                                element.sub_topic_id == idSubTopicUpdate)
-                            .forEach((vocabulary) async {
-                          var idVocabularyUpdate = vocabulary.id;
-                          vocabulary.id = null;
-                          vocabulary.sub_topic_id = subTopicId;
-
-                          var vocabularyId =
-                              await db.insertVocabulary(vocabulary);
-                          logger(vocabularyId);
-
-                          audios
-                              ?.where((audio) =>
-                                  audio.vocabulary_id == idVocabularyUpdate)
-                              .forEach((audio) async {
-                            audio.vocabulary_id = vocabularyId;
-                            var id = await db.insertAudioVocabulary(audio);
-                            logger(id);
-                          });
-
-                          examples
-                              ?.where((example) =>
-                                  example.vocabulary_id == idVocabularyUpdate)
-                              .forEach((example) async {
-                            example.vocabulary_id = vocabularyId;
-                            var id = await db.insertExample(example);
-                            logger(id);
-                          });
-                          spellings
-                              ?.where((spelling) =>
-                                  spelling.vocabulary_id == idVocabularyUpdate)
-                              .forEach((spelling) async {
-                            spelling.vocabulary_id = vocabularyId;
-                            var id = await db.insertSpelling(spelling);
-                            logger(id);
-                          });
-                        });
+                      await db.updateDataVocabulary(
+                          idTopicUpdate,
+                          idTopic,
+                          subTopics,
+                          vocabularies,
+                          audios,
+                          spellings,
+                          examples, (process) {
+                        sendPort.send(UpdateReponse(UpdateStatus.UPDATE,
+                            category: category,
+                            topic: topic,
+                            process: process));
                       });
                     } else {
-                      conversations
-                          ?.where((conversation) =>
-                              conversation.topic_id == idTopicUpdate)
-                          .forEach((conversation) async {
-                        var idConversationUpdate = conversation.id;
-                        conversation.id = null;
-                        conversation.topic_id = idTopic;
-                        var idConversation =
-                            await db.insertConversation(conversation);
-                        logger(idConversation);
-                        audio_conversations
-                            ?.where((audio) =>
-                                audio.conversation_id == idConversationUpdate)
-                            .forEach((audio) async {
-                          audio.conversation_id = idConversation;
-                          var id = await db.insertAudioConversation(audio);
-                          logger(id);
-                        });
-
-                        transcripts
-                            ?.where((transcript) =>
-                                transcript.conversation_id ==
-                                idConversationUpdate)
-                            .forEach((transcript) async {
-                          transcript.conversation_id = idConversation;
-                          var id = await db.insertTranscript(transcript);
-                          logger(id);
-                        });
+                      await db.updateDataConversation(idTopicUpdate, idTopic,
+                          conversations, audio_conversations, transcripts, (process) {
+                        sendPort.send(UpdateReponse(UpdateStatus.UPDATE,
+                            category: category,
+                            topic: topic,
+                            process: process));
                       });
                     }
                   }
@@ -259,7 +205,7 @@ void backgroundTask(UpdateRequest request) async {
       }
     }
   }
-  sendPort.send(true);
+  sendPort.send(UpdateReponse(UpdateStatus.COMPLETE));
 }
 
 FileSystemEntity? getFileByName(

@@ -12,7 +12,7 @@ import 'package:english_study/model/conversation.dart';
 import 'package:english_study/model/transcript.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
-import 'package:english_study/model/tab_type.dart';
+import 'package:english_study/model/topic_type.dart';
 import 'package:english_study/storage/memory.dart';
 import 'package:english_study/model/spelling.dart';
 import 'package:english_study/model/sub_topic.dart';
@@ -20,6 +20,7 @@ import 'package:english_study/model/topic.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/preference.dart';
+import 'package:english_study/utils/extension.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -642,51 +643,138 @@ WHERE topic_id = ${topic.id} and isLearnComplete = 0
     ]);
   }
 
-  Future<int> insertSubTopic(SubTopic subTopic) async {
+  Future<void> updateDataVocabulary(
+      int? idTopicUpdate,
+      int? idTopic,
+      List<SubTopic>? subTopics,
+      List<Vocabulary>? vocabularies,
+      List<Audio>? audios,
+      List<Spelling>? spellings,
+      List<Example>? examples,
+      Function? onProcess) async {
     final db = await _db;
-    return await db.insert(_SUB_TOPIC_TABLE, subTopic.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.ignore);
+    db.transaction((txn) async {
+      var batch = txn.batch();
+      var total = 0;
+      int index = 0;
+      subTopics?.where((element) => element.topic_id == idTopicUpdate).map((e) {
+        try {
+          total += int.parse(e.number_word?.replaceAll(' Words', '') ?? '0');
+        } catch (e) {
+          logger(e);
+        }
+        return e;
+      }).forEach((subTopic) async {
+        var idSubTopicUpdate = subTopic.id;
+        subTopic.id = null;
+        subTopic.topic_id = idTopic;
+
+        batch.insert(_SUB_TOPIC_TABLE, subTopic.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.ignore);
+        var subTopicId = (await batch.commit()).getOrNull(0) as int;
+        logger(subTopicId);
+
+        vocabularies
+            ?.where((element) => element.sub_topic_id == idSubTopicUpdate)
+            .forEach((vocabulary) async {
+          var idVocabularyUpdate = vocabulary.id;
+          vocabulary.id = null;
+          vocabulary.sub_topic_id = subTopicId;
+
+          batch.insert(_VOCABULARY_TABLE, vocabulary.toMap(),
+              conflictAlgorithm: ConflictAlgorithm.ignore);
+          var vocabularyId = (await batch.commit()).getOrNull(0) as int;
+
+          logger(total);
+          index++;
+          var process = index / total;
+          logger(process);
+
+          onProcess?.call(process);
+
+          audios
+              ?.where((audio) => audio.vocabulary_id == idVocabularyUpdate)
+              .forEach((audio) async {
+            audio.vocabulary_id = vocabularyId;
+            batch.insert(_AUDIO_TABLE, audio.toMap(false),
+                conflictAlgorithm: ConflictAlgorithm.ignore);
+          });
+
+          examples
+              ?.where((example) => example.vocabulary_id == idVocabularyUpdate)
+              .forEach((example) async {
+            example.vocabulary_id = vocabularyId;
+            batch.insert(_EXAMPLE_TABLE, example.toMap(),
+                conflictAlgorithm: ConflictAlgorithm.ignore);
+          });
+          spellings
+              ?.where(
+                  (spelling) => spelling.vocabulary_id == idVocabularyUpdate)
+              .forEach((spelling) async {
+            spelling.vocabulary_id = vocabularyId;
+            batch.insert(_SPELLING_TABLE, spelling.toMap(),
+                conflictAlgorithm: ConflictAlgorithm.ignore);
+            // logger(id);
+          });
+          await batch.commit();
+        });
+      });
+    });
   }
 
-  Future<int> insertVocabulary(Vocabulary vocabulary) async {
-    final db = await _db;
-    return await db.insert(_VOCABULARY_TABLE, vocabulary.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.ignore);
-  }
+  Future<void> updateDataConversation(
+      int? idTopicUpdate,
+      int idTopic,
+      List<Conversation>? conversations,
+      List<Audio>? audio_conversations,
+      List<Transcript>? transcripts,
+      Function? onProcess) async {
+    var db = await _db;
+    await db.transaction((txn) async {
+      var batch = txn.batch();
+      var conversationList = conversations
+          ?.where((conversation) => conversation.topic_id == idTopicUpdate)
+          .toList();
+      var total = conversationList?.length ?? 1;
+      logger(total);
+      int index = 0;
+      for (int i = 0; i < (conversationList?.length ?? 0); i++) {
+        var conversation = conversationList?.getOrNull(i);
+        if (conversation == null) continue;
+        var idConversationUpdate = conversation.id;
+        conversation.id = null;
+        conversation.topic_id = idTopic;
+        batch.insert(_CONVERSATION_TABLE, conversation.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.ignore);
+        var idConversation = (await batch.commit()).getOrNull(0) as int;
+        logger(idConversation);
 
-  Future<int> insertAudioVocabulary(Audio audio) async {
-    final db = await _db;
-    return await db.insert(_AUDIO_TABLE, audio.toMap(false),
-        conflictAlgorithm: ConflictAlgorithm.ignore);
-  }
+        index++;
+        var process = index / total;
+        logger(process);
 
-  Future<int> insertExample(Example example) async {
-    final db = await _db;
-    return await db.insert(_EXAMPLE_TABLE, example.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.ignore);
-  }
+        onProcess?.call(process);
 
-  Future<int> insertSpelling(Spelling spelling) async {
-    final db = await _db;
-    return await db.insert(_SPELLING_TABLE, spelling.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.ignore);
-  }
+        audio_conversations
+            ?.where((audio) => audio.conversation_id == idConversationUpdate)
+            .forEach((audio) async {
+          audio.conversation_id = idConversation;
+          batch.insert(_AUDIO_CONVERSATION_TABLE, audio.toMap(true),
+              conflictAlgorithm: ConflictAlgorithm.ignore);
+          // logger(id);
+        });
 
-  Future<int> insertConversation(Conversation conversation) async {
-    final db = await _db;
-    return await db.insert(_CONVERSATION_TABLE, conversation.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.ignore);
-  }
-
-  Future<int> insertAudioConversation(Audio audio) async {
-    final db = await _db;
-    return await db.insert(_AUDIO_CONVERSATION_TABLE, audio.toMap(true),
-        conflictAlgorithm: ConflictAlgorithm.ignore);
-  }
-
-  Future<int> insertTranscript(Transcript transcript) async {
-    final db = await _db;
-    return await db.insert(_TRANSCRIPT_TABLE, transcript.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.ignore);
+        transcripts
+            ?.where((transcript) =>
+                transcript.conversation_id == idConversationUpdate)
+            .forEach((transcript) async {
+          transcript.conversation_id = idConversation;
+          batch.insert(_TRANSCRIPT_TABLE, transcript.toMap(),
+              conflictAlgorithm: ConflictAlgorithm.ignore);
+          // logger(id);
+        });
+        await batch.commit();
+      }
+    });
   }
 }

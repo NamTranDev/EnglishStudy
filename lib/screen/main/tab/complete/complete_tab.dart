@@ -8,7 +8,7 @@ import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
-import 'package:english_study/model/tab_type.dart';
+import 'package:english_study/model/topic_type.dart';
 
 class CompleteTab extends StatefulWidget {
   const CompleteTab({super.key});

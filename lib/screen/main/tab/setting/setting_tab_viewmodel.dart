@@ -11,7 +11,7 @@ import 'package:english_study/model/example.dart';
 import 'package:english_study/model/setting_info.dart';
 import 'package:english_study/model/spelling.dart';
 import 'package:english_study/model/sub_topic.dart';
-import 'package:english_study/model/tab_type.dart';
+import 'package:english_study/model/topic_type.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/model/transcript.dart';
 import 'package:english_study/model/update_link_info.dart';
@@ -95,8 +95,7 @@ class SettingTabViewModel with ChangeNotifier {
 
   Future<void> checkNewData() async {
     loading?.call(true);
-    getDataBackgroundTask(await getUpdateVersion(), () {
-      loading?.call(false);
-    });
+    var updateData = await getUpdateVersion();
+    loading?.call(updateData);
   }
 }

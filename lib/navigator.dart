@@ -2,6 +2,7 @@ import 'package:english_study/screen/listening/conversation/conversation_backgro
 import 'package:english_study/screen/listening/conversation/conversation_screen.dart';
 import 'package:english_study/screen/listening/lessions/lession_topic_screen.dart';
 import 'package:english_study/screen/main/main_screen.dart';
+import 'package:english_study/screen/sync_data/sync_data_screen.dart';
 import 'package:english_study/screen/vocabulary/flash_card/flash_card_vocabulary_screen.dart';
 import 'package:english_study/screen/vocabulary/game/game_vocabulary_screen.dart';
 import 'package:english_study/screen/vocabulary/sub_topic/sub_topic_screen.dart';
@@ -15,5 +16,7 @@ var routes = {
   GameVocabularyScreen.routeName: (context) => GameVocabularyScreen(),
   LessionTopicScreen.routeName: (context) => LessionTopicScreen(),
   ConversationScreen.routeName: (context) => ConversationScreen(),
-  ConversationBackgroundScreen.routeName: (context) => ConversationBackgroundScreen(),
+  ConversationBackgroundScreen.routeName: (context) =>
+      ConversationBackgroundScreen(),
+  SyncDataScreen.routeName: (context) => SyncDataScreen(),
 };

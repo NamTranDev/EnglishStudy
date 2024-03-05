@@ -1,5 +1,5 @@
 import 'package:english_study/download/download_manager.dart';
-import 'package:english_study/model/tab_type.dart';
+import 'package:english_study/model/topic_type.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/model/init_screen_tab.dart';
 import 'package:english_study/screen/category/category_component.dart';

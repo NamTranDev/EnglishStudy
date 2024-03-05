@@ -1,6 +1,6 @@
 import 'package:english_study/constants.dart';
 import 'package:english_study/model/bottom_bar_item.dart';
-import 'package:english_study/model/tab_type.dart';
+import 'package:english_study/model/topic_type.dart';
 import 'package:english_study/screen/main/bottom_bar_provider.dart';
 import 'package:english_study/screen/main/main_viewmodel.dart';
 import 'package:english_study/screen/main/tab/complete/complete_tab.dart';

@@ -99,25 +99,7 @@ Widget loadImage(String? image_name, String? image_path, {BoxFit? fit}) {
     );
   }
 
-  var pathAsset = 'assets/image/$image_name';
-  return FutureBuilder<bool>(
-    future: doesImageExistInAssets(pathAsset),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.done) {
-        if (snapshot.data == true) {
-          return Image.asset(
-            pathAsset,
-            fit: fit,
-          );
-        } else {
-          return Image.asset('assets/no_image.jpg', fit: fit);
-        }
-      } else {
-        // While waiting for the future, you can return a placeholder or loading indicator.
-        return CircularProgressIndicator();
-      }
-    },
-  );
+  return widgetImageAsset(image_name, fit: fit);
 }
 
 Widget widgetIcon(String path, {double? size, Color? color, BoxFit? fit}) {

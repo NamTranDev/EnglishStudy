@@ -29,7 +29,7 @@ class SplashScreen extends StatelessWidget {
                     });
                   }
                   return Container(
-                    padding: EdgeInsets.all(100),
+                    padding: EdgeInsets.all(84),
                     child: Center(
                         child: Image.asset(
                       'assets/icons/ic_laucher.png',

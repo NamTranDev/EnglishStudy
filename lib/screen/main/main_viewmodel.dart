@@ -1,3 +1,4 @@
+import 'package:english_study/constants.dart';
 import 'package:english_study/model/bottom_bar_item.dart';
 import 'package:english_study/model/topic_type.dart';
 import 'package:english_study/screen/main/tab/complete/complete_tab.dart';
@@ -14,6 +15,10 @@ class MainViewModel with ChangeNotifier {
   late List<BottomBarItem> bottomBars = [];
 
   Future<void> checkTab() async {
+
+    await Future.delayed(
+        const Duration(milliseconds: 2 * duration_animation_screen));
+
     var db = getIt<DBProvider>();
     var isHasVocabularyTab =
         await db.hasCategoryToLearn(TopicType.VOCABULARY.value);

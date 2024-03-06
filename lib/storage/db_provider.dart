@@ -215,7 +215,8 @@ class DBProvider {
     return mapperConversation(db, res.first);
   }
 
-  Future<List<SubTopic>> getSubTopics(String? topicId) async {
+  Future<List<SubTopic>> getSubTopics(
+      String? topicId) async {
     final db = await _db;
     var res = await db
         .query(_SUB_TOPIC_TABLE, where: 'topic_id = ?', whereArgs: [topicId]);
@@ -256,9 +257,7 @@ class DBProvider {
     Iterable<Future<SubTopic>> mappedList = values.isNotEmpty
         ? values.map((c) async {
             SubTopic subtopic = SubTopic.fromMap(c);
-
             subtopic.processLearn = await progressSubTopic(subtopic);
-
             return subtopic;
           }).toList()
         : [];
@@ -465,6 +464,126 @@ class DBProvider {
     return result.isNotEmpty;
   }
 
+  Future<Topic?> checkTopicExist(Topic topic) async {
+    final db = await _db;
+    List<Map<String, dynamic>> res = await db.query(
+      _TOPIC_TABLE,
+      where:
+          'topic_name = ? and number_lessons = ? and total_words = ? and description_topic = ? and category = ?',
+      whereArgs: [
+        topic.name,
+        topic.number_sub_topic,
+        topic.total_word,
+        topic.description,
+        topic.category
+      ],
+    );
+    return res.map((e) => Topic.fromMap(e)).toList().getOrNull(0);
+  }
+
+  Future<SubTopic?> checkSubTopicExist(Database db, SubTopic subTopic) async {
+    var res = await db.query(
+      _SUB_TOPIC_TABLE,
+      where:
+          'topic_id = ? and sub_topic_name = ? and number_sub_topic_words = ?',
+      whereArgs: [subTopic.topic_id, subTopic.name, subTopic.number_word],
+    );
+
+    return res.map((e) => SubTopic.fromMap(e)).toList().getOrNull(0);
+  }
+
+  Future<Conversation?> checkConversationExist(
+      Database db, Conversation conversation) async {
+    List<Map<String, dynamic>> res = await db.query(
+      _CONVERSATION_TABLE,
+      where: 'topic_id = ? and conversation_lession = ?',
+      whereArgs: [conversation.topic_id, conversation.conversation_lession],
+    );
+    return res.map((e) => Conversation.fromMap(e)).toList().getOrNull(0);
+  }
+
+  Future<Vocabulary?> checkVocabularyExist(
+      Database db, Vocabulary vocabulary) async {
+    List<Map<String, dynamic>> res = await db.query(
+      _VOCABULARY_TABLE,
+      where:
+          'sub_topic_id = ? and vocabulary = ? and image_file_name = ? and word_type = ? and description = ?',
+      whereArgs: [
+        vocabulary.sub_topic_id,
+        vocabulary.word,
+        vocabulary.image_file_name,
+        vocabulary.word_type,
+        vocabulary.description
+      ],
+    );
+    return res.map((e) => Vocabulary.fromMap(e)).toList().getOrNull(0);
+  }
+
+  Future<Transcript?> checkTranscriptExist(
+      Database db, Transcript transcript) async {
+    List<Map<String, dynamic>> res = await db.query(
+      _TRANSCRIPT_TABLE,
+      where: 'conversation_id = ? and script = ?',
+      whereArgs: [
+        transcript.conversation_id,
+        transcript.script,
+      ],
+    );
+    return res.map((e) => Transcript.fromMap(e)).toList().getOrNull(0);
+  }
+
+  Future<Audio?> checkAudioVocabularyExist(Database db, Audio audio) async {
+    List<Map<String, dynamic>> res = await db.query(
+      _AUDIO_TABLE,
+      where:
+          'vocabulary_id = ? and audio_file_name = ? and audio_file_path = ?',
+      whereArgs: [
+        audio.vocabulary_id,
+        audio.name,
+        audio.path,
+      ],
+    );
+    return res.map((e) => Audio.fromMap(e, false)).toList().getOrNull(0);
+  }
+
+  Future<Audio?> checkAudioConversationExist(Database db, Audio audio) async {
+    List<Map<String, dynamic>> res = await db.query(
+      _AUDIO_CONVERSATION_TABLE,
+      where:
+          'conversation_id = ? and audio_file_name = ? and audio_file_path = ?',
+      whereArgs: [
+        audio.conversation_id,
+        audio.name,
+        audio.path,
+      ],
+    );
+    return res.map((e) => Audio.fromMap(e, false)).toList().getOrNull(0);
+  }
+
+  Future<Spelling?> checkSpellingExist(Database db, Spelling spelling) async {
+    List<Map<String, dynamic>> res = await db.query(
+      _SPELLING_TABLE,
+      where: 'vocabulary_id = ? and spelling_text = ?',
+      whereArgs: [
+        spelling.vocabulary_id,
+        spelling.spelling,
+      ],
+    );
+    return res.map((e) => Spelling.fromMap(e)).toList().getOrNull(0);
+  }
+
+  Future<Example?> checkExampleExist(Database db, Example example) async {
+    List<Map<String, dynamic>> res = await db.query(
+      _EXAMPLE_TABLE,
+      where: 'vocabulary_id = ? and example = ?',
+      whereArgs: [
+        example.vocabulary_id,
+        example.sentence,
+      ],
+    );
+    return res.map((e) => Example.fromMap(e)).toList().getOrNull(0);
+  }
+
   Future<bool> checkCategoryComplete(String? category) async {
     if (category == null) return false;
     final db = await _db;
@@ -654,73 +773,114 @@ WHERE topic_id = ${topic.id} and isLearnComplete = 0
       List<Example>? examples,
       Function? onProcess) async {
     final db = await _db;
-    db.transaction((txn) async {
-      var batch = txn.batch();
-      var total = 0;
-      int index = 0;
-      subTopics?.where((element) => element.topic_id == idTopicUpdate).map((e) {
-        try {
-          total += int.parse(e.number_word?.replaceAll(' Words', '') ?? '0');
-        } catch (e) {
-          logger(e);
-        }
-        return e;
-      }).forEach((subTopic) async {
-        var idSubTopicUpdate = subTopic.id;
-        subTopic.id = null;
-        subTopic.topic_id = idTopic;
+    var total = 0;
+    int index = 0;
+    var subTopicList = subTopics
+        ?.where((element) => element.topic_id == idTopicUpdate)
+        .map((e) {
+      try {
+        total += int.parse(e.number_word?.replaceAll(' Words', '') ?? '0');
+      } catch (e) {
+        logger(e);
+      }
+      return e;
+    }).toList();
+    for (int indexSubTopic = 0;
+        indexSubTopic < (subTopicList?.length ?? 0);
+        indexSubTopic++) {
+      var subTopic = subTopicList?.getOrNull(indexSubTopic);
+      if (subTopic == null) continue;
+      var idSubTopicUpdate = subTopic.id;
+      subTopic.id = null;
+      subTopic.topic_id = idTopic;
 
-        batch.insert(_SUB_TOPIC_TABLE, subTopic.toMap(),
+      var subTopicCheck = await checkSubTopicExist(db, subTopic);
+      var subTopicId;
+      if (subTopicCheck != null) {
+        subTopicId = subTopicCheck.id;
+      } else {
+        subTopicId = await db.insert(_SUB_TOPIC_TABLE, subTopic.toMap(),
             conflictAlgorithm: ConflictAlgorithm.ignore);
-        var subTopicId = (await batch.commit()).getOrNull(0) as int;
-        logger(subTopicId);
+      }
 
-        vocabularies
-            ?.where((element) => element.sub_topic_id == idSubTopicUpdate)
-            .forEach((vocabulary) async {
-          var idVocabularyUpdate = vocabulary.id;
-          vocabulary.id = null;
-          vocabulary.sub_topic_id = subTopicId;
+      logger(subTopicId);
 
-          batch.insert(_VOCABULARY_TABLE, vocabulary.toMap(),
+      var vocabularyList = vocabularies
+          ?.where((element) => element.sub_topic_id == idSubTopicUpdate)
+          .toList();
+      for (int indexVocabulary = 0;
+          indexVocabulary < (vocabularyList?.length ?? 0);
+          indexVocabulary++) {
+        var vocabulary = vocabularyList?.getOrNull(indexVocabulary);
+        if (vocabulary == null) continue;
+        var idVocabularyUpdate = vocabulary.id;
+        vocabulary.id = null;
+        vocabulary.sub_topic_id = subTopicId;
+
+        var vocabularyCheck = await checkVocabularyExist(db, vocabulary);
+        var vocabularyId;
+        if (vocabularyCheck != null) {
+          vocabularyId = vocabularyCheck.id;
+        } else {
+          vocabularyId = await db.insert(_VOCABULARY_TABLE, vocabulary.toMap(),
               conflictAlgorithm: ConflictAlgorithm.ignore);
-          var vocabularyId = (await batch.commit()).getOrNull(0) as int;
+        }
 
-          logger(total);
-          index++;
-          var process = index / total;
-          logger(process);
+        logger(total);
+        index++;
+        var process = index / total;
+        logger(process);
 
-          onProcess?.call(process);
+        onProcess?.call(process);
 
-          audios
-              ?.where((audio) => audio.vocabulary_id == idVocabularyUpdate)
-              .forEach((audio) async {
-            audio.vocabulary_id = vocabularyId;
-            batch.insert(_AUDIO_TABLE, audio.toMap(false),
+        var audioList = audios
+            ?.where((audio) => audio.vocabulary_id == idVocabularyUpdate)
+            .toList();
+
+        for (int indexAudio = 0;
+            indexAudio < (audioList?.length ?? 0);
+            indexAudio++) {
+          var audio = audioList?.getOrNull(indexAudio);
+          if (audio == null) continue;
+          audio.vocabulary_id = vocabularyId;
+          var audioCheck = await checkAudioVocabularyExist(db, audio);
+          if (audioCheck == null) {
+            await db.insert(_AUDIO_TABLE, audio.toMap(false),
                 conflictAlgorithm: ConflictAlgorithm.ignore);
-          });
-
-          examples
-              ?.where((example) => example.vocabulary_id == idVocabularyUpdate)
-              .forEach((example) async {
-            example.vocabulary_id = vocabularyId;
-            batch.insert(_EXAMPLE_TABLE, example.toMap(),
+          }
+        }
+        var exampleList = examples
+            ?.where((example) => example.vocabulary_id == idVocabularyUpdate)
+            .toList();
+        for (int indexExample = 0;
+            indexExample < (exampleList?.length ?? 0);
+            indexExample++) {
+          var example = exampleList?.getOrNull(indexExample);
+          if (example == null) continue;
+          example.vocabulary_id = vocabularyId;
+          var exampleCheck = await checkExampleExist(db, example);
+          if (exampleCheck == null) {
+            await db.insert(_EXAMPLE_TABLE, example.toMap(),
                 conflictAlgorithm: ConflictAlgorithm.ignore);
-          });
-          spellings
-              ?.where(
-                  (spelling) => spelling.vocabulary_id == idVocabularyUpdate)
-              .forEach((spelling) async {
-            spelling.vocabulary_id = vocabularyId;
-            batch.insert(_SPELLING_TABLE, spelling.toMap(),
+          }
+        }
+        var spellingList = spellings
+            ?.where((spelling) => spelling.vocabulary_id == idVocabularyUpdate)
+            .toList();
+        for (int indexSpelling = 0;
+            indexSpelling < (spellingList?.length ?? 0);
+            indexSpelling++) {
+          var spelling = spellingList?.getOrNull(indexSpelling);
+          if (spelling == null) continue;
+          spelling.vocabulary_id = vocabularyId;
+          var spellingCheck = await checkSpellingExist(db, spelling);
+          if (spellingCheck == null) {
+            await db.insert(_SPELLING_TABLE, spelling.toMap(),
                 conflictAlgorithm: ConflictAlgorithm.ignore);
-            // logger(id);
-          });
-          await batch.commit();
-        });
-      });
-    });
+          }
+        }
+      }
+    }
   }
 
   Future<void> updateDataConversation(
@@ -731,89 +891,85 @@ WHERE topic_id = ${topic.id} and isLearnComplete = 0
       List<Transcript>? transcripts,
       Function? onProcess) async {
     var db = await _db;
-    await db.transaction((txn) async {
-      var batch = txn.batch();
-      var conversationList = conversations
-          ?.where((conversation) => conversation.topic_id == idTopicUpdate)
-          .toList();
-      var total = conversationList?.length ?? 1;
-      logger(total);
-      int index = 0;
-      for (int i = 0; i < (conversationList?.length ?? 0); i++) {
-        var conversation = conversationList?.getOrNull(i);
-        if (conversation == null) continue;
-        var idConversationUpdate = conversation.id;
-        conversation.id = null;
-        conversation.topic_id = idTopic;
-        batch.insert(_CONVERSATION_TABLE, conversation.toMap(),
+    var conversationList = conversations
+        ?.where((conversation) => conversation.topic_id == idTopicUpdate)
+        .toList();
+    var total = conversationList?.length ?? 1;
+    logger(total);
+    int index = 0;
+    for (int i = 0; i < (conversationList?.length ?? 0); i++) {
+      var conversation = conversationList?.getOrNull(i);
+      if (conversation == null) continue;
+      var idConversationUpdate = conversation.id;
+      conversation.id = null;
+      conversation.topic_id = idTopic;
+      var conversationCheck = await checkConversationExist(db, conversation);
+      var idConversation;
+      if (conversationCheck != null) {
+        idConversation = conversationCheck.id;
+      } else {
+        idConversation = await db.insert(
+            _CONVERSATION_TABLE, conversation.toMap(),
             conflictAlgorithm: ConflictAlgorithm.ignore);
-        var idConversation = (await batch.commit()).getOrNull(0) as int;
-        logger(idConversation);
-
-        index++;
-        var process = index / total;
-        logger(process);
-
-        onProcess?.call(process);
-
-        audio_conversations
-            ?.where((audio) => audio.conversation_id == idConversationUpdate)
-            .forEach((audio) async {
-          audio.conversation_id = idConversation;
-          batch.insert(_AUDIO_CONVERSATION_TABLE, audio.toMap(true),
-              conflictAlgorithm: ConflictAlgorithm.ignore);
-          // logger(id);
-        });
-
-        transcripts
-            ?.where((transcript) =>
-                transcript.conversation_id == idConversationUpdate)
-            .forEach((transcript) async {
-          transcript.conversation_id = idConversation;
-          batch.insert(_TRANSCRIPT_TABLE, transcript.toMap(),
-              conflictAlgorithm: ConflictAlgorithm.ignore);
-          // logger(id);
-        });
-        await batch.commit();
       }
-    });
+
+      logger(idConversation);
+
+      index++;
+      var process = index / total;
+      logger(process);
+
+      onProcess?.call(process);
+
+      var audioList = audio_conversations
+          ?.where((audio) => audio.conversation_id == idConversationUpdate)
+          .toList();
+      for (int indexAudio = 0;
+          indexAudio < (audioList?.length ?? 0);
+          indexAudio++) {
+        var audio = audioList?.getOrNull(indexAudio);
+        if (audio == null) continue;
+        audio.conversation_id = idConversation;
+        var audioCheck = await checkAudioConversationExist(db, audio);
+        if (audioCheck == null) {
+          await db.insert(_AUDIO_CONVERSATION_TABLE, audio.toMap(true),
+              conflictAlgorithm: ConflictAlgorithm.ignore);
+        }
+      }
+      var transcriptList = transcripts
+          ?.where((transcript) =>
+              transcript.conversation_id == idConversationUpdate)
+          .toList();
+      for (int indexTranscript = 0;
+          indexTranscript < (transcriptList?.length ?? 0);
+          indexTranscript++) {
+        var transcript = transcriptList?.getOrNull(indexTranscript);
+        if (transcript == null) continue;
+        transcript.conversation_id = idConversation;
+        var transcriptCheck = await checkTranscriptExist(db, transcript);
+        if (transcriptCheck == null) {
+          await db.insert(_TRANSCRIPT_TABLE, transcript.toMap(),
+              conflictAlgorithm: ConflictAlgorithm.ignore);
+        }
+      }
+    }
   }
 
   Future<void> deleteAllDataRelate(String? key) async {
     var db = await _db;
     await db.transaction((txn) async {
-      var batch = txn.batch();
-      logger('DELETE FROM "audio"');
-      batch.execute(
-          '''DELETE FROM "audio" WHERE "vocabulary_id" IN (SELECT "id" FROM "vocabulary" WHERE "sub_topic_id" IN (SELECT "id" FROM "sub_topics" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
-      logger('DELETE FROM "examples"');
-      batch.execute(
-          '''DELETE FROM "examples" WHERE "vocabulary_id" IN (SELECT "id" FROM "vocabulary" WHERE "sub_topic_id" IN (SELECT "id" FROM "sub_topics" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
-      logger('DELETE FROM "spelling"');
-      batch.execute(
-          '''DELETE FROM "spelling" WHERE "vocabulary_id" IN (SELECT "id" FROM "vocabulary" WHERE "sub_topic_id" IN (SELECT "id" FROM "sub_topics" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
-      logger('DELETE FROM "vocabulary"');
-      batch.execute(
-          '''DELETE FROM "vocabulary" WHERE "sub_topic_id" IN (SELECT "id" FROM "sub_topics" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
-      logger('DELETE FROM "audio_conversation"');
-      batch.execute(
-          '''DELETE FROM "audio_conversation" WHERE "conversation_id" IN (SELECT "id" FROM "conversation" WHERE "topic_id" IN (SELECT "id" FROM "topics" 
-          WHERE "category" = ${key})))''');
-      logger('DELETE FROM "transcript"');
-      batch.execute(
-          '''DELETE FROM "transcript" WHERE "conversation_id" IN (SELECT "id" FROM "conversation" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
-      logger('DELETE FROM "conversation"');
-      batch.execute(
-          '''DELETE FROM "conversation" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
-      logger('DELETE FROM "sub_topics"');
-      batch.execute(
-          '''DELETE FROM "sub_topics" WHERE "topic_id" IN (SELECT "id" FROM "topics" WHERE "category" = ${key})))''');
-      logger('DELETE FROM "topics"');
-      batch.execute('''DELETE FROM "topics" WHERE "category" = ${key})))''');
-      logger('DELETE FROM "category"');
-      batch.execute('''DELETE FROM "category" WHERE "key" = ${key})))''');
-      var result = await batch.commit();
-      logger(result);
+      Batch batch = txn.batch();
+      batchDeleteFromCategory(batch, key);
+      // Execute the batch
+      await batch.commit(noResult: true);
     });
+  }
+
+  void batchDeleteFromCategory(Batch batch, categoryKey) {
+    batch.delete(
+      'category',
+      where: 'key = ?',
+      whereArgs: [categoryKey],
+    );
   }
 }

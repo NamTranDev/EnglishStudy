@@ -30,8 +30,7 @@ class SyncDataScreen extends StatelessWidget {
                   child: ValueListenableBuilder(
                       valueListenable: viewmodel.updateValue,
                       builder: (context, value, widget) {
-                        if (value == null ||
-                            value.status == UpdateStatus.COMPLETE) {
+                        if (value?.status == UpdateStatus.COMPLETE) {
                           SchedulerBinding.instance
                               .addPostFrameCallback((timeStamp) {
                             Navigator.pop(context);

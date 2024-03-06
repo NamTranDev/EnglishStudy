@@ -7,6 +7,7 @@ class SubTopic {
   int? topic_id;
   String? name;
   String? image;
+  String? image_path;
   String? number_word;
   int? isLearnComplete;
   int? isLearning;
@@ -20,6 +21,7 @@ class SubTopic {
     this.topic_id,
     this.name,
     this.image,
+    this.image_path,
     this.number_word,
     this.isLearnComplete,
     this.isLearning,
@@ -30,6 +32,7 @@ class SubTopic {
     int? topic_id,
     String? name,
     String? image,
+    String? image_path,
     String? number_word,
     int? isLearnComplete,
     int? isLearning,
@@ -39,6 +42,7 @@ class SubTopic {
       topic_id: topic_id ?? this.topic_id,
       name: name ?? this.name,
       image: image ?? this.image,
+      image_path: image ?? this.image_path,
       number_word: number_word ?? this.number_word,
       isLearnComplete: isLearnComplete ?? this.isLearnComplete,
       isLearning: isLearning ?? this.isLearning,
@@ -51,6 +55,7 @@ class SubTopic {
       'topic_id': topic_id,
       'sub_topic_name': name,
       'sub_topic_image': image,
+      'sub_topic_image_path': image_path,
       'number_sub_topic_words': number_word,
       'isLearnComplete': isLearnComplete,
       'isLearning': isLearning,
@@ -66,6 +71,9 @@ class SubTopic {
           : null,
       image: map['sub_topic_image'] != null
           ? map['sub_topic_image'] as String
+          : null,
+        image_path: map['sub_topic_image_path'] != null
+          ? map['sub_topic_image_path'] as String
           : null,
       number_word: map['number_sub_topic_words'] != null
           ? map['number_sub_topic_words'] as String
@@ -83,7 +91,7 @@ class SubTopic {
 
   @override
   String toString() =>
-      'SubTopic(id: $id,topic_id: $topic_id, name: $name, image: $image, number_word: $number_word, isLearnComplete: $isLearnComplete, isLearning: $isLearning)';
+      'SubTopic(id: $id,topic_id: $topic_id, name: $name, image: $image,image_path: $image_path, number_word: $number_word, isLearnComplete: $isLearnComplete, isLearning: $isLearning)';
 
   @override
   bool operator ==(covariant SubTopic other) {
@@ -94,6 +102,7 @@ class SubTopic {
     other.topic_id == topic_id &&
         other.name == name &&
         other.image == image &&
+        other.image_path == image_path &&
         other.number_word == number_word &&
         other.isLearnComplete == isLearnComplete &&
         other.isLearning == isLearning;
@@ -105,6 +114,7 @@ class SubTopic {
       topic_id.hashCode ^
       name.hashCode ^
       image.hashCode ^
+      image_path.hashCode ^
       number_word.hashCode ^
       isLearnComplete.hashCode ^
       isLearning.hashCode;

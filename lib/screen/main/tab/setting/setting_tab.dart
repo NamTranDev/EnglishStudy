@@ -35,14 +35,17 @@ class _SettingTabState extends State<SettingTab> {
         _viewModel.loading = (value) async {
           if (value is UpdateDataModel) {
             EasyLoading.dismiss();
-            await Navigator.pushNamed(
-                            context, SyncDataScreen.routeName,
-                            arguments: value);
+            await Navigator.pushNamed(context, SyncDataScreen.routeName,
+                arguments: value);
           } else {
-            EasyLoading.show(
-              // status: 'loading...',
-              maskType: EasyLoadingMaskType.black,
-            );
+            if (value == true) {
+              EasyLoading.show(
+                // status: 'loading...',
+                maskType: EasyLoadingMaskType.black,
+              );
+            } else {
+              EasyLoading.dismiss();
+            }
           }
         };
         return FutureBuilder(

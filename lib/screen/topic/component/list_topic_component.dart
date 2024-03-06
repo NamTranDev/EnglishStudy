@@ -111,12 +111,12 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
           builder: (context, value, child) {
             return value
                 ? NextCategoryComponent(
-                  text: 'Learn Another Topic',
-                  onNextCategoryClick: () {
-                    nextPickCategory(
-                        context, topics?.getOrNull(topics.length - 1));
-                  },
-                )
+                    text: 'Learn Another Topic',
+                    onNextCategoryClick: () {
+                      nextPickCategory(
+                          context, topics?.getOrNull(topics.length - 1));
+                    },
+                  )
                 : SizedBox();
           },
         ),
@@ -186,7 +186,7 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
           ),
           child: Stack(
             children: [
-              widgetImageAsset(topic?.image, fit: BoxFit.cover),
+              widgetImage(topic?.image_path, topic?.image, fit: BoxFit.cover),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,

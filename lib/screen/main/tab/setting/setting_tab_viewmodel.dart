@@ -96,6 +96,9 @@ class SettingTabViewModel with ChangeNotifier {
   Future<void> checkNewData() async {
     loading?.call(true);
     var updateData = await getUpdateVersion();
-    loading?.call(updateData);
+    loading?.call(
+        (updateData?.version ?? 0) > getIt<Preference>().versionUpdate()
+            ? updateData
+            : false);
   }
 }

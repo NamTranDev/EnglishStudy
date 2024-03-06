@@ -11,7 +11,6 @@ import 'package:english_study/utils/extension.dart';
 
 class SubTopicViewModel extends LessionsViewModel
     with CompleteCategoryViewModel {
-
   Future<List<SubTopic>> initData(Topic? topic, bool fromTab) async {
     await Future.delayed(Duration(milliseconds: duration_animation_screen));
     var db = getIt<DBProvider>();

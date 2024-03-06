@@ -197,7 +197,8 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                                       fit: BoxFit.scaleDown,
                                     ),
                                   )
-                                : widgetImageAsset(subTopic?.image,
+                                : widgetImage(
+                                    subTopic?.image_path, subTopic?.image,
                                     fit: BoxFit.cover),
                           ),
                         ),

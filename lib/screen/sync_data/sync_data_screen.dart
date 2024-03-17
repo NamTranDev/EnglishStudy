@@ -36,6 +36,50 @@ class SyncDataScreen extends StatelessWidget {
                             Navigator.pop(context);
                           });
                         }
+                        if (value?.status == UpdateStatus.ERROR) {
+                          SchedulerBinding.instance
+                              .addPostFrameCallback((timeStamp) {
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                // return object of type Dialog
+                                return AlertDialog(
+                                  actionsAlignment: MainAxisAlignment.center,
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        'Error',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge,
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        'Đã xãy ra lỗi trong quá trình cập nhật dữ liệu',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
+                                      ),
+                                    ],
+                                  ),
+                                  actions: <Widget>[
+                                    ElevatedButton(
+                                      child: Text('OK'),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          });
+                        }
                         return value != null &&
                                 value.status == UpdateStatus.UPDATE
                             ? buildSyncData(context, value)

@@ -186,7 +186,7 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
           ),
           child: Stack(
             children: [
-              widgetImage(topic?.image_path, topic?.image, fit: BoxFit.cover),
+              widgetImage(topic?.image, topic?.image_path, fit: BoxFit.cover),
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,4 +1,4 @@
-enum UpdateStatus { LOADING, UPDATE, COMPLETE }
+enum UpdateStatus { LOADING, UPDATE, COMPLETE, ERROR }
 
 extension UpdateStatusExtension on UpdateStatus {
   int get value {
@@ -9,6 +9,8 @@ extension UpdateStatusExtension on UpdateStatus {
         return 1;
       case UpdateStatus.COMPLETE:
         return 2;
+      case UpdateStatus.ERROR:
+        return 3;
     }
   }
 }

@@ -1,7 +1,7 @@
 import os
 import sqlite3
 
-path_db = 'assets/english.db'
+path_db = 'english.db'
 
 def database_exists(db_file):
     return os.path.exists(db_file)

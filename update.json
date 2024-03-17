@@ -3,7 +3,15 @@
     "urls" : [
         {
             "name" : "update_CEFR_Wordlist",
-            "url" : "https://dl.dropboxusercontent.com/scl/fi/1p2xzfw9n8rar3voldphr/update_CEFR_Wordlist.zip?rlkey=op8e31jpdejggcsshl7w7fwup&dl=0"
+            "url" : "https://dl.dropboxusercontent.com/scl/fi/kknnaspqjvmsqns7juh1e/update_CEFR_Wordlist.zip?rlkey=nzn5hb1i8gjpbw3a0eg9dw4gq&dl=0"
+        },
+        {
+            "name" : "update_helenadailyenglish",
+            "url" : "https://dl.dropboxusercontent.com/scl/fi/kw2p123drkgbt3v3idxdz/update_helenadailyenglish.zip?rlkey=3ww7pja2w1eebaedpakz1z6ox&dl=0"
+        },
+        {
+            "name" : "update_toeic",
+            "url" : "https://dl.dropboxusercontent.com/scl/fi/bw003yjzzduinemlm103m/update_toeic.zip?rlkey=1ox4ru6rqhmd9k0gg0gf9mpbf&dl=0"
         }
     ]
 }

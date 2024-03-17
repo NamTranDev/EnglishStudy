@@ -34,9 +34,8 @@ class Preference {
     return isGuideLearnWithGame;
   }
 
-  bool isGuideNote(){
-    var isGuideNote =
-        _prefs?.getBool(_KEY_GUIDE_NOTE) ?? true;
+  bool isGuideNote() {
+    var isGuideNote = _prefs?.getBool(_KEY_GUIDE_NOTE) ?? true;
     print(isGuideNote);
     _prefs?.setBool(_KEY_GUIDE_NOTE, false);
     return isGuideNote;
@@ -71,7 +70,7 @@ class Preference {
   int versionUpdate() {
     return _prefs?.getInt(_KEY_VERSION_UPDATE) ?? 0;
   }
-  
+
   void saveVersionUpdate(int? version) {
     _prefs?.setInt(_KEY_VERSION_UPDATE, version ?? 0);
   }
@@ -79,7 +78,12 @@ class Preference {
   NotificationModel dailyNotification() {
     String? value = _prefs?.getString(_KEY_DAILY_NOTIFICATION);
     if (value == null || value.isEmpty) {
-      return NotificationModel(idNotification: 1,hour: 20, minute: 30, isEnable: true,isSchedule: false);
+      return NotificationModel(
+          idNotification: 1,
+          hour: 20,
+          minute: 30,
+          isEnable: true,
+          isSchedule: false);
     }
     return NotificationModel.fromJson(value);
   }

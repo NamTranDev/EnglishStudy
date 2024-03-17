@@ -37,6 +37,7 @@ class _SettingTabState extends State<SettingTab> {
             EasyLoading.dismiss();
             await Navigator.pushNamed(context, SyncDataScreen.routeName,
                 arguments: value);
+            setState(() {});
           } else {
             if (value == true) {
               EasyLoading.show(

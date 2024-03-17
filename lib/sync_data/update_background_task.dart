@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
-import 'dart:ui';
 
 import 'package:dio/dio.dart';
 import 'package:english_study/logger.dart';
@@ -24,6 +23,7 @@ import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:english_study/storage/preference.dart';
 import 'package:english_study/utils/extension.dart';
+import 'package:flutter/foundation.dart' as isolate;
 import 'package:flutter/services.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:path_provider/path_provider.dart';
@@ -48,11 +48,14 @@ Future<void> getDataBackgroundTask(
 
   receivePort.listen((dynamic data) {
     // logger(data);
-    var status = data as UpdateReponse;
-    onStatus?.call(status);
-    if (status.status == UpdateStatus.COMPLETE) {
-      receivePort.close();
-      isolate.kill();
+    if (data is UpdateReponse) {
+      onStatus?.call(data);
+      if (data.status == UpdateStatus.COMPLETE) {
+        receivePort.close();
+        isolate.kill();
+      }
+    } else if (data is int) {
+      getIt<Preference>().saveVersionUpdate(data);
     }
   });
 }
@@ -81,138 +84,187 @@ void backgroundTask(UpdateRequest request) async {
   if (currentVersionApp < currentVersion) {
     for (int i = currentVersionApp; i < currentVersion; i++) {
       sendPort.send(UpdateReponse(UpdateStatus.LOADING));
-      // try {
-      UpdateLinkInfo? updateLink = updateVersion?.urls?.getOrNull(i);
-      if (updateLink == null || updateLink.url == null) {
-        continue;
-      }
-      var pathStore = "${path}/update_${updateLink.key}.zip";
-      final fileDownload = File(pathStore);
-      Dio dio = Dio();
-      await dio.download(updateLink.url!, pathStore);
+      try {
+        UpdateLinkInfo? updateLink = updateVersion?.urls?.getOrNull(i);
+        if (updateLink == null || updateLink.url == null) {
+          continue;
+        }
+        var pathStore = "${path}/${updateLink.name}.zip";
+        final fileDownload = File(pathStore);
+        Dio dio = Dio();
+        await dio.download(updateLink.url!, pathStore);
 
-      var directory = Directory("${path}");
-      if (await directory.exists() == false) {
-        await directory.create();
-      }
+        var directory = Directory("${path}");
+        if (await directory.exists() == false) {
+          await directory.create();
+        }
 
-      // try {
-      await ZipFile.extractToDirectory(
-        zipFile: fileDownload,
-        destinationDir: directory,
-      );
-      var folder = Directory("${path}/update_${updateLink.key}");
-      var folderExist = folder.existsSync();
-      logger(folderExist);
-      if (folderExist) {
-        List<FileSystemEntity>? files = folder.listSync();
+        await ZipFile.extractToDirectory(
+          zipFile: fileDownload,
+          destinationDir: directory,
+        );
+        var folder = Directory("${path}/${updateLink.name}");
+        var folderExist = folder.existsSync();
+        logger(folderExist);
+        if (folderExist) {
+          List<FileSystemEntity>? files = folder.listSync();
 
-        FileSystemEntity? categoryFile = getFileByName(files, 'category.json');
-        if (categoryFile != null) {
-          List<Category> categories = await loadItemsFromFile<Category>(
-              categoryFile.path, (json) => Category.fromMap(json));
-          Category? category = categories.getOrNull(0);
-          if (category != null &&
-              await db.checkCategoryExist(category.key) == false) {
-            List<Topic>? topics;
-            List<SubTopic>? subTopics;
-            List<Conversation>? conversations;
-            List<Vocabulary>? vocabularies;
-            List<Transcript>? transcripts;
-            List<Audio>? audios;
-            List<Audio>? audio_conversations;
-            List<Spelling>? spellings;
-            List<Example>? examples;
-            for (var file in files) {
-              if (file is File) {
-                // logger(file.path);
-                if (file.path.endsWith('sub_topics.json')) {
-                  subTopics = await loadItemsFromFile<SubTopic>(
-                      file.path, (json) => SubTopic.fromMap(json));
-                } else if (file.path.endsWith('topics.json')) {
-                  topics = await loadItemsFromFile<Topic>(
-                      file.path, (json) => Topic.fromMap(json));
-                } else if (file.path.endsWith('conversation.json')) {
-                  conversations = await loadItemsFromFile<Conversation>(
-                      file.path, (json) => Conversation.fromMap(json));
-                } else if (file.path.endsWith('vocabulary.json')) {
-                  vocabularies = await loadItemsFromFile<Vocabulary>(
-                      file.path, (json) => Vocabulary.fromMap(json));
-                } else if (file.path.endsWith('transcript.json')) {
-                  transcripts = await loadItemsFromFile<Transcript>(
-                      file.path, (json) => Transcript.fromMap(json));
-                } else if (file.path.endsWith('audio.json')) {
-                  audios = await loadItemsFromFile<Audio>(
-                      file.path, (json) => Audio.fromMap(json, false));
-                } else if (file.path.endsWith('audio_conversation.json')) {
-                  audio_conversations = await loadItemsFromFile<Audio>(
-                      file.path, (json) => Audio.fromMap(json, true));
-                } else if (file.path.endsWith('spelling.json')) {
-                  spellings = await loadItemsFromFile<Spelling>(
-                      file.path, (json) => Spelling.fromMap(json));
-                } else if (file.path.endsWith('examples.json')) {
-                  examples = await loadItemsFromFile<Example>(
-                      file.path, (json) => Example.fromMap(json));
+          FileSystemEntity? categoryFile =
+              getFileByName(files, 'category.json');
+          if (categoryFile != null) {
+            List<Category> categories = await loadItemsFromFile<Category>(
+                categoryFile.path, (json) => Category.fromMap(json));
+            Category? category = categories.getOrNull(0);
+
+            if (category != null) {
+              var isExist = await db.checkCategoryExist(category.key);
+              logger(isExist);
+              if (isExist == false) {
+                List<Topic>? topics;
+                List<SubTopic>? subTopics;
+                List<Conversation>? conversations;
+                List<Vocabulary>? vocabularies;
+                List<Transcript>? transcripts;
+                List<Audio>? audios;
+                List<Audio>? audio_conversations;
+                List<Spelling>? spellings;
+                List<Example>? examples;
+                for (var file in files) {
+                  if (file is File) {
+                    // logger(file.path);
+                    if (file.path.endsWith('sub_topics.json')) {
+                      subTopics = await loadItemsFromFile<SubTopic>(
+                          file.path, (json) => SubTopic.fromMap(json));
+                    } else if (file.path.endsWith('topics.json')) {
+                      topics = await loadItemsFromFile<Topic>(
+                          file.path, (json) => Topic.fromMap(json));
+                    } else if (file.path.endsWith('conversation.json')) {
+                      conversations = await loadItemsFromFile<Conversation>(
+                          file.path, (json) => Conversation.fromMap(json));
+                    } else if (file.path.endsWith('vocabulary.json')) {
+                      vocabularies = await loadItemsFromFile<Vocabulary>(
+                          file.path, (json) => Vocabulary.fromMap(json));
+                    } else if (file.path.endsWith('transcript.json')) {
+                      transcripts = await loadItemsFromFile<Transcript>(
+                          file.path, (json) => Transcript.fromMap(json));
+                    } else if (file.path.endsWith('audio.json')) {
+                      audios = await loadItemsFromFile<Audio>(
+                          file.path, (json) => Audio.fromMap(json, false));
+                    } else if (file.path.endsWith('audio_conversation.json')) {
+                      audio_conversations = await loadItemsFromFile<Audio>(
+                          file.path, (json) => Audio.fromMap(json, true));
+                    } else if (file.path.endsWith('spelling.json')) {
+                      spellings = await loadItemsFromFile<Spelling>(
+                          file.path, (json) => Spelling.fromMap(json));
+                    } else if (file.path.endsWith('examples.json')) {
+                      examples = await loadItemsFromFile<Example>(
+                          file.path, (json) => Example.fromMap(json));
+                    }
+                  }
                 }
-              }
-            }
-            if (topics?.isNotEmpty == true) {
-              await db.insertCategory(category);
-              // logger(idCategory);
+                if (topics?.isNotEmpty == true) {
+                  await db.insertCategory(category);
+                  // logger(idCategory);
 
-              for (var topic in topics!) {
-                var idTopicUpdate = topic.id;
-                topic.id = null;
-                Topic? topicCheck = await db.checkTopicExist(topic);
-                var idTopic;
-                if (topicCheck != null) {
-                  idTopic = topicCheck.id;
-                } else {
-                  idTopic = await db.insertTopic(topic);
-                }
+                  for (var topic in topics!) {
+                    var idTopicUpdate = topic.id;
+                    topic.id = null;
+                    Topic? topicCheck = await db.checkTopicExist(topic);
+                    var idTopic;
+                    if (topicCheck != null) {
+                      idTopic = topicCheck.id;
+                    } else {
+                      idTopic = await db.insertTopic(topic);
+                    }
 
-                // logger(idTopic);
+                    // logger(idTopic);
 
-                if (topic.type == TopicType.VOCABULARY.value) {
-                  await db.updateDataVocabulary(
-                      idTopicUpdate,
-                      idTopic,
-                      subTopics,
-                      vocabularies,
-                      audios,
-                      spellings,
-                      examples, (process) {
-                    sendPort.send(UpdateReponse(UpdateStatus.UPDATE,
-                        category: category, topic: topic, process: process));
-                  });
-                } else {
-                  await db.updateDataConversation(
-                      idTopicUpdate,
-                      idTopic,
-                      conversations,
-                      audio_conversations,
-                      transcripts, (process) {
-                    sendPort.send(UpdateReponse(UpdateStatus.UPDATE,
-                        category: category, topic: topic, process: process));
-                  });
+                    var rootFolder = '${request.folderPath}/${topic.category}';
+                    logger(rootFolder);
+                    logger(topic);
+                    isolate.compute(downloadResource, [
+                      topic.link_resource_default,
+                      rootFolder,
+                      '$rootFolder/resource_default_${topic.name}',
+                      request.token
+                    ]);
+
+                    if (topic.type == TopicType.VOCABULARY.value) {
+                      await db.updateDataVocabulary(
+                          idTopicUpdate,
+                          idTopic,
+                          subTopics,
+                          vocabularies,
+                          audios,
+                          spellings,
+                          examples, (process) {
+                        sendPort.send(UpdateReponse(UpdateStatus.UPDATE,
+                            category: category,
+                            topic: topic,
+                            process: process));
+                      });
+                    } else {
+                      await db.updateDataConversation(
+                          idTopicUpdate,
+                          idTopic,
+                          conversations,
+                          audio_conversations,
+                          transcripts, (process) {
+                        sendPort.send(UpdateReponse(UpdateStatus.UPDATE,
+                            category: category,
+                            topic: topic,
+                            process: process));
+                      });
+                    }
+                  }
                 }
               }
             }
           }
         }
+        fileDownload.delete();
+        folder.deleteSync(recursive: true);
+        sendPort.send(i + 1);
+      } catch (e) {
+        logger(e);
+        sendPort.send(UpdateReponse(UpdateStatus.ERROR));
+        return;
       }
-      // } catch (e) {
-      //   logger(e);
-      // }
-      fileDownload.delete();
-      folder.deleteSync(recursive: true);
-      pref.saveVersionUpdate(i + 1);
-      // } catch (e) {
-      //   logger(e);
-      // }
     }
+    sendPort.send(UpdateReponse(UpdateStatus.COMPLETE));
   }
-  sendPort.send(UpdateReponse(UpdateStatus.COMPLETE));
+}
+
+Future<void> downloadResource(List<dynamic> argument) async {
+  // try {
+  String url = argument[0];
+  String folderPath = argument[1];
+  String pathStore = argument[2];
+  var token = argument[3];
+
+  var directoryFile = Directory(pathStore);
+  if (await directoryFile.exists() == true) {
+    return;
+  }
+
+  BackgroundIsolateBinaryMessenger.ensureInitialized(token);
+
+  var directory = Directory(folderPath);
+  if (await directory.exists() == false) {
+    await directory.create();
+  }
+
+  final fileDownload = File('$pathStore.zip');
+  Dio dio = Dio();
+  await dio.download(url, fileDownload.path);
+  await ZipFile.extractToDirectory(
+    zipFile: fileDownload,
+    destinationDir: directory,
+  );
+  fileDownload.deleteSync(recursive: true);
+  // } catch (e) {
+  //   logger(e);
+  // }
 }
 
 FileSystemEntity? getFileByName(

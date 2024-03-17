@@ -8,6 +8,7 @@ import 'package:english_study/screen/splash/splash_screen.dart';
 import 'package:english_study/storage/preference.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'package:english_study/navigator.dart' as nav;
@@ -25,6 +26,8 @@ Future main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
+  _deleteCacheDir();
+
   await setupServiceLocator();
 
   var notification = getIt<NotificationManager>();
@@ -32,6 +35,14 @@ Future main() async {
       .scheduleDailyNotification(getIt<Preference>().dailyNotification());
 
   runApp(const MyApp());
+}
+
+Future<void> _deleteCacheDir() async {
+  final cacheDir = await getTemporaryDirectory();
+
+  if (cacheDir.existsSync()) {
+    cacheDir.deleteSync(recursive: true);
+  }
 }
 
 class MyApp extends StatefulWidget {

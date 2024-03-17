@@ -15,8 +15,10 @@ def create_connection(db_file):
 
         path_root = 'crawled/toeic'
 
-        convert_file_path(c)
-        conn.commit()
+        # convert_file_path(c)
+        # conn.commit()
+
+        create_resource_default(c)
 
         # move_file_to_assets(c,path_root,'toeic')
         # zip_topic(c,path_root,'toeic')
@@ -26,6 +28,86 @@ def create_connection(db_file):
     finally:
         if conn:
             conn.close()
+
+def create_resource_default(c):
+    path_assets_image = 'assets/image'
+    path_assets_audio = 'assets/audio'
+    root_folder = 'crawled/resource_default'
+    check_file_exist_or_makedir(root_folder)
+    categories = c.execute("SELECT * FROM category").fetchall()
+    for category in categories:
+        count = 0
+        key = category[0]
+        query = "SELECT * FROM topics where category='" + str(key) + "'"
+        print(query)
+        topics = c.execute(query).fetchall()
+        for topic in topics:
+            id_topic = topic[0]
+            topic_name = topic[1]
+            topic_image = topic[2]
+            category_name = topic[9]
+            print(id_topic)
+            print(topic_name)
+            print(category_name)
+            folder_category = root_folder + '/' + category_name
+            check_file_exist_or_makedir(folder_category)
+            folder_topic = folder_category + '/resource_default_' + topic_name
+            check_file_exist_or_makedir(folder_topic)
+            if topic_image is not None:
+                copy_file(path_assets_image,folder_topic,topic_image)
+            
+
+            sub_topics = c.execute('SELECT * FROM sub_topics where topic_id=' + str(id_topic)).fetchall()
+            for sub_topic in sub_topics:
+                sub_id = sub_topic[0]
+                sub_image = sub_topic[5]
+                if sub_image is not None:
+                    copy_file(path_assets_image,folder_topic,sub_image)
+                if(count > 0):
+                    continue
+                vocabularys = c.execute('SELECT * FROM vocabulary where sub_topic_id =' + str(sub_id)).fetchall()
+                for vocabulary in vocabularys:
+                    id = vocabulary[0]
+                    image = vocabulary[3]
+                    if image is not None:
+                        copy_file(path_assets_image,folder_topic,image)
+                    audios = c.execute('SELECT * FROM audio where vocabulary_id =' + str(id)).fetchall()
+                    for audio in audios:
+                        audio_file = audio[2]
+                        if audio_file is not None:
+                            copy_file(path_assets_audio,folder_topic,audio_file)
+                count += 1
+            conversations = c.execute('SELECT * FROM conversation where topic_id=' + str(id_topic)).fetchall()
+            for conversation in conversations:
+                if count > 5:
+                    break
+                id = conversation[0]
+                audios = c.execute('SELECT * FROM audio_conversation where conversation_id =' + str(id)).fetchall()
+                for audio in audios:
+                    audio_file = audio[2]
+                    if audio_file is not None:
+                        copy_file(path_assets_audio,folder_topic,audio_file)
+                count += 1
+
+def check_file_exist_or_makedir(path):
+    if not os.path.exists(path): 
+            os.makedirs(path)
+
+def copy_file(source_folder, destination_folder,file_name):
+    path = source_folder+'/'+file_name
+    if not os.path.exists(path):
+        return
+    if(os.path.exists(destination_folder + '/'+file_name)):
+        return
+    try:
+        shutil.move(path, destination_folder)
+        print(f"Đã sao chép tệp '{path}' thành công vào '{destination_folder}'.")
+    except FileNotFoundError:
+        print("Không tìm thấy tệp nguồn.")
+    except PermissionError:
+        print("Không có quyền truy cập để sao chép tệp.")
+    except Exception as e:
+        print(f"Lỗi không xác định: {e}")
 
 def convert_file_path(c):
     topics = c.execute("SELECT * FROM topics").fetchall()

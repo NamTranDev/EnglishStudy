@@ -15,7 +15,7 @@ class SplashViewModel {
     if (currentVersion < (updateVersion?.version ?? 0)) {
       getIt<AppMemory>().isHasUpdate.value = true;
       for (int i = currentVersion; i < (updateVersion?.version ?? 0); i++) {
-        var key = updateVersion?.urls?.getOrNull(i)?.key;
+        var key = updateVersion?.urls?.getOrNull(i)?.name;
         var db = getIt<DBProvider>();
         var isHasExistCategory = await db.checkCategoryExist(key);
         if (isHasExistCategory == true) {

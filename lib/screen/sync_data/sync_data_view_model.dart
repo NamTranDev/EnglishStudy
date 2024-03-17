@@ -15,7 +15,7 @@ class SyncDataViewModel {
 
     getDataBackgroundTask(argument, (status) {
       // logger(status);
-      
+
       _updateValue.value = status;
     });
   }

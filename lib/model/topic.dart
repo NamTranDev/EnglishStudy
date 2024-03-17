@@ -116,7 +116,7 @@ class Topic {
           : null,
       link_resource:
           map['link_topic'] != null ? map['link_topic'] as String : null,
-      link_resource_default: map['link_topic_resource'] != null
+      link_resource_default: map['link_topic_default'] != null
           ? map['link_topic_default'] as String
           : null,
       category: map['category'] != null ? map['category'] as String : null,

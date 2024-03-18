@@ -20,7 +20,7 @@ class Transcript {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'conversation_id': script,
+      'conversation_id': conversation_id,
       'script': script,
     };
   }

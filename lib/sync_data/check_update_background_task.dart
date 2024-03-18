@@ -23,7 +23,7 @@ Future<UpdateDataModel?> getUpdateVersion() async {
       logger(data);
       return data;
     }
-  } on DioError catch (e) {
+  } catch (e) {
     logger(e);
   }
   return null;

@@ -1,6 +1,8 @@
+import 'package:english_study/constants.dart';
 import 'package:english_study/model/update_data_model.dart';
 import 'package:english_study/model/update_response.dart';
 import 'package:english_study/model/update_status.dart';
+import 'package:english_study/restart_app.dart';
 import 'package:english_study/screen/sync_data/sync_data_view_model.dart';
 
 import 'package:flutter/material.dart';
@@ -25,16 +27,15 @@ class SyncDataScreen extends StatelessWidget {
                 builder: (context, viewmodel, child) {
               viewmodel.runSync(argument);
               return Container(
+                width: double.infinity,
+                height: double.infinity,
                 padding: EdgeInsets.all(20),
                 child: Center(
                   child: ValueListenableBuilder(
                       valueListenable: viewmodel.updateValue,
                       builder: (context, value, widget) {
                         if (value?.status == UpdateStatus.COMPLETE) {
-                          SchedulerBinding.instance
-                              .addPostFrameCallback((timeStamp) {
-                            Navigator.pop(context);
-                          });
+                          return buildComplete(context);
                         }
                         if (value?.status == UpdateStatus.ERROR) {
                           SchedulerBinding.instance
@@ -96,9 +97,38 @@ class SyncDataScreen extends StatelessWidget {
     );
   }
 
+  buildComplete(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Update Complete',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        ElevatedButton(
+          onPressed: () {
+            RestartWidget.restartApp(context);
+          },
+          style: ElevatedButton.styleFrom(
+              backgroundColor: maastricht_blue,
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10)),
+          child: Text(
+            "Restart App",
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(fontSize: 18, color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+
   buildSyncData(BuildContext context, UpdateReponse value) {
     return Column(
-      mainAxisSize: MainAxisSize.max,
       children: [
         Text(
           value.category?.title ?? '',

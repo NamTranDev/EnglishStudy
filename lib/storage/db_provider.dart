@@ -215,8 +215,7 @@ class DBProvider {
     return mapperConversation(db, res.first);
   }
 
-  Future<List<SubTopic>> getSubTopics(
-      String? topicId) async {
+  Future<List<SubTopic>> getSubTopics(String? topicId) async {
     final db = await _db;
     var res = await db
         .query(_SUB_TOPIC_TABLE, where: 'topic_id = ?', whereArgs: [topicId]);
@@ -899,6 +898,7 @@ WHERE topic_id = ${topic.id} and isLearnComplete = 0
     int index = 0;
     for (int i = 0; i < (conversationList?.length ?? 0); i++) {
       var conversation = conversationList?.getOrNull(i);
+      logger(conversation);
       if (conversation == null) continue;
       var idConversationUpdate = conversation.id;
       conversation.id = null;

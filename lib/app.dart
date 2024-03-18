@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:english_study/constants.dart';
 import 'package:english_study/notification/notification_manager.dart';
+import 'package:english_study/restart_app.dart';
 import 'package:english_study/screen/main/main_screen.dart';
 import 'package:english_study/screen/splash/splash_screen.dart';
 import 'package:english_study/storage/preference.dart';
@@ -34,7 +35,7 @@ Future main() async {
   notification
       .scheduleDailyNotification(getIt<Preference>().dailyNotification());
 
-  runApp(const MyApp());
+  runApp(RestartWidget(child: const MyApp()));
 }
 
 Future<void> _deleteCacheDir() async {

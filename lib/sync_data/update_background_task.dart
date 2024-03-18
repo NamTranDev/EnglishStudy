@@ -138,6 +138,9 @@ void backgroundTask(UpdateRequest request) async {
                     } else if (file.path.endsWith('topics.json')) {
                       topics = await loadItemsFromFile<Topic>(
                           file.path, (json) => Topic.fromMap(json));
+                    } else if (file.path.endsWith('audio_conversation.json')) {
+                      audio_conversations = await loadItemsFromFile<Audio>(
+                          file.path, (json) => Audio.fromMap(json, true));
                     } else if (file.path.endsWith('conversation.json')) {
                       conversations = await loadItemsFromFile<Conversation>(
                           file.path, (json) => Conversation.fromMap(json));
@@ -150,9 +153,6 @@ void backgroundTask(UpdateRequest request) async {
                     } else if (file.path.endsWith('audio.json')) {
                       audios = await loadItemsFromFile<Audio>(
                           file.path, (json) => Audio.fromMap(json, false));
-                    } else if (file.path.endsWith('audio_conversation.json')) {
-                      audio_conversations = await loadItemsFromFile<Audio>(
-                          file.path, (json) => Audio.fromMap(json, true));
                     } else if (file.path.endsWith('spelling.json')) {
                       spellings = await loadItemsFromFile<Spelling>(
                           file.path, (json) => Spelling.fromMap(json));

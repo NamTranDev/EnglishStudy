@@ -69,22 +69,40 @@ def create_resource_default(c):
                 for vocabulary in vocabularys:
                     id = vocabulary[0]
                     image = vocabulary[3]
+#                     update_query = """
+#     UPDATE vocabulary
+#     SET image_file_path = ?
+#     WHERE id = ?
+# """
+#                     c.execute(update_query, (category_name + '/' + 'resource_default_' + topic_name + '/' + image, id))
                     if image is not None:
                         copy_file(path_assets_image,folder_topic,image)
                     audios = c.execute('SELECT * FROM audio where vocabulary_id =' + str(id)).fetchall()
                     for audio in audios:
                         audio_file = audio[2]
+#                         update_query = """
+#     UPDATE audio
+#     SET audio_file_path = ?
+#     WHERE audio_file_name = ? and vocabulary_id = ?
+# """
+#                         c.execute(update_query, (category_name + '/' + 'resource_default_' + topic_name + '/' + audio_file,audio_file, id))
                         if audio_file is not None:
                             copy_file(path_assets_audio,folder_topic,audio_file)
                 count += 1
             conversations = c.execute('SELECT * FROM conversation where topic_id=' + str(id_topic)).fetchall()
             for conversation in conversations:
-                if count > 5:
+                if count > 4:
                     break
                 id = conversation[0]
                 audios = c.execute('SELECT * FROM audio_conversation where conversation_id =' + str(id)).fetchall()
                 for audio in audios:
                     audio_file = audio[2]
+#                     update_query = """
+#     UPDATE audio_conversation
+#     SET audio_file_path = ?
+#     WHERE audio_file_name = ? and conversation_id = ?
+# """
+#                     c.execute(update_query, (category_name + '/' + 'resource_default_' + topic_name + '/' + audio_file,audio_file, id))
                     if audio_file is not None:
                         copy_file(path_assets_audio,folder_topic,audio_file)
                 count += 1

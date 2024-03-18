@@ -1,17 +1,17 @@
 {
-	"version":2,
+	"version":1,
     "urls" : [
         {
             "name" : "update_CEFR_Wordlist",
-            "url" : "https://dl.dropboxusercontent.com/scl/fi/kknnaspqjvmsqns7juh1e/update_CEFR_Wordlist.zip?rlkey=nzn5hb1i8gjpbw3a0eg9dw4gq&dl=0"
+            "url" : "https://dl.dropboxusercontent.com/scl/fi/s6g8tr1j0ianztu2ovs6k/update_CEFR_Wordlist.zip?rlkey=hud46efzjlbwut2knk3ja94z4&dl=0"
         },
         {
             "name" : "update_helenadailyenglish",
-            "url" : "https://dl.dropboxusercontent.com/scl/fi/kw2p123drkgbt3v3idxdz/update_helenadailyenglish.zip?rlkey=3ww7pja2w1eebaedpakz1z6ox&dl=0"
+            "url" : "https://dl.dropboxusercontent.com/scl/fi/4wdtavauwaza5k6xarzzb/update_helenadailyenglish.zip?rlkey=z6vw2qz01dy2oojs16907v4w3&dl=0"
         },
         {
             "name" : "update_toeic",
-            "url" : "https://dl.dropboxusercontent.com/scl/fi/bw003yjzzduinemlm103m/update_toeic.zip?rlkey=1ox4ru6rqhmd9k0gg0gf9mpbf&dl=0"
+            "url" : "https://dl.dropboxusercontent.com/scl/fi/x96hvkyeyv6c9u38y11rg/update_toeic.zip?rlkey=6iovwhfzfl0ra9x29n30xegz1&dl=0"
         }
     ]
 }

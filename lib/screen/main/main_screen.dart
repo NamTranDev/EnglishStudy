@@ -1,5 +1,7 @@
+import 'package:english_study/ad_helper.dart';
 import 'package:english_study/constants.dart';
 import 'package:english_study/model/bottom_bar_item.dart';
+import 'package:english_study/reuse/component/banner_component.dart';
 import 'package:english_study/screen/main/bottom_bar_provider.dart';
 import 'package:english_study/screen/main/main_viewmodel.dart';
 import 'package:english_study/screen/main/tab/complete/complete_tab_viewmodel.dart';
@@ -8,6 +10,7 @@ import 'package:english_study/screen/main/tab/setting/setting_tab_viewmodel.dart
 import 'package:english_study/screen/main/tab/vocabulary/vocabulary_tab_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatelessWidget {
@@ -41,25 +44,35 @@ class MainScreen extends StatelessWidget {
         color: Colors.white,
         child: Consumer<MainViewModel>(
           builder: (context, viewmodel, _) {
-            return FutureBuilder(
-                future: viewmodel.checkTab(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text(
-                          "Something wrong with message: ${snapshot.error.toString()}"),
-                    );
-                  } else if (snapshot.connectionState == ConnectionState.done) {
-                    return ChangeNotifierProvider<BottomNavigationBarProvider>(
-                      create: (context) => BottomNavigationBarProvider(),
-                      builder: (context, child) => bodyMain(context, viewmodel),
-                    );
-                  } else {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                });
+            return Column(
+              children: [
+                Expanded(
+                  child: FutureBuilder(
+                      future: viewmodel.checkTab(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                                "Something wrong with message: ${snapshot.error.toString()}"),
+                          );
+                        } else if (snapshot.connectionState ==
+                            ConnectionState.done) {
+                          return ChangeNotifierProvider<
+                              BottomNavigationBarProvider>(
+                            create: (context) => BottomNavigationBarProvider(),
+                            builder: (context, child) =>
+                                bodyMain(context, viewmodel),
+                          );
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                      }),
+                ),
+                BannerComponent()
+              ],
+            );
           },
         ),
       ),

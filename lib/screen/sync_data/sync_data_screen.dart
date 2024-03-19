@@ -129,6 +129,7 @@ class SyncDataScreen extends StatelessWidget {
 
   buildSyncData(BuildContext context, UpdateReponse value) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           value.category?.title ?? '',
@@ -137,10 +138,6 @@ class SyncDataScreen extends StatelessWidget {
         SizedBox(
           height: 30,
         ),
-        // Text(
-        //   value.category?.description ?? '',
-        //   style: Theme.of(context).textTheme.bodySmall,
-        // ),
         Text(
           value.topic?.name ?? '',
           style: Theme.of(context).textTheme.bodySmall,

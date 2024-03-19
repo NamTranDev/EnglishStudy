@@ -11,6 +11,7 @@ import 'package:english_study/storage/memory.dart';
 import 'package:flutter/cupertino.dart';
 
 class MainViewModel with ChangeNotifier {
+
   late List<Widget> pages = [];
   late List<BottomBarItem> bottomBars = [];
 

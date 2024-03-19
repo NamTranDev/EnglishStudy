@@ -3,6 +3,7 @@ import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/reuse/check_complete_category.dart';
+import 'package:english_study/reuse/component/banner_component.dart';
 import 'package:english_study/reuse/component/download_banner_component.dart';
 import 'package:english_study/reuse/component/download_process_component.dart';
 import 'package:english_study/reuse/component/next_category_component.dart';
@@ -37,66 +38,71 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<TopicViewModel>(
-      builder: (context, viewmodel, child) {
-        _viewModel = viewmodel;
-        _viewModel.onShowGuideNextCategory = () {
-          // tooltipController.showTooltip();
-        };
-        // _viewModel.onLearnComplete = (topic) {
-        //   print('Learn Complete . Need show popup to select');
-        //   showDialog(
-        //     context: context,
-        //     builder: (BuildContext context) {
-        //       // return object of type Dialog
-        //       return AlertDialog(
-        //         title: new Text('Congratulations'),
-        //         content: new Text(
-        //             'You are excellent after completing this topic. Please continue to work hard to improve your English'),
-        //         actions: <Widget>[
-        //           // usually buttons at the bottom of the dialog
-        //           ElevatedButton(
-        //             child: Text('Close'),
-        //             onPressed: () {
-        //               Navigator.of(context).pop();
-        //               viewmodel.cancelNextCategory();
-        //             },
-        //           ),
-        //           ElevatedButton(
-        //             child: Text('Another Topic'),
-        //             onPressed: () {
-        //               Navigator.of(context).pop();
-        //               nextPickCategory(context, topic);
-        //             },
-        //           ),
-        //         ],
-        //       );
-        //     },
-        //   );
-        // };
-        _viewModel.downloadManager.onDownloadErrorListener = () {
-          showSnackBar(context, 'An error occurred during the download process',
-              iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
-        };
-        return FutureBuilder(
-          future:
-              viewmodel.initData(widget.category, widget.topics, widget.type),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                    "Something wrong with message: ${snapshot.error.toString()}"),
-              );
-            } else if (snapshot.hasData) {
-              return buildListTopic(snapshot.data);
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
+    return Column(
+      children: [
+        Expanded(child: Consumer<TopicViewModel>(
+          builder: (context, viewmodel, child) {
+            _viewModel = viewmodel;
+            _viewModel.onShowGuideNextCategory = () {
+              // tooltipController.showTooltip();
+            };
+            // _viewModel.onLearnComplete = (topic) {
+            //   print('Learn Complete . Need show popup to select');
+            //   showDialog(
+            //     context: context,
+            //     builder: (BuildContext context) {
+            //       // return object of type Dialog
+            //       return AlertDialog(
+            //         title: new Text('Congratulations'),
+            //         content: new Text(
+            //             'You are excellent after completing this topic. Please continue to work hard to improve your English'),
+            //         actions: <Widget>[
+            //           // usually buttons at the bottom of the dialog
+            //           ElevatedButton(
+            //             child: Text('Close'),
+            //             onPressed: () {
+            //               Navigator.of(context).pop();
+            //               viewmodel.cancelNextCategory();
+            //             },
+            //           ),
+            //           ElevatedButton(
+            //             child: Text('Another Topic'),
+            //             onPressed: () {
+            //               Navigator.of(context).pop();
+            //               nextPickCategory(context, topic);
+            //             },
+            //           ),
+            //         ],
+            //       );
+            //     },
+            //   );
+            // };
+            _viewModel.downloadManager.onDownloadErrorListener = () {
+              showSnackBar(context, 'An error occurred during the download process',
+                  iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
+            };
+            return FutureBuilder(
+              future:
+                  viewmodel.initData(widget.category, widget.topics, widget.type),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                        "Something wrong with message: ${snapshot.error.toString()}"),
+                  );
+                } else if (snapshot.hasData) {
+                  return buildListTopic(snapshot.data);
+                } else {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
+            );
           },
-        );
-      },
+        ),),
+        if(widget.hasBack) BannerComponent()
+      ],
     );
   }
 

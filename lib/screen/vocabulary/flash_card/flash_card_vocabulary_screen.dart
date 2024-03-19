@@ -193,7 +193,8 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                                           GameVocabularyScreen.routeName,
                                           arguments: (ModalRoute.of(context)
                                                   ?.settings
-                                                  .arguments as String?)
+                                                  .arguments as SubTopic?)
+                                              ?.id
                                               ?.toString());
                                       if (!_viewModel.nextScreen) {
                                         var isShowTooltipGuideGame = _viewModel

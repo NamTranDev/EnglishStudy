@@ -1,3 +1,5 @@
+import 'package:english_study/services/service_locator.dart';
+import 'package:english_study/storage/db_provider.dart';
 import 'package:flutter/material.dart';
 
 class RestartWidget extends StatefulWidget {
@@ -23,7 +25,6 @@ class _RestartWidgetState extends State<RestartWidget> {
       key = UniqueKey();
     });
   }
-
 
   @override
   Widget build(BuildContext context) {

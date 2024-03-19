@@ -4,6 +4,7 @@ import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/reuse/check_complete_category.dart';
+import 'package:english_study/reuse/component/banner_component.dart';
 import 'package:english_study/reuse/component/download_banner_component.dart';
 import 'package:english_study/reuse/component/game_button_component.dart';
 import 'package:english_study/reuse/component/header_title_component.dart';
@@ -37,89 +38,96 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SubTopicViewModel>(
-      builder: (context, viewmodel, child) {
-        _viewModel = viewmodel;
-        _viewModel.downloadManager.onDownloadErrorListener = () {
-          showSnackBar(context, 'An error occurred during the download process',
-              iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
-        };
-        _viewModel.onShowGuideNextCategory = () {
-          // tooltipController.showTooltip();
-        };
-        return FutureBuilder(
-          future: viewmodel.initData(widget.topic, widget.fromTab),
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                    "Something wrong with message: ${snapshot.error.toString()}"),
+    return Column(
+      children: [
+        Expanded(
+          child: Consumer<SubTopicViewModel>(
+            builder: (context, viewmodel, child) {
+              _viewModel = viewmodel;
+              _viewModel.downloadManager.onDownloadErrorListener = () {
+                showSnackBar(context, 'An error occurred during the download process',
+                    iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
+              };
+              _viewModel.onShowGuideNextCategory = () {
+                // tooltipController.showTooltip();
+              };
+              return FutureBuilder(
+                future: viewmodel.initData(widget.topic, widget.fromTab),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                          "Something wrong with message: ${snapshot.error.toString()}"),
+                    );
+                  } else if (snapshot.hasData) {
+                    return Column(
+                      children: [
+                        HeaderTitleComponent(
+                          title: widget.topic?.name,
+                        ),
+                        ValueListenableBuilder(
+                          valueListenable: _viewModel.showComplete,
+                          builder: (context, value, child) {
+                            return value
+                                ? NextCategoryComponent(
+                                    text: 'Learn Another Topic',
+                                    onNextCategoryClick: () {
+                                      nextPickCategory(context, widget.topic);
+                                    },
+                                  )
+                                : SizedBox();
+                          },
+                        ),
+                        ValueListenableBuilder(
+                          valueListenable: _viewModel.downloadManager.processItems,
+                          builder: (context, value, child) {
+                            FileInfo? fileInfo = value?[widget.topic?.link_resource];
+                            return fileInfo != null &&
+                                    fileInfo.status != DownloadStatus.COMPLETE
+                                ? Card(
+                                    margin: EdgeInsets.only(left: 8, right: 8),
+                                    elevation: 5,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 5, horizontal: 10),
+                                      child: DownloadBannerComponent(
+                                        text: 'Download this lession',
+                                        process: fileInfo.progress,
+                                        onDownloadClick: () {
+                                          _viewModel.downloadManager
+                                              .download(widget.topic?.link_resource);
+                                        },
+                                      ),
+                                    ),
+                                  )
+                                : SizedBox();
+                          },
+                        ),
+                        Expanded(
+                            child: ListView.builder(
+                          padding: EdgeInsets.only(top: 20),
+                          itemBuilder: (context, index) {
+                            // print(snapshot.data?.length);
+                            // print(index);
+                            // print(isLast);
+                            return widgetSubTopicItem(snapshot.data, index);
+                          },
+                          itemCount: snapshot.data?.length ?? 0,
+                        )),
+                      ],
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
               );
-            } else if (snapshot.hasData) {
-              return Column(
-                children: [
-                  HeaderTitleComponent(
-                    title: widget.topic?.name,
-                  ),
-                  ValueListenableBuilder(
-                    valueListenable: _viewModel.showComplete,
-                    builder: (context, value, child) {
-                      return value
-                          ? NextCategoryComponent(
-                              text: 'Learn Another Topic',
-                              onNextCategoryClick: () {
-                                nextPickCategory(context, widget.topic);
-                              },
-                            )
-                          : SizedBox();
-                    },
-                  ),
-                  ValueListenableBuilder(
-                    valueListenable: _viewModel.downloadManager.processItems,
-                    builder: (context, value, child) {
-                      FileInfo? fileInfo = value?[widget.topic?.link_resource];
-                      return fileInfo != null &&
-                              fileInfo.status != DownloadStatus.COMPLETE
-                          ? Card(
-                              margin: EdgeInsets.only(left: 8, right: 8),
-                              elevation: 5,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 5, horizontal: 10),
-                                child: DownloadBannerComponent(
-                                  text: 'Download this lession',
-                                  process: fileInfo.progress,
-                                  onDownloadClick: () {
-                                    _viewModel.downloadManager
-                                        .download(widget.topic?.link_resource);
-                                  },
-                                ),
-                              ),
-                            )
-                          : SizedBox();
-                    },
-                  ),
-                  Expanded(
-                      child: ListView.builder(
-                    padding: EdgeInsets.only(top: 20),
-                    itemBuilder: (context, index) {
-                      // print(snapshot.data?.length);
-                      // print(index);
-                      // print(isLast);
-                      return widgetSubTopicItem(snapshot.data, index);
-                    },
-                    itemCount: snapshot.data?.length ?? 0,
-                  )),
-                ],
-              );
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
-        );
-      },
+            },
+          ),
+        ),
+        if(widget.fromTab == false) const BannerComponent()
+      ],
     );
   }
 

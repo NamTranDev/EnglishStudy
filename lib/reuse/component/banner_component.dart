@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class BannerComponent extends StatefulWidget {
-  const BannerComponent({super.key});
+  final AdController? controller;
+
+  const BannerComponent({super.key, this.controller});
 
   @override
   State<BannerComponent> createState() => _BannerComponentState();
@@ -16,6 +18,17 @@ class _BannerComponentState extends State<BannerComponent> {
   @override
   void initState() {
     super.initState();
+
+    widget.controller?.addListener(() {
+      switch (widget.controller?.adInterstitialStatus) {
+        case 1:
+          _loadInterstitialAd();
+          break;
+        case 2:
+          _interstitialAd?.show();
+          break;
+      }
+    });
 
     BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
@@ -33,8 +46,6 @@ class _BannerComponentState extends State<BannerComponent> {
         },
       ),
     ).load();
-
-    // _loadInterstitialAd();
   }
 
   void _loadInterstitialAd() {
@@ -44,11 +55,12 @@ class _BannerComponentState extends State<BannerComponent> {
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (ad) {
           ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) {},
+            onAdDismissedFullScreenContent: (ad) {
+              widget.controller?.refresh();
+            },
           );
 
           _interstitialAd = ad;
-          _interstitialAd?.show();
         },
         onAdFailedToLoad: (err) {
           debugPrint('Failed to load an interstitial ad: ${err.message}');
@@ -60,7 +72,7 @@ class _BannerComponentState extends State<BannerComponent> {
   @override
   Widget build(BuildContext context) {
     return _bannerAd == null
-        ? SizedBox()
+        ? const SizedBox()
         : SizedBox(
             width: _bannerAd!.size.width.toDouble(),
             height: _bannerAd!.size.height.toDouble(),
@@ -73,5 +85,23 @@ class _BannerComponentState extends State<BannerComponent> {
     _bannerAd?.dispose();
     _interstitialAd?.dispose();
     super.dispose();
+  }
+}
+
+class AdController extends ChangeNotifier {
+  int adInterstitialStatus = 0;
+
+  void loadInterstitial() {
+    adInterstitialStatus = 1;
+    notifyListeners();
+  }
+
+  void showInterstitial() {
+    adInterstitialStatus = 2;
+    notifyListeners();
+  }
+
+  void refresh() {
+    adInterstitialStatus = 0;
   }
 }

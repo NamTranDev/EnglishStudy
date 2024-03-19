@@ -24,6 +24,7 @@ import 'package:english_study/utils/extension.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<DBProvider> initDBProvider(String folderPath, ByteData assetByte) async {
   DBProvider dbProvider = DBProvider._(folderPath, assetByte);
@@ -57,6 +58,15 @@ class DBProvider {
   }
 
   Future<void> initDB() async {
+    databaseFactoryOrNull = null;
+    if (Platform.isWindows || Platform.isLinux) {
+      // Initialize FFI
+      sqfliteFfiInit();
+    }
+    // Change the default factory. On iOS/Android, if not using `sqlite_flutter_lib` you can forget
+    // this step, it will use the sqlite version available on the system.
+    databaseFactory = databaseFactoryFfi;
+
     var path = join(folderPath, "english.db");
 
     // deleteDatabase(path);
@@ -703,6 +713,8 @@ class DBProvider {
 
   Future<bool> hasCategoryToLearn(int type) async {
     final db = await _db;
+    var test = await getAllTopics();
+    logger(test);
     return (Sqflite.firstIntValue(await db
                 .rawQuery("""SELECT COUNT(DISTINCT c."key") AS countCategories
 FROM ${_CATEGORY_TABLE} c

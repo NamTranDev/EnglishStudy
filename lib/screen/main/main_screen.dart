@@ -9,14 +9,20 @@ import 'package:english_study/screen/main/tab/listen/listen_tab_viewmodel.dart';
 import 'package:english_study/screen/main/tab/setting/setting_tab_viewmodel.dart';
 import 'package:english_study/screen/main/tab/vocabulary/vocabulary_tab_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
   static String routeName = '/main';
   const MainScreen({super.key});
 
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -44,35 +50,33 @@ class MainScreen extends StatelessWidget {
         color: Colors.white,
         child: Consumer<MainViewModel>(
           builder: (context, viewmodel, _) {
-            return Column(
-              children: [
-                Expanded(
-                  child: FutureBuilder(
-                      future: viewmodel.checkTab(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          return Center(
-                            child: Text(
-                                "Something wrong with message: ${snapshot.error.toString()}"),
-                          );
-                        } else if (snapshot.connectionState ==
-                            ConnectionState.done) {
-                          return ChangeNotifierProvider<
-                              BottomNavigationBarProvider>(
-                            create: (context) => BottomNavigationBarProvider(),
-                            builder: (context, child) =>
-                                bodyMain(context, viewmodel),
-                          );
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-                      }),
-                ),
-                BannerComponent()
-              ],
-            );
+            return FutureBuilder(
+                future: viewmodel.checkTab(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            "Something wrong with message: ${snapshot.error.toString()}"),
+                        ElevatedButton(
+                            onPressed: () {
+                              setState(() {});
+                            },
+                            child: Text('Retry'))
+                      ],
+                    );
+                  } else if (snapshot.connectionState == ConnectionState.done) {
+                    return ChangeNotifierProvider<BottomNavigationBarProvider>(
+                      create: (context) => BottomNavigationBarProvider(),
+                      builder: (context, child) => bodyMain(context, viewmodel),
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                });
           },
         ),
       ),
@@ -83,10 +87,17 @@ class MainScreen extends StatelessWidget {
     var provider = Provider.of<BottomNavigationBarProvider>(context);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: PageView(
-        controller: provider.pageController,
-        physics: const NeverScrollableScrollPhysics(),
-        children: viewModel.pages,
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView(
+              controller: provider.pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: viewModel.pages,
+            ),
+          ),
+          BannerComponent()
+        ],
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(

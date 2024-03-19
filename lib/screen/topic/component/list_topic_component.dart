@@ -101,7 +101,7 @@ class _ListTopicComponentState extends State<ListTopicComponent> {
             );
           },
         ),),
-        if(widget.hasBack) BannerComponent()
+        if(widget.hasBack) const BannerComponent()
       ],
     );
   }

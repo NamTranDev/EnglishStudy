@@ -3,6 +3,7 @@ import 'package:english_study/model/update_data_model.dart';
 import 'package:english_study/model/update_response.dart';
 import 'package:english_study/model/update_status.dart';
 import 'package:english_study/restart_app.dart';
+import 'package:english_study/screen/main/main_screen.dart';
 import 'package:english_study/screen/sync_data/sync_data_view_model.dart';
 
 import 'package:flutter/material.dart';

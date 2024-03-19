@@ -3,6 +3,7 @@ import 'package:english_study/screen/main/main_screen.dart';
 import 'package:english_study/screen/splash/splash_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -17,7 +18,7 @@ class SplashScreen extends StatelessWidget {
       builder: (context, child) {
         return Scaffold(
           backgroundColor: sky_blue,
-          body: SafeArea(child: Consumer<SplashViewModel>(
+          body: Consumer<SplashViewModel>(
             builder: (context, viewmodel, child) {
               return FutureBuilder(
                 future: viewmodel.initialize(),
@@ -39,7 +40,7 @@ class SplashScreen extends StatelessWidget {
                 },
               );
             },
-          )),
+          ),
         );
       },
     );

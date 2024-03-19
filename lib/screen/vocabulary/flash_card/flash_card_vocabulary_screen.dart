@@ -3,6 +3,7 @@ import 'package:english_study/constants.dart';
 import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/reuse/component/back_screen_component.dart';
+import 'package:english_study/reuse/component/banner_component.dart';
 import 'package:english_study/reuse/component/game_button_component.dart';
 import 'package:english_study/screen/vocabulary/flash_card/component/button_falling.dart';
 import 'package:english_study/screen/vocabulary/flash_card/component/example_component.dart';
@@ -45,29 +46,36 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
         body: SafeArea(
           child: BackScreenComponent(
             icon_asset: 'assets/icons/ic_close.svg',
-            child: Consumer<FlashCardViewModel>(
-              builder: (context, value, child) {
-                _viewModel = value;
-                return FutureBuilder(
-                  future: value.vocabularies(
-                      ModalRoute.of(context)?.settings.arguments as SubTopic?),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text(
-                            "Something wrong with message: ${snapshot.error.toString()}"),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Consumer<FlashCardViewModel>(
+                    builder: (context, value, child) {
+                      _viewModel = value;
+                      return FutureBuilder(
+                        future: value.vocabularies(
+                            ModalRoute.of(context)?.settings.arguments as SubTopic?),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text(
+                                  "Something wrong with message: ${snapshot.error.toString()}"),
+                            );
+                          } else if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else {
+                            return buildCaroselCard(snapshot.data);
+                          }
+                        },
                       );
-                    } else if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-                      return buildCaroselCard(snapshot.data);
-                    }
-                  },
-                );
-              },
+                    },
+                  ),
+                ),
+                const BannerComponent()
+              ],
             ),
           ),
         ),

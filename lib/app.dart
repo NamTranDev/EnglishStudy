@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:english_study/constants.dart';
 import 'package:english_study/notification/notification_manager.dart';
 import 'package:english_study/restart_app.dart';
-import 'package:english_study/screen/main/main_screen.dart';
 import 'package:english_study/screen/splash/splash_screen.dart';
 import 'package:english_study/storage/preference.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -16,14 +16,6 @@ import 'package:english_study/navigator.dart' as nav;
 import 'package:english_study/services/service_locator.dart';
 
 Future main() async {
-  databaseFactoryOrNull = null;
-  if (Platform.isWindows || Platform.isLinux) {
-    // Initialize FFI
-    sqfliteFfiInit();
-  }
-  // Change the default factory. On iOS/Android, if not using `sqlite_flutter_lib` you can forget
-  // this step, it will use the sqlite version available on the system.
-  databaseFactory = databaseFactoryFfi;
 
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -34,6 +26,13 @@ Future main() async {
   var notification = getIt<NotificationManager>();
   notification
       .scheduleDailyNotification(getIt<Preference>().dailyNotification());
+
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
 
   runApp(RestartWidget(child: const MyApp()));
 }

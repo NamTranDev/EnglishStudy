@@ -21,11 +21,11 @@ class GameVocabularyScreen extends StatefulWidget {
 }
 
 class _GameVocabularyScreenState extends State<GameVocabularyScreen> {
-  late GameVocabularyViewModel _viewModel;
+  GameVocabularyViewModel? _viewModel;
 
   @override
   void dispose() {
-    _viewModel.dispose();
+    _viewModel?.dispose();
     super.dispose();
   }
 
@@ -38,13 +38,13 @@ class _GameVocabularyScreenState extends State<GameVocabularyScreen> {
           value: GameVocabularyViewModel(
               ModalRoute.of(context)?.settings.arguments as String?),
           child: BackScreenComponent(
-            child: Column(
-              children: [
-                Expanded(
-                  child: Consumer<GameVocabularyViewModel>(
-                    builder: (context, viewModel, child) {
-                      _viewModel = viewModel;
-                      return StreamBuilder(
+            child: Consumer<GameVocabularyViewModel>(
+              builder: (context, viewModel, child) {
+                _viewModel = viewModel;
+                return Column(
+                  children: [
+                    Expanded(
+                      child: StreamBuilder(
                         stream: viewModel.gameVocabularyList,
                         builder: (context, snapshot) {
                           if (snapshot.hasError) {
@@ -60,7 +60,7 @@ class _GameVocabularyScreenState extends State<GameVocabularyScreen> {
                                 GameType? type = value?.type;
                                 type ??= Provider.of<GameVocabularyViewModel>(context)
                                     .randomGameType();
-                  
+                      
                                 switch (type) {
                                   case GameType.InputAudioToWord:
                                   case GameType.InputDefinationToWord:
@@ -71,7 +71,7 @@ class _GameVocabularyScreenState extends State<GameVocabularyScreen> {
                                       gameVocabularyModel: value,
                                       gameType: type,
                                     );
-                  
+                      
                                   default:
                                     return ChooseAnswerComponent(
                                       gameVocabularyModel: value,
@@ -86,12 +86,12 @@ class _GameVocabularyScreenState extends State<GameVocabularyScreen> {
                             );
                           }
                         },
-                      );
-                    },
-                  ),
-                ),
-                const BannerComponent()
-              ],
+                      ),
+                    ),
+                    BannerComponent(controller: _viewModel?.adController,)
+                  ],
+                );
+              },
             ),
           ),
         ),

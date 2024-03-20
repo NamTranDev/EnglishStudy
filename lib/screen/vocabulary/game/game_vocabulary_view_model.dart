@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:english_study/model/game_answer_status.dart';
 import 'package:english_study/model/game_type.dart';
 import 'package:english_study/model/game_vocabulary_model.dart';
+import 'package:english_study/reuse/ad_interstitial_view_model.dart';
 import 'package:english_study/reuse/audio_view_model.dart';
 import 'package:english_study/reuse/note_viewmodel.dart';
 import 'package:english_study/services/service_locator.dart';
@@ -11,7 +12,8 @@ import 'package:english_study/storage/db_provider.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 
-class GameVocabularyViewModel with AudioViewModel, NoteViewModel {
+class GameVocabularyViewModel
+    with AudioViewModel, NoteViewModel, AdInterstitialViewModel {
   final String? subTopicId;
 
   final ValueNotifier<GameVocabularyModel?> _vocabulary =
@@ -74,6 +76,7 @@ class GameVocabularyViewModel with AudioViewModel, NoteViewModel {
   }
 
   void previousQuestion() async {
+    showAd();
     _index = _index - 1;
     if (_index < 0) {
       _index = 0;
@@ -82,6 +85,7 @@ class GameVocabularyViewModel with AudioViewModel, NoteViewModel {
   }
 
   void nextQuestion() async {
+    showAd();
     _index = _index + 1;
     if (_index < (_listGameVocabulary?.length ?? 0)) {
       _initQuestionInfo();
@@ -91,6 +95,7 @@ class GameVocabularyViewModel with AudioViewModel, NoteViewModel {
   }
 
   void dispose() {
+    disposeAd();
     disposeAudio();
     _gameVocabularyListController.close();
   }

@@ -33,7 +33,7 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
 
   @override
   void dispose() {
-    _viewModel.disposeAudio();
+    _viewModel.dispose();
     super.dispose();
   }
 
@@ -46,15 +46,16 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
         body: SafeArea(
           child: BackScreenComponent(
             icon_asset: 'assets/icons/ic_close.svg',
-            child: Column(
-              children: [
-                Expanded(
-                  child: Consumer<FlashCardViewModel>(
-                    builder: (context, value, child) {
-                      _viewModel = value;
-                      return FutureBuilder(
-                        future: value.vocabularies(
-                            ModalRoute.of(context)?.settings.arguments as SubTopic?),
+            child: Consumer<FlashCardViewModel>(
+              builder: (context, value, child) {
+                _viewModel = value;
+                return Column(
+                  children: [
+                    Expanded(
+                      child: FutureBuilder(
+                        future: value.vocabularies(ModalRoute.of(context)
+                            ?.settings
+                            .arguments as SubTopic?),
                         builder: (context, snapshot) {
                           if (snapshot.hasError) {
                             return Center(
@@ -70,12 +71,14 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                             return buildCaroselCard(snapshot.data);
                           }
                         },
-                      );
-                    },
-                  ),
-                ),
-                const BannerComponent()
-              ],
+                      ),
+                    ),
+                    BannerComponent(
+                      controller: _viewModel.adController,
+                    )
+                  ],
+                );
+              },
             ),
           ),
         ),

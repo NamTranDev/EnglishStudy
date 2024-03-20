@@ -1,18 +1,20 @@
 import 'package:english_study/model/conversation.dart';
 import 'package:english_study/model/progress_audio.dart';
+import 'package:english_study/reuse/ad_interstitial_view_model.dart';
 import 'package:english_study/reuse/audio_view_model.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 
-class ConversationViewModel with AudioViewModel {
+class ConversationViewModel with AudioViewModel, AdInterstitialViewModel {
   final ValueNotifier<ProgressBarAudio?> _progressStatus =
       ValueNotifier<ProgressBarAudio?>(null);
   ValueNotifier<ProgressBarAudio?> get progressStatus => _progressStatus;
 
   Future<Conversation?> conversationDetail(Conversation? _conversation) async {
     var db = getIt<DBProvider>();
+    showAd();
     var conversation =
         _conversation?.audios != null && _conversation?.transcript != null
             ? _conversation
@@ -46,5 +48,10 @@ class ConversationViewModel with AudioViewModel {
     db.syncConversation(id);
     audioPlayer.pause();
     audioPlayer.seek(Duration.zero);
+  }
+
+  void dispose() {
+    disposeAd();
+    disposeAudio();
   }
 }

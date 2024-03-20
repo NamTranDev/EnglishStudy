@@ -1,4 +1,5 @@
 import 'package:english_study/model/sub_topic.dart';
+import 'package:english_study/reuse/ad_interstitial_view_model.dart';
 import 'package:english_study/reuse/note_viewmodel.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/reuse/audio_view_model.dart';
@@ -8,7 +9,8 @@ import 'package:english_study/storage/preference.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 
-class FlashCardViewModel with AudioViewModel, NoteViewModel {
+class FlashCardViewModel
+    with AudioViewModel, NoteViewModel, AdInterstitialViewModel {
   final ValueNotifier<String?> _indexVocabulary = ValueNotifier<String?>(null);
   ValueNotifier<String?> get indexVocabulary => _indexVocabulary;
 
@@ -40,6 +42,7 @@ class FlashCardViewModel with AudioViewModel, NoteViewModel {
   }
 
   void updateIndexVocabulary(String index) {
+    showAd(max: 5);
     _indexVocabulary.value = index;
   }
 
@@ -59,5 +62,10 @@ class FlashCardViewModel with AudioViewModel, NoteViewModel {
     }
     var pref = getIt<Preference>();
     return pref.isGuideLearnWithGame();
+  }
+
+  void dispose() {
+    disposeAd();
+    disposeAudio();
   }
 }

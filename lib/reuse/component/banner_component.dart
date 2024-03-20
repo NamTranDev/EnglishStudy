@@ -20,14 +20,7 @@ class _BannerComponentState extends State<BannerComponent> {
     super.initState();
 
     widget.controller?.addListener(() {
-      switch (widget.controller?.adInterstitialStatus) {
-        case 1:
-          _loadInterstitialAd();
-          break;
-        case 2:
-          _interstitialAd?.show();
-          break;
-      }
+      _interstitialAd?.show();
     });
 
     BannerAd(
@@ -46,6 +39,8 @@ class _BannerComponentState extends State<BannerComponent> {
         },
       ),
     ).load();
+
+    _loadInterstitialAd();
   }
 
   void _loadInterstitialAd() {
@@ -56,7 +51,8 @@ class _BannerComponentState extends State<BannerComponent> {
         onAdLoaded: (ad) {
           ad.fullScreenContentCallback = FullScreenContentCallback(
             onAdDismissedFullScreenContent: (ad) {
-              widget.controller?.refresh();
+              _interstitialAd = null;
+              _loadInterstitialAd();
             },
           );
 
@@ -91,17 +87,8 @@ class _BannerComponentState extends State<BannerComponent> {
 class AdController extends ChangeNotifier {
   int adInterstitialStatus = 0;
 
-  void loadInterstitial() {
-    adInterstitialStatus = 1;
-    notifyListeners();
-  }
-
   void showInterstitial() {
-    adInterstitialStatus = 2;
+    adInterstitialStatus += 1;
     notifyListeners();
-  }
-
-  void refresh() {
-    adInterstitialStatus = 0;
   }
 }

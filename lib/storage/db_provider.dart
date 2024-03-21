@@ -58,14 +58,12 @@ class DBProvider {
   }
 
   Future<void> initDB() async {
-    databaseFactoryOrNull = null;
-    if (Platform.isWindows || Platform.isLinux) {
+    if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       // Initialize FFI
       sqfliteFfiInit();
+
+      databaseFactory = databaseFactoryFfi;
     }
-    // Change the default factory. On iOS/Android, if not using `sqlite_flutter_lib` you can forget
-    // this step, it will use the sqlite version available on the system.
-    databaseFactory = databaseFactoryFfi;
 
     var path = join(folderPath, "english.db");
 
@@ -76,7 +74,9 @@ class DBProvider {
     if (!exists) {
       try {
         await Directory(dirname(path)).create(recursive: true);
-      } catch (_) {}
+      } catch (e) {
+        logger(e);
+      }
 
       List<int> bytes = assetByte.buffer
           .asUint8List(assetByte.offsetInBytes, assetByte.lengthInBytes);

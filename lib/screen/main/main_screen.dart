@@ -1,4 +1,3 @@
-import 'package:english_study/ad_helper.dart';
 import 'package:english_study/constants.dart';
 import 'package:english_study/model/bottom_bar_item.dart';
 import 'package:english_study/reuse/component/banner_component.dart';
@@ -9,9 +8,7 @@ import 'package:english_study/screen/main/tab/listen/listen_tab_viewmodel.dart';
 import 'package:english_study/screen/main/tab/setting/setting_tab_viewmodel.dart';
 import 'package:english_study/screen/main/tab/vocabulary/vocabulary_tab_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {

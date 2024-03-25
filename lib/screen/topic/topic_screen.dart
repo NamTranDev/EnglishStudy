@@ -1,13 +1,9 @@
-import 'dart:io';
 
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/screen/topic/argument.dart';
 import 'package:english_study/screen/topic/component/list_topic_component.dart';
 import 'package:english_study/screen/topic/topic_view_model.dart';
-import 'package:english_study/storage/memory.dart';
 import 'package:english_study/reuse/component/back_screen_component.dart';
-import 'package:english_study/services/service_locator.dart';
-import 'package:english_study/storage/preference.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

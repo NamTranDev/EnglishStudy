@@ -7,8 +7,6 @@ import 'package:english_study/reuse/component/banner_component.dart';
 import 'package:english_study/reuse/component/download_banner_component.dart';
 import 'package:english_study/reuse/component/download_process_component.dart';
 import 'package:english_study/reuse/component/next_category_component.dart';
-import 'package:english_study/screen/main/bottom_bar_provider.dart';
-import 'package:english_study/screen/main/main_screen.dart';
 import 'package:english_study/screen/vocabulary/sub_topic/sub_topic_screen.dart';
 import 'package:english_study/screen/topic/topic_view_model.dart';
 import 'package:english_study/utils/extension.dart';

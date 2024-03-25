@@ -1,20 +1,15 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:english_study/constants.dart';
 import 'package:english_study/download/download_manager.dart';
-import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
 import 'package:english_study/logger.dart';
 import 'package:english_study/reuse/complete_category_view_model.dart';
-import 'package:english_study/storage/memory.dart';
 import 'package:english_study/model/topic.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/db_provider.dart';
-import 'package:english_study/storage/preference.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 
 class TopicViewModel with CompleteCategoryViewModel {
   final ValueNotifier<int> _updateLessionStatus = ValueNotifier<int>(0);

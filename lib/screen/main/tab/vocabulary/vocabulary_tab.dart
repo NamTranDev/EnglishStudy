@@ -1,16 +1,9 @@
-import 'package:english_study/download/download_manager.dart';
 import 'package:english_study/model/topic_type.dart';
-import 'package:english_study/model/topic.dart';
-import 'package:english_study/model/init_screen_tab.dart';
 import 'package:english_study/screen/category/category_component.dart';
 import 'package:english_study/screen/main/tab/vocabulary/vocabulary_tab_viewmodel.dart';
 import 'package:english_study/screen/vocabulary/sub_topic/sub_topic_screen.dart';
 import 'package:english_study/screen/topic/topic_screen.dart';
-import 'package:english_study/services/service_locator.dart';
-import 'package:english_study/storage/db_provider.dart';
-import 'package:english_study/storage/preference.dart';
 import 'package:english_study/utils/extension.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,7 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:english_study/notification/notification_model.dart';
 import 'package:english_study/services/service_locator.dart';
@@ -13,6 +12,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:english_study/notification/received_notification.dart';
 

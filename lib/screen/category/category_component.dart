@@ -1,12 +1,6 @@
 import 'package:english_study/constants.dart';
 import 'package:english_study/model/category.dart';
-import 'package:english_study/model/topic_type.dart';
-import 'package:english_study/model/topic.dart';
 import 'package:english_study/screen/category/category_view_model.dart';
-import 'package:english_study/screen/vocabulary/game/game_vocabulary_view_model.dart';
-import 'package:english_study/services/service_locator.dart';
-import 'package:english_study/storage/db_provider.dart';
-import 'package:english_study/storage/preference.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

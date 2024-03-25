@@ -1,5 +1,4 @@
 import 'package:english_study/constants.dart';
-import 'package:english_study/logger.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/reuse/component/note_component.dart';

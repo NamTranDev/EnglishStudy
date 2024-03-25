@@ -1,5 +1,4 @@
 import 'package:english_study/constants.dart';
-import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/screen/vocabulary/flash_card/component/example_component.dart';
 import 'package:english_study/screen/vocabulary/flash_card/component/vocabulary_component.dart';
@@ -7,7 +6,6 @@ import 'package:english_study/screen/vocabulary/game/game_vocabulary_view_model.
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class WidgetAfterGame extends StatelessWidget {

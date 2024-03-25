@@ -13,8 +13,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:english_study/navigator.dart' as nav;
 import 'package:english_study/services/service_locator.dart';
 
-Future main() async {
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   _deleteCacheDir();
@@ -60,6 +61,8 @@ class _MyAppState extends State<MyApp> {
       theme: themeInfo,
       initialRoute: SplashScreen.routeName,
       routes: nav.routes,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       builder: EasyLoading.init(),
     );
   }

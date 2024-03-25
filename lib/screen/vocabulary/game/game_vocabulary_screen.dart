@@ -1,15 +1,10 @@
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:english_study/constants.dart';
 import 'package:english_study/model/game_type.dart';
-import 'package:english_study/model/game_vocabulary_model.dart';
 import 'package:english_study/reuse/component/back_screen_component.dart';
 import 'package:english_study/reuse/component/banner_component.dart';
 import 'package:english_study/screen/vocabulary/game/component/choose_answer_component.dart';
 import 'package:english_study/screen/vocabulary/game/component/input_answer_component.dart';
 import 'package:english_study/screen/vocabulary/game/game_vocabulary_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
 
 class GameVocabularyScreen extends StatefulWidget {

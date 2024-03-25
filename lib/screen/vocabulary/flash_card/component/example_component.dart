@@ -1,7 +1,9 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/localization/generated/l10n.dart';
 import 'package:english_study/model/example.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/reuse/component/note_component.dart';
+import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +22,7 @@ class ExampleComponent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Example>? examples = vocabulary?.examples;
+    Localize _localize = getIt<Localize>();
     return Card(
       elevation: isGame ? 0 : 5,
       shape: RoundedRectangleBorder(
@@ -47,7 +50,7 @@ class ExampleComponent extends StatelessWidget {
                             children: [
                               TextSpan(
                                 text: example?.sentence ?? '',
-                                style: Theme.of(context).textTheme.bodySmall,
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                               TextSpan(text: '  '),
                               if (example != null)
@@ -105,7 +108,7 @@ class ExampleComponent extends StatelessWidget {
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    'View Vocabulary',
+                    _localize.example_component_text_view_vocabulary,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),

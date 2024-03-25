@@ -42,8 +42,10 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
             builder: (context, viewmodel, child) {
               _viewModel = viewmodel;
               _viewModel.downloadManager.onDownloadErrorListener = () {
-                showSnackBar(context, 'An error occurred during the download process',
-                    iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
+                showSnackBar(
+                    context, 'An error occurred during the download process',
+                    iconSvg: 'assets/icons/ic_error.svg',
+                    iconSvgColor: red_violet);
               };
               _viewModel.onShowGuideNextCategory = () {
                 // tooltipController.showTooltip();
@@ -76,9 +78,11 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
                           },
                         ),
                         ValueListenableBuilder(
-                          valueListenable: _viewModel.downloadManager.processItems,
+                          valueListenable:
+                              _viewModel.downloadManager.processItems,
                           builder: (context, value, child) {
-                            FileInfo? fileInfo = value?[widget.topic?.link_resource];
+                            FileInfo? fileInfo =
+                                value?[widget.topic?.link_resource];
                             return fileInfo != null &&
                                     fileInfo.status != DownloadStatus.COMPLETE
                                 ? Card(
@@ -92,8 +96,8 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
                                         text: 'Download this lession',
                                         process: fileInfo.progress,
                                         onDownloadClick: () {
-                                          _viewModel.downloadManager
-                                              .download(widget.topic?.link_resource);
+                                          _viewModel.downloadManager.download(
+                                              widget.topic?.link_resource);
                                         },
                                       ),
                                     ),
@@ -123,7 +127,7 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
             },
           ),
         ),
-        if(widget.fromTab == false) const BannerComponent()
+        if (widget.fromTab == false) const BannerComponent()
       ],
     );
   }
@@ -153,7 +157,7 @@ class _ListLessionComponentState extends State<ListLessionComponent> {
                   conversation?.conversation_lession ?? '',
                   style: Theme.of(context)
                       .textTheme
-                      .headlineMedium
+                      .bodyMedium
                       ?.copyWith(fontSize: 20),
                 ),
               ),

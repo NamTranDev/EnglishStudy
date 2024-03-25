@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:english_study/constants.dart';
+import 'package:english_study/localization/generated/l10n.dart';
 import 'package:english_study/notification/notification_manager.dart';
 import 'package:english_study/restart_app.dart';
 import 'package:english_study/screen/splash/splash_screen.dart';
@@ -8,12 +9,11 @@ import 'package:english_study/storage/preference.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:english_study/navigator.dart' as nav;
 import 'package:english_study/services/service_locator.dart';
-
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,18 +22,22 @@ Future main() async {
 
   await setupServiceLocator();
 
-  var notification = getIt<NotificationManager>();
-  notification
-      .scheduleDailyNotification(getIt<Preference>().dailyNotification());
+  scheduleNotification();
 
   SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
+    const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
     ),
   );
 
   runApp(RestartWidget(child: const MyApp()));
+}
+
+void scheduleNotification() {
+  var notification = getIt<NotificationManager>();
+  notification
+      .scheduleDailyNotification(getIt<Preference>().dailyNotification());
 }
 
 Future<void> _deleteCacheDir() async {
@@ -49,20 +53,44 @@ class MyApp extends StatefulWidget {
 
   @override
   State<MyApp> createState() => _MyAppState();
+
+  static void setLocale(BuildContext context, Locale newLocale) {}
 }
 
 class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
+  Locale? _locale = Locale(getIt<Preference>().languageLocalize());
+
+  setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // Avoid errors caused by flutter upgrade.
     // Importing 'package:flutter/widgets.dart' is required.
     return MaterialApp(
       theme: themeInfo,
+      localizationsDelegates: const [
+        Localize.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: Localize.delegate.supportedLocales,
+      localeResolutionCallback: (deviceLocale, supportedLocales) {
+        if (supportedLocales
+            .map((e) => e.languageCode)
+            .contains(deviceLocale?.languageCode)) {
+          return deviceLocale;
+        } else {
+          return const Locale('en', '');
+        }
+      },
+      locale: _locale,
       initialRoute: SplashScreen.routeName,
       routes: nav.routes,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
       builder: EasyLoading.init(),
     );
   }
@@ -71,10 +99,12 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     getIt<NotificationManager>().isAndroidPermissionGranted(() {
-      setState(() {});
+      // setState(() {});
+      scheduleNotification();
     });
     getIt<NotificationManager>().requestPermissions(() {
-      setState(() {});
+      // setState(() {});
+      scheduleNotification();
     });
     getIt<NotificationManager>()
         .configureDidReceiveLocalNotificationSubject(context);

@@ -97,7 +97,7 @@ class ChooseAnswerComponent extends StatelessWidget {
       default:
         return Text(
           question(gameType),
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 20),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 20),
           textAlign: TextAlign.center,
         );
     }

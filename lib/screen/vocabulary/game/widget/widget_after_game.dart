@@ -1,8 +1,10 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/localization/generated/l10n.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/screen/vocabulary/flash_card/component/example_component.dart';
 import 'package:english_study/screen/vocabulary/flash_card/component/vocabulary_component.dart';
 import 'package:english_study/screen/vocabulary/game/game_vocabulary_view_model.dart';
+import 'package:english_study/services/service_locator.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +20,7 @@ class WidgetAfterGame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var viewModel = Provider.of<GameVocabularyViewModel>(context);
+    Localize _localize = getIt<Localize>();
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.end,
@@ -80,8 +83,8 @@ class WidgetAfterGame extends StatelessWidget {
                 height: 5,
               ),
               Text(
-                'Review',
-                style: Theme.of(context).textTheme.bodySmall,
+                _localize.widget_after_game_button_review,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),
@@ -100,8 +103,8 @@ class WidgetAfterGame extends StatelessWidget {
                 height: 5,
               ),
               Text(
-                'Next',
-                style: Theme.of(context).textTheme.bodySmall,
+                _localize.widget_after_game_button_next,
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],
           ),

@@ -57,7 +57,7 @@ class _NoteComponentState extends State<NoteComponent> {
             text: TextSpan(children: [
           TextSpan(
             text: isGuideNote ? 'Noted' : (widget.note ?? ''),
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.white,
                 ),
           ),

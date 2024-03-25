@@ -1,8 +1,10 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/localization/generated/l10n.dart';
 import 'package:english_study/model/audio.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/reuse/component/note_component.dart';
 import 'package:english_study/screen/vocabulary/flash_card/widget/widget_audio_spelling.dart';
+import 'package:english_study/services/service_locator.dart';
 import 'package:flutter/material.dart';
 
 class VocabularyComponent extends StatelessWidget {
@@ -25,6 +27,7 @@ class VocabularyComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Localize _localize = getIt<Localize>();
     return Card(
       elevation: isGame ? 0 : 5,
       shape: RoundedRectangleBorder(
@@ -130,7 +133,7 @@ class VocabularyComponent extends StatelessWidget {
                         text: TextSpan(children: [
                           TextSpan(
                             text: vocabulary?.description ?? '',
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                           TextSpan(text: '  '),
                           if (vocabulary != null)
@@ -185,7 +188,7 @@ class VocabularyComponent extends StatelessWidget {
                       ),
                     ),
                     alignment: Alignment.center,
-                    child: Text('View Examples',
+                    child: Text(_localize.vocabulary_component_text_view_example,
                         style: Theme.of(context)
                             .textTheme
                             .bodyMedium

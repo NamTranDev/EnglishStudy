@@ -38,17 +38,17 @@ ThemeData themeInfo = ThemeData(
   ),
   textTheme: const TextTheme(
     headlineMedium: TextStyle(
-      fontSize: 50,
-      color: Colors.black,
+      fontSize: 30,
+      color: maastricht_blue,
       fontWeight: FontWeight.w700,
     ),
-    bodyMedium: TextStyle(
-      fontSize: 15,
+    titleMedium: TextStyle(
+      fontSize: 14,
       fontWeight: FontWeight.w700,
       color: maastricht_blue,
     ),
-    bodySmall: TextStyle(
-      fontSize: 15,
+    bodyMedium: TextStyle(
+      fontSize: 12,
       color: maastricht_blue,
     ),
   ),

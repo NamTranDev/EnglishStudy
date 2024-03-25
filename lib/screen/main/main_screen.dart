@@ -109,7 +109,7 @@ class _MainScreenState extends State<MainScreen> {
           currentIndex: provider.currentPage,
           selectedItemColor: maastricht_blue,
           unselectedItemColor: maastricht_blue.withOpacity(0.5),
-          showSelectedLabels: true,
+          showSelectedLabels: false,
           showUnselectedLabels: false,
           onTap: (index) {
             if (index != provider.currentPage) {

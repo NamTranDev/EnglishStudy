@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:english_study/constants.dart';
+import 'package:english_study/localization/generated/l10n.dart';
 import 'package:english_study/model/sub_topic.dart';
 import 'package:english_study/model/vocabulary.dart';
 import 'package:english_study/reuse/component/back_screen_component.dart';
@@ -9,6 +10,7 @@ import 'package:english_study/screen/vocabulary/flash_card/component/button_fall
 import 'package:english_study/screen/vocabulary/flash_card/component/example_component.dart';
 import 'package:english_study/screen/vocabulary/flash_card/flash_card_view_model.dart';
 import 'package:english_study/screen/vocabulary/game/game_vocabulary_screen.dart';
+import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
@@ -30,6 +32,7 @@ class FlashCardScreen extends StatefulWidget {
 class _FlashCardScreenState extends State<FlashCardScreen> {
   final tooltipController = JustTheController();
   late FlashCardViewModel _viewModel;
+  late Localize _localize;
 
   @override
   void dispose() {
@@ -39,6 +42,7 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _localize = getIt<Localize>();
     return Provider.value(
       value: FlashCardViewModel(),
       child: Scaffold(
@@ -187,7 +191,7 @@ class _FlashCardScreenState extends State<FlashCardScreen> {
                                   width: 150,
                                   padding: EdgeInsets.all(10),
                                   child: Text(
-                                    'You can play games to learn vocabulary more effectively',
+                                    _localize.flash_card_screen_text_suggest_play_game,
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall

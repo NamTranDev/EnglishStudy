@@ -26,7 +26,7 @@ class DownloadBannerComponent extends StatelessWidget {
           child: Container(
             child: Text(
               text,
-              style: Theme.of(context).textTheme.bodySmall,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
         ),

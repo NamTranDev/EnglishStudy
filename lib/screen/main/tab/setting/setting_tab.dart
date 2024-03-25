@@ -29,79 +29,91 @@ class _SettingTabState extends State<SettingTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SettingTabViewModel>(
-      builder: (context, viewmodel, _) {
-        _viewModel = viewmodel;
-        _viewModel.loading = (value) async {
-          if (value is UpdateDataModel) {
-            EasyLoading.dismiss();
-            await Navigator.pushNamed(context, SyncDataScreen.routeName,
-                arguments: value);
-            setState(() {});
-          } else {
-            if (value == true) {
-              EasyLoading.show(
-                // status: 'loading...',
-                maskType: EasyLoadingMaskType.black,
-              );
-            } else {
+    return SafeArea(
+      child: Consumer<SettingTabViewModel>(
+        builder: (context, viewmodel, _) {
+          _viewModel = viewmodel;
+          _viewModel.loading = (value) async {
+            if (value is UpdateDataModel) {
               EasyLoading.dismiss();
-            }
-          }
-        };
-        return FutureBuilder(
-            future: _viewModel.getSettingInfo(),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text(
-                      "Something wrong with message: ${snapshot.error.toString()}"),
-                );
-              } else if (snapshot.connectionState == ConnectionState.done) {
-                List<SettingInfo>? data = snapshot.data;
-                return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      SettingInfo? setting = data?.getOrNull(index);
-                      if (setting == null) return SizedBox();
-                      return Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(child: Text(setting.name ?? '')),
-                              ListenableBuilder(
-                                listenable: setting,
-                                builder: (context, widget) {
-                                  return IgnorePointer(
-                                    ignoring: setting.isEnable == false,
-                                    child: buildSettingAction(setting),
-                                  );
-                                },
-                              )
-                            ],
-                          ),
-                          if (setting.any != null)
-                            ListenableBuilder(
-                              listenable: setting,
-                              builder: (context, widget) {
-                                return buildExpandWidget(setting);
-                              },
-                            )
-                        ],
-                      );
-                    },
-                    itemCount: data?.length,
-                  ),
+              await Navigator.pushNamed(context, SyncDataScreen.routeName,
+                  arguments: value);
+              setState(() {});
+            } else {
+              if (value == true) {
+                EasyLoading.show(
+                  // status: 'loading...',
+                  maskType: EasyLoadingMaskType.black,
                 );
               } else {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
+                EasyLoading.dismiss();
               }
-            });
-      },
+            }
+          };
+          return FutureBuilder(
+              future: _viewModel.getSettingInfo(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                        "Something wrong with message: ${snapshot.error.toString()}"),
+                  );
+                } else if (snapshot.connectionState == ConnectionState.done) {
+                  List<SettingInfo>? data = snapshot.data;
+                  return Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Setting',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemBuilder: (context, index) {
+                              SettingInfo? setting = data?.getOrNull(index);
+                              if (setting == null) return SizedBox();
+                              return Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(child: Text(setting.name ?? '')),
+                                      ListenableBuilder(
+                                        listenable: setting,
+                                        builder: (context, widget) {
+                                          return IgnorePointer(
+                                            ignoring: setting.isEnable == false,
+                                            child: buildSettingAction(setting),
+                                          );
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                  if (setting.any != null)
+                                    ListenableBuilder(
+                                      listenable: setting,
+                                      builder: (context, widget) {
+                                        return buildExpandWidget(setting);
+                                      },
+                                    )
+                                ],
+                              );
+                            },
+                            itemCount: data?.length,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              });
+        },
+      ),
     );
   }
 

@@ -68,6 +68,14 @@ class SettingTabViewModel with ChangeNotifier {
           isToggle: true,
           any: getIt<AppMemory>().isHasUpdate),
     );
+    settings.add(
+      SettingInfo(
+          id: 4,
+          name: 'Language',
+          isEnable: true,
+          isToggle: true,
+          any: getIt<Preference>().languageLocalize()),
+    );
     return Future.value(settings);
   }
 

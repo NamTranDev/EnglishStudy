@@ -46,7 +46,7 @@ class WidgetAnswer extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             answer,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontFamily: isSpelling ? 'Noto' : 'Roboto',
                 color: typeAnswer == 1 ? Colors.black : Colors.white),
           ),

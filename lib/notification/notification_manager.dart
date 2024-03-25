@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:english_study/localization/generated/l10n.dart';
 import 'package:english_study/notification/notification_model.dart';
 import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/storage/preference.dart';
@@ -12,7 +13,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:english_study/notification/received_notification.dart';
 
@@ -221,10 +221,11 @@ class NotificationManager {
     }
 
     getIt<Preference>().saveDailyNotification(model);
+    var localize = getIt<Localize>();
     await flutterLocalNotificationsPlugin.zonedSchedule(
         model.idNotification,
-        'English Study Daily Notification',
-        'Open app to learn',
+        localize.notification_title_daily,
+        localize.notification_body_daily,
         scheduledDate,
         const NotificationDetails(
           android: AndroidNotificationDetails('daily notification channel id',

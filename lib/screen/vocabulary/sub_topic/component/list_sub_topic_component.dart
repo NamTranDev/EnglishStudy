@@ -1,4 +1,5 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/localization/generated/l10n.dart';
 import 'package:english_study/download/download_status.dart';
 import 'package:english_study/download/file_info.dart';
 import 'package:english_study/model/sub_topic.dart';
@@ -12,6 +13,7 @@ import 'package:english_study/reuse/component/next_category_component.dart';
 import 'package:english_study/screen/vocabulary/flash_card/flash_card_vocabulary_screen.dart';
 import 'package:english_study/screen/vocabulary/game/game_vocabulary_screen.dart';
 import 'package:english_study/screen/vocabulary/sub_topic/sub_topic_view_model.dart';
+import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
@@ -28,6 +30,7 @@ class ListSubTopicComponent extends StatefulWidget {
 
 class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
   late SubTopicViewModel _viewModel;
+  late Localize _localize;
   final tooltipController = JustTheController();
 
   double marginLeft = 30;
@@ -38,6 +41,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
 
   @override
   Widget build(BuildContext context) {
+    _localize = getIt<Localize>();
     return Column(
       children: [
         Expanded(
@@ -45,8 +49,10 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
             builder: (context, viewmodel, child) {
               _viewModel = viewmodel;
               _viewModel.downloadManager.onDownloadErrorListener = () {
-                showSnackBar(context, 'An error occurred during the download process',
-                    iconSvg: 'assets/icons/ic_error.svg', iconSvgColor: red_violet);
+                showSnackBar(
+                    context, _localize.sub_topic_component_text_download_error,
+                    iconSvg: 'assets/icons/ic_error.svg',
+                    iconSvgColor: red_violet);
               };
               _viewModel.onShowGuideNextCategory = () {
                 // tooltipController.showTooltip();
@@ -70,7 +76,8 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                           builder: (context, value, child) {
                             return value
                                 ? NextCategoryComponent(
-                                    text: 'Learn Another Topic',
+                                    text: _localize
+                                        .sub_topic_component_text_another_category,
                                     onNextCategoryClick: () {
                                       nextPickCategory(context, widget.topic);
                                     },
@@ -79,9 +86,11 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                           },
                         ),
                         ValueListenableBuilder(
-                          valueListenable: _viewModel.downloadManager.processItems,
+                          valueListenable:
+                              _viewModel.downloadManager.processItems,
                           builder: (context, value, child) {
-                            FileInfo? fileInfo = value?[widget.topic?.link_resource];
+                            FileInfo? fileInfo =
+                                value?[widget.topic?.link_resource];
                             return fileInfo != null &&
                                     fileInfo.status != DownloadStatus.COMPLETE
                                 ? Card(
@@ -91,11 +100,12 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                                       padding: EdgeInsets.symmetric(
                                           vertical: 5, horizontal: 10),
                                       child: DownloadBannerComponent(
-                                        text: 'Download this lession',
+                                        text: _localize
+                                            .sub_topic_component_text_download,
                                         process: fileInfo.progress,
                                         onDownloadClick: () {
-                                          _viewModel.downloadManager
-                                              .download(widget.topic?.link_resource);
+                                          _viewModel.downloadManager.download(
+                                              widget.topic?.link_resource);
                                         },
                                       ),
                                     ),
@@ -126,7 +136,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
             },
           ),
         ),
-        if(widget.fromTab == false) const BannerComponent()
+        if (widget.fromTab == false) const BannerComponent()
       ],
     );
   }
@@ -147,8 +157,8 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                   onTap: () async {
                     if (subTopic?.isLearnComplete == 0 &&
                         subTopic?.isLearning == 0) {
-                      showSnackBar(
-                          context, 'You need to study the open topics first');
+                      showSnackBar(context,
+                          _localize.sub_topic_component_text_warning_complete);
                       return;
                     }
 
@@ -159,7 +169,9 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
 
                     if (!isHasResource && !isDefault) {
                       showSnackBar(
-                          context, 'You must download data lession first');
+                          context,
+                          _localize
+                              .sub_topic_component_text_warning_need_download);
                       return;
                     }
 
@@ -238,7 +250,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                         margin: EdgeInsets.only(left: 20, right: 50),
                         child: Text(
                           subTopic?.name ?? '',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: Theme.of(context).textTheme.titleMedium,
                           textAlign: TextAlign.start,
                         ),
                       ),
@@ -269,7 +281,7 @@ class _ListSubTopicComponentState extends State<ListSubTopicComponent> {
                         margin: EdgeInsets.only(left: 20, right: 50),
                         child: Text(
                           subTopic?.number_word ?? '',
-                          style: Theme.of(context).textTheme.bodySmall,
+                          style: Theme.of(context).textTheme.bodyMedium,
                           textAlign: TextAlign.start,
                         ),
                       ),

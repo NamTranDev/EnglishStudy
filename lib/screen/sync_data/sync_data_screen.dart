@@ -108,7 +108,7 @@ class SyncDataScreen extends StatelessWidget {
       children: [
         Text(
           'Update Complete',
-          style: Theme.of(context).textTheme.titleLarge,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         SizedBox(
           height: 20,
@@ -138,14 +138,14 @@ class SyncDataScreen extends StatelessWidget {
       children: [
         Text(
           value.category?.title ?? '',
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         SizedBox(
           height: 30,
         ),
         Text(
           value.topic?.name ?? '',
-          style: Theme.of(context).textTheme.bodySmall,
+          style: Theme.of(context).textTheme.bodyMedium,
         ),
         SizedBox(
           height: 10,

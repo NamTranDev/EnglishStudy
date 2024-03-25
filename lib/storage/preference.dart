@@ -21,6 +21,7 @@ class Preference {
   final _KEY_CONVERSATION_BACKGROUND = 'KEY_CONVERSATION_BACKGROUND';
   final _KEY_DAILY_NOTIFICATION = 'KEY_DAILY_NOTIFICATION';
   final _KEY_VERSION_UPDATE = 'KEY_VERSION_UPDATE';
+  final _KEY_LANGUAGE_LOCALIZE = 'KEY_LANGUAGE_LOCALIZE';
 
   SharedPreferences? _prefs;
 
@@ -61,6 +62,14 @@ class Preference {
 
   String? currentCategory(int? type) {
     return _prefs?.getString(_KEY_CATEGORY_CURRENT + (type?.toString() ?? ''));
+  }
+
+  String languageLocalize() {
+    return _prefs?.getString(_KEY_LANGUAGE_LOCALIZE) ?? 'vi';
+  }
+
+  void saveLanguageLocalize(String locale) {
+    _prefs?.setString(_KEY_LANGUAGE_LOCALIZE, locale);
   }
 
   void saveDailyNotification(NotificationModel model) {

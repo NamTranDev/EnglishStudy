@@ -1,6 +1,8 @@
 import 'package:english_study/constants.dart';
+import 'package:english_study/localization/generated/l10n.dart';
 import 'package:english_study/model/category.dart';
 import 'package:english_study/screen/category/category_view_model.dart';
+import 'package:english_study/services/service_locator.dart';
 import 'package:english_study/utils/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -34,7 +36,7 @@ class CategoryComponent extends StatelessWidget {
                 } else if (snapshot.connectionState == ConnectionState.done) {
                   return buildWidget(context, snapshot.data, viewmodel);
                 } else {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
@@ -48,15 +50,16 @@ class CategoryComponent extends StatelessWidget {
 
   Widget buildWidget(BuildContext context, List<Category>? categories,
       CategoryViewModel viewModel) {
+    var localize = getIt<Localize>();
     return Container(
-      margin: EdgeInsets.only(top: 10, left: 10, right: 10),
+      margin: const EdgeInsets.only(top: 10, left: 10, right: 10),
       child: Column(
         children: [
           Text(
             isComplete == true
-                ? 'Learned topics'
-                : 'Please choose a category to get started',
-            style: Theme.of(context).textTheme.headlineLarge,
+                ? localize.category_component_title_complete
+                : localize.category_component_title_learn,
+            style: Theme.of(context).textTheme.headlineMedium,
             textAlign: TextAlign.center,
           ),
           Expanded(
@@ -85,7 +88,7 @@ class CategoryComponent extends StatelessWidget {
                           child: Stack(
                             alignment: Alignment.centerLeft,
                             children: [
-                              Container(
+                              SizedBox(
                                 width: double.infinity,
                                 height: 80,
                                 child: ValueListenableBuilder(
@@ -99,7 +102,7 @@ class CategoryComponent extends StatelessWidget {
                                               BorderRadius.circular(80),
                                         ),
                                         child: Container(
-                                          padding: EdgeInsets.only(
+                                          padding: const EdgeInsets.only(
                                               left: 70, right: 10),
                                           alignment: Alignment.center,
                                           child: Text(
@@ -140,7 +143,7 @@ class CategoryComponent extends StatelessWidget {
                               horizontal: 20, vertical: 10),
                           child: Text(
                             categories?.getOrNull(index)?.description ?? '',
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: Theme.of(context).textTheme.bodyMedium,
                           ),
                         )
                       ],
@@ -155,7 +158,7 @@ class CategoryComponent extends StatelessWidget {
                       valueListenable: viewModel.selectInfo,
                       builder: (context, info, widget) {
                         return AnimatedOpacity(
-                          duration: Duration(
+                          duration: const Duration(
                               milliseconds: duration_animation_visible),
                           opacity: info == null ? 0 : 1,
                           child: ElevatedButton(
@@ -165,10 +168,10 @@ class CategoryComponent extends StatelessWidget {
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: maastricht_blue,
-                                padding: EdgeInsets.symmetric(
+                                padding: const EdgeInsets.symmetric(
                                     horizontal: 30, vertical: 10)),
                             child: Text(
-                              "Select",
+                              localize.category_component_button_select,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
